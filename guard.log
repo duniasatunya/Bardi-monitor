@@ -1,0 +1,53 @@
+2026-11-10T16:12:17.390Z Pengawas mulai.
+2026-11-10T16:12:17.401Z monitor jalan (pid 16580)
+2026-11-10T16:14:32.591Z monitor berhenti (exit 0) setelah 135 dtk; dibuka lagi dalam 3 dtk.
+2026-11-10T16:14:35.608Z monitor jalan (pid 21784)
+2026-11-10T16:15:46.378Z monitor berhenti (exit 0); berhenti.flag ada, pengawas berhenti.
+2026-11-10T16:30:46.003Z Pengawas mulai.
+2026-11-10T16:30:46.014Z monitor jalan (pid 27560)
+2026-11-10T16:33:18.584Z monitor berhenti (exit 0) setelah 153 dtk; dibuka lagi dalam 3 dtk.
+2026-11-10T16:33:21.598Z monitor jalan (pid 356)
+2026-11-10T16:36:37.753Z monitor berhenti (exit 0) setelah 196 dtk; dibuka lagi dalam 3 dtk.
+2026-11-10T16:36:40.761Z monitor jalan (pid 17104)
+2026-11-10T16:36:58.035Z monitor berhenti (exit 0) setelah 17 dtk; dibuka lagi dalam 3 dtk.
+2026-11-10T16:37:01.066Z monitor jalan (pid 15784)
+2026-11-10T16:37:20.335Z Pengawas mulai.
+2026-11-10T16:37:20.341Z monitor jalan (pid 24120)
+2026-11-10T16:38:50.642Z Pengawas mulai.
+2026-11-10T16:38:50.646Z monitor jalan (pid 19288)
+2026-11-10T16:44:58.517Z monitor berhenti (exit 0) setelah 368 dtk; dibuka lagi dalam 3 dtk.
+2026-11-10T16:45:01.535Z monitor jalan (pid 15036)
+2026-11-10T16:45:12.994Z Pengawas mulai.
+2026-11-10T16:45:12.999Z monitor jalan (pid 25820)
+2026-11-10T16:59:44.976Z monitor berhenti (exit 0) setelah 872 dtk; dibuka lagi dalam 3 dtk.
+2026-11-10T16:59:47.981Z monitor jalan (pid 20348)
+2026-11-10T17:04:33.689Z monitor berhenti (exit 0) setelah 286 dtk; dibuka lagi dalam 3 dtk.
+2026-11-10T17:04:36.702Z monitor jalan (pid 13984)
+2026-11-10T17:12:43.751Z monitor berhenti (exit 0) setelah 487 dtk; dibuka lagi dalam 3 dtk.
+2026-11-10T17:12:46.769Z monitor jalan (pid 21392)
+2026-11-10T17:40:19.196Z monitor berhenti (exit 0) setelah 1652 dtk; dibuka lagi dalam 3 dtk.
+2026-11-10T17:40:22.214Z monitor jalan (pid 7044)
+2026-11-10T17:56:02.847Z monitor berhenti (exit 0) setelah 941 dtk; dibuka lagi dalam 3 dtk.
+2026-11-10T17:56:05.854Z monitor jalan (pid 13452)
+2026-11-10T18:02:53.790Z monitor berhenti (exit 0) setelah 408 dtk; dibuka lagi dalam 3 dtk.
+2026-11-10T18:02:56.794Z monitor jalan (pid 25668)
+2026-11-10T18:09:44.352Z monitor berhenti (exit 0) setelah 408 dtk; dibuka lagi dalam 3 dtk.
+2026-11-10T18:09:47.368Z monitor jalan (pid 23656)
+2026-11-10T18:20:54.002Z Pengawas mulai.
+2026-11-10T18:20:54.008Z monitor jalan (pid 8596)
+2026-11-10T18:26:26.373Z Pengawas mulai.
+2026-11-10T18:26:26.378Z monitor jalan (pid 16624)
+2026-11-10T19:35:11.086Z monitor berhenti (exit 0) setelah 4125 dtk; dibuka lagi dalam 3 dtk.
+2026-11-10T19:35:14.096Z monitor jalan (pid 23396)
+2026-11-10T19:44:00.183Z monitor berhenti (exit 0) setelah 526 dtk; dibuka lagi dalam 3 dtk.
+2026-11-10T19:44:03.200Z monitor jalan (pid 4788)
+2026-11-10T20:06:47.465Z monitor berhenti (exit 0) setelah 1364 dtk; dibuka lagi dalam 3 dtk.
+2026-11-10T20:06:50.483Z monitor jalan (pid 28552)
+2026-11-10T20:18:40.376Z monitor berhenti (exit 0) setelah 710 dtk; dibuka lagi dalam 3 dtk.
+2026-11-10T20:18:43.393Z monitor jalan (pid 16480)
+2026-11-10T20:20:41.102Z monitor berhenti (exit 0) setelah 118 dtk; dibuka lagi dalam 3 dtk.
+2026-11-10T20:20:44.115Z monitor jalan (pid 7012)
+2026-11-10T20:23:43.203Z monitor berhenti (exit 0) setelah 179 dtk; dibuka lagi dalam 3 dtk.
+2026-11-10T20:23:46.217Z monitor jalan (pid 13976)
+2026-11-10T21:12:16.066Z monitor berhenti (exit 0) setelah 2910 dtk; dibuka lagi dalam 3 dtk.
+2026-11-10T21:12:19.081Z monitor jalan (pid 16584)

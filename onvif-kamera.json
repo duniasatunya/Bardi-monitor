@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "cameras": [
+    {
+      "id": "5fed6332",
+      "name": "admin",
+      "floor": "",
+      "host": "192.168.18.169",
+      "port": 8000,
+      "username": "admin",
+      "passwordEnc": "v1:aiwPPvWLN7hYM+wvRQ95keEUcmEN2S+hcHC8E4+hAJMk"
+    },
+    {
+      "id": "e7165e42",
+      "name": "asdg",
+      "floor": "",
+      "host": "192.168.18.172",
+      "port": 80,
+      "username": "admin",
+      "passwordEnc": "v1:VkPt7intAkxgeSPPoj9idqRhlC/UORkY/uWY+/IIiIOT"
+    }
+  ]
+}
