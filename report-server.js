@@ -8,6 +8,12 @@ const crypto = require('crypto');
 const { createCapturer } = require('./screen-capture');
 const { createLiveStream } = require('./live-stream');
 const { createUpdater } = require('./updater');
+const { createOnvifManager, scanPorts, discover, isPrivateIPv4 } = require('./onvif-cams');
+const makeOnvifPage = require('./onvif-page');
+const { createPtz } = require('./onvif-ptz');
+const { attachRealtimeWs } = require('./onvif-ws');
+const { createOnvifLive } = require('./onvif-live');
+const { createIncidentRecorder } = require('./onvif-incident');
 
 // ---------- password & sesi ----------
 function loadConfig(dir) {
@@ -212,14 +218,14 @@ table{width:100%;border-collapse:collapse;font-size:14px}th,td{text-align:left;p
 .b{display:inline-block;padding:1px 8px;border-radius:99px;font-size:12px;font-weight:600;color:#fff}
 .PLAY{background:var(--ok)}.ERROR,.OFFLINE{background:var(--bad)}.CONNECTING,.FROZEN,.ACTED{background:var(--warn)}.INIT,.HIDE{background:var(--mut)}
 .tot{display:flex;flex-wrap:wrap;gap:16px}.tot div{min-width:90px}.tot b{display:block;font-size:22px}
-button:disabled{opacity:.5;cursor:default}.pri-b{background:var(--pri);border-color:var(--pri);color:#fff}
+button:disabled{opacity:.5;cursor:default}.pri-b{background:var(--pri);border-color:var(--pri);color:#fff}.danger{color:#b42318;border-color:#b42318}
 tr.clk{cursor:pointer}tr.clk:hover td{background:rgba(232,89,12,.08)}tr.sel td{background:rgba(232,89,12,.16)}
 .lnk{color:var(--pri);cursor:pointer;text-decoration:underline;background:none;border:0;padding:0;font:inherit}
 .det{border:2px solid var(--pri);border-radius:10px;padding:12px;margin:14px 0 4px;overflow-x:auto}.det h3{margin:0 0 8px;font-size:15px}
 .det th,.det td{white-space:normal;padding:6px 5px;font-size:13px}
 </style></head><body>
 <header><h1>Laporan Bardi Monitor</h1><div class="row"><span class="mut" id="upd">memuat...</span>
-<button id="upb">Pembaruan</button><a class="btn" href="/layar" target="_blank" rel="noopener">Lihat layar PC</a><a class="btn pri" href="/report.pdf">Unduh PDF</a><a class="btn" href="/logout">Keluar</a></div></header>
+<a class="btn" href="/onvif">Kamera ONVIF</a><a class="btn" href="/multiview">Multiview</a><a class="btn" href="/kejadian">Rekaman kejadian</a><button id="upb">Pembaruan</button><button id="stopb" class="danger">Hentikan pemantauan</button><a class="btn" href="/layar" target="_blank" rel="noopener">Lihat layar PC</a><a class="btn pri" href="/report.pdf">Unduh PDF</a><a class="btn" href="/logout">Keluar</a></div></header>
 <main>
 <div class="card" id="upc" style="display:none"><div class="row" style="justify-content:space-between"><h2>Pembaruan dari GitHub</h2><button id="upx">Tutup</button></div>
 <p class="mut" id="upv"></p><p id="upm"></p>
@@ -312,6 +318,8 @@ async function upPoll(){try{const d=await api('/api/update/status');drawUp(d);
   if(['checking','downloading','installing'].includes(d.state))setTimeout(upPoll,1000);else if(d.state==='restarting')waitBack()}catch(e){}}
 $('upb').onclick=()=>{$('upc').style.display='';upStatus()};
 $('upx').onclick=()=>{$('upc').style.display='none'};
+$('stopb').onclick=async()=>{if(!confirm('Hentikan pemantauan? Program di PC akan MATI dan tidak menyala lagi sampai Anda menjalankannya manual (atau PC dihidupkan ulang).'))return;
+  try{const r=await post('/api/stop');alert(r.ok?'Pemantauan dihentikan. Untuk menyalakan lagi, buka shortcut Bardi Monitor di PC.':(r.error||'Gagal menghentikan'))}catch(e){}};
 $('upchk').onclick=async()=>{$('upm').textContent='Memeriksa GitHub...';try{drawUp(await post('/api/update/check'))}catch(e){}};
 $('upgo').onclick=async()=>{if(!confirm('Perbarui sekarang? Bardi Monitor akan menutup dan membuka ulang sendiri (sekitar 15 detik).'))return;
   const r=await post('/api/update/apply');if(r.ok)upPoll();else $('upm').textContent=r.error||'Gagal memulai pembaruan'};
@@ -353,6 +361,22 @@ function startReportServer(opts) {
   let publicIp = '';
   const startedAt = Date.now();
   const upd = createUpdater({ dir, log, apiBase: opts.updateApiBase });
+  const onvif = createOnvifManager({ dir, log, probeFn: opts.onvifProbeFn, timing: opts.onvifTiming });
+  onvif.start();
+  const onvifLive = createOnvifLive({ log, rootDir: dir, ffmpegPath: opts.ffmpegPath, getCamera: (id) => onvif.liveInfo(id), tmpBase: opts.onvifLiveTmp, rtspTransport: opts.onvifRtspTransport });
+  // Rekaman kejadian: buffer berputar tiap kamera ONVIF; saat kamera putus, 2 menit sebelum & sesudahnya disimpan jadi klip.
+  const incident = createIncidentRecorder({ log, rootDir: dir, ffmpegPath: opts.ffmpegPath, listCams: () => onvif.list().map((c) => ({ id: c.id, name: c.name })), getCamera: (id) => onvif.liveInfo(id), outDir: opts.incidentDir, bufBase: opts.incidentBuf, timing: opts.incidentTiming, minFreeBytes: opts.incidentMinFree, retentionDays: opts.incidentDays || 7 });
+  if (!opts.noIncident) incident.start();
+  const INCIDENT_PAGE = require('./onvif-kejadian')(BASE_CSS);
+  const ONVIF_PAGE = makeOnvifPage(BASE_CSS);
+  const MULTIVIEW_PAGE = require('./onvif-multiview')(BASE_CSS);
+  const ptz = createPtz({ getTarget: (id) => onvif.secret(id), log, camClass: opts.onvifCamClass });
+  let onvifTests = 0; // batasi tes bersamaan (cegah dipakai memindai jaringan)
+  const readJson = (req) => new Promise((resolve, reject) => {
+    let b = ''; req.on('data', (d) => { b += d; if (b.length > 8192) { req.destroy(); reject(new Error('terlalu besar')); } });
+    req.on('end', () => { try { resolve(JSON.parse(b || '{}')); } catch (e) { reject(new Error('JSON tidak valid')); } });
+    req.on('error', reject);
+  });
 
   const fetchIp = () => {
     try {
@@ -493,6 +517,75 @@ function startReportServer(opts) {
         }).catch(() => {});
         return json(res, { ok: true, started: true });
       }
+      if (p === '/onvif') return send(res, 200, 'text/html; charset=utf-8', ONVIF_PAGE);
+      if (p === '/multiview') return send(res, 200, 'text/html; charset=utf-8', MULTIVIEW_PAGE);
+      if (p === '/kejadian') return send(res, 200, 'text/html; charset=utf-8', INCIDENT_PAGE);
+      if (p === '/api/kejadian') return json(res, { ok: true, dir: incident.dir, recorder: incident.statusList(), days: incident.retentionDays, incidents: incident.incidents() });
+      if (p.startsWith('/kejadian/f/')) { // /kejadian/f/<id8>/<tanggal_jam.mp4>: video klip (mendukung Range supaya bisa digeser)
+        const m = /^\/kejadian\/f\/([0-9a-f]{8})\/([0-9_.\-a-z]+)$/.exec(p);
+        const f = m && incident.fileFor(m[1], m[2]);
+        if (!f) return send(res, 404, 'text/plain; charset=utf-8', 'Tidak ada');
+        let start = 0, end = f.size - 1, code = 200;
+        const rg = /^bytes=(\d*)-(\d*)$/.exec(String(req.headers.range || ''));
+        if (rg && (rg[1] || rg[2])) {
+          if (rg[1] === '') { start = Math.max(0, f.size - Number(rg[2])); } else { start = Number(rg[1]); if (rg[2]) end = Math.min(end, Number(rg[2])); }
+          if (!(start <= end && start < f.size)) { res.writeHead(416, { 'Content-Range': 'bytes */' + f.size }); return res.end(); }
+          code = 206;
+        }
+        const h = { 'Content-Type': 'video/mp4', 'Accept-Ranges': 'bytes', 'Content-Length': end - start + 1, 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' };
+        if (code === 206) h['Content-Range'] = `bytes ${start}-${end}/${f.size}`;
+        res.writeHead(code, h);
+        const st = fs.createReadStream(f.path, { start, end });
+        st.on('error', () => { try { res.destroy(); } catch (_) {} });
+        res.on('close', () => st.destroy());
+        return st.pipe(res);
+      }
+      if (p.startsWith('/onvif-live/')) { // /onvif-live/<id>/<live.m3u8|segNNNNN.ts>
+        const m = /^\/onvif-live\/([0-9a-f]{8})\/([A-Za-z0-9_.]+)$/.exec(p);
+        if (m && m[2] === 'rt.mp4') return onvifLive.realtime(m[1], url.searchParams.get('q'), req, res, url.searchParams.get('a') !== '0', url.searchParams.get('s') === '1');
+        const f = m && onvifLive.file(m[1], m[2]);
+        if (!f) return send(res, 404, 'text/plain; charset=utf-8', 'Tidak ada');
+        return send(res, 200, f.type, f.body);
+      }
+      if (p === '/api/onvif/cameras') return json(res, { libOk: onvif.libOk(), libMessage: onvif.libMessage(), cameras: onvif.list() });
+      if (p === '/api/onvif/save' || p === '/api/onvif/delete' || p === '/api/onvif/test' || p === '/api/onvif/scan' || p === '/api/onvif/discover' || p === '/api/onvif/live/start' || p === '/api/onvif/live/stop' || p === '/api/onvif/diag' || p === '/api/onvif/ptz') {
+        if (req.method !== 'POST') return send(res, 405, 'text/plain; charset=utf-8', 'Gunakan POST');
+        const origin = req.headers.origin;
+        if (origin) { let okOrigin = false; try { okOrigin = new URL(origin).host === req.headers.host; } catch (_) {} if (!okOrigin) return send(res, 403, 'text/plain; charset=utf-8', 'Forbidden'); }
+        if (!/^application\/json\b/i.test(req.headers['content-type'] || '')) return send(res, 415, 'text/plain; charset=utf-8', 'Harus JSON');
+        let body; try { body = await readJson(req); } catch (e) { return json(res, { ok: false, error: 'Data tidak valid.' }); }
+        if (p === '/api/onvif/save') return json(res, onvif.upsert(body));
+        if (p === '/api/onvif/delete') return json(res, onvif.remove(body.id));
+        if (p === '/api/onvif/ptz') { const id = String(body.id || ''); return json(res, body.action === 'stop' ? await ptz.stop(id) : await ptz.move(id, body)); }
+        if (p === '/api/onvif/diag') return json(res, await onvifLive.diag(String(body.id || ''), body.quality));
+        if (p === '/api/onvif/live/stop') { onvifLive.stop(String(body.id || ''), 'ditutup penonton'); return json(res, { ok: true }); }
+        if (p === '/api/onvif/live/start') {
+          const id = String(body.id || '');
+          const r = await onvifLive.start(id, body.quality);
+          if (!r.ok) log('WARN', `Live ONVIF ${id} gagal: ${String(r.error).slice(0, 200)}`);
+          return json(res, r.ok ? { ok: true, url: `/onvif-live/${id}/live.m3u8`, profile: r.profile, info: r.info } : { ok: false, error: /tidak ditemukan|ENOENT/.test(r.error || '') && /ffmpeg/.test(r.error || '') ? 'ffmpeg belum terpasang (jalankan INSTALL.bat lagi)' : r.error });
+        }
+        if (onvifTests >= 3) return json(res, { ok: false, error: 'Terlalu banyak tes berjalan. Tunggu sebentar.' });
+        onvifTests++;
+        try {
+          if (p === '/api/onvif/discover') return json(res, await (opts.onvifDiscoverFn || discover)());
+          if (p === '/api/onvif/scan') {
+            const host = String(body.host || '').trim();
+            if (!isPrivateIPv4(host)) return json(res, { ok: false, error: 'IP harus alamat jaringan lokal, contoh 192.168.18.51.' });
+            return json(res, await (opts.onvifScanFn || scanPorts)(host));
+          }
+          return json(res, await onvif.test(body));
+        } finally { onvifTests--; }
+      }
+      if (p === '/api/stop') {
+        if (req.method !== 'POST') return send(res, 405, 'text/plain; charset=utf-8', 'Gunakan POST');
+        const origin = req.headers.origin;
+        if (origin) { let okOrigin = false; try { okOrigin = new URL(origin).host === req.headers.host; } catch (_) {} if (!okOrigin) return send(res, 403, 'text/plain; charset=utf-8', 'Forbidden'); }
+        if (!opts.stop) return json(res, { ok: false, error: 'Fitur berhenti tidak tersedia' });
+        log('INFO', `Penghentian pemantauan diminta dari ${ip}`);
+        setTimeout(() => opts.stop(), 800);
+        return json(res, { ok: true });
+      }
       if (p === '/api/events') {
         const limit = Math.min(1000, Math.max(1, parseInt(url.searchParams.get('limit') || '200', 10) || 200));
         const cam = url.searchParams.get('camera');
@@ -518,6 +611,7 @@ function startReportServer(opts) {
     }
   });
   server.on('error', (e) => log('WARN', `Server laporan gagal start di port ${port}: ${e.code || e.message}`));
+  attachRealtimeWs(server, { authed: (req) => checkToken(cfg.secret, getCookie(req, 'bm_session')), onvifLive, log });
   server.listen(port, '0.0.0.0', () => log('INFO', `Laporan aktif: http://<IP-PC>:${port}/displaycostum.html (wajib password)`));
   return server;
 }

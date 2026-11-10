@@ -23,7 +23,7 @@ const KEEP_BACKUPS = 5;
 
 const PROTECTED_TOP = new Set([
   'config.json', 'update.json', 'version.json', 'profile', 'node_modules', 'ffmpeg', 'runtime', 'backup',
-  'kamera-lantai.json', '.git', 'Bardi Monitor.app',
+  'kamera-lantai.json', 'onvif-kamera.json', 'onvif.key', '.git', 'Bardi Monitor.app',
 ]);
 function isProtected(rel) {
   const r = rel.replace(/\\/g, '/');

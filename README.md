@@ -92,3 +92,27 @@ Pasang sekali (repo privat butuh token):
 Aman: data lokal tidak pernah ditimpa (`config.json`, `profile/`, `kamera-lantai.json`, CSV, log, `ffmpeg/`, `node_modules/`, `update.json`). Pembaruan ditolak kalau ada file kode yang rusak sintaksnya atau `report-server.js` tidak bisa dimuat. Kalau versi baru bermasalah setelah terpasang: tutup Bardi Monitor, klik ganda **PULIHKAN-VERSI-LAMA.bat**, lalu buka lagi. Cadangan disimpan 5 terakhir.
 
 Catatan: file yang dihapus dari repo tidak ikut terhapus di PC. Pembaruan ini hanya untuk versi Windows di folder ini; versi Mac belum punya.
+
+## Mode kios + nyala otomatis (24/7)
+
+- **START.vbs** (shortcut Desktop) sekarang menjalankan *mode kios*: layar penuh tanpa tombol silang, dijaga oleh `guard.js`. Mouse dan keyboard tetap bisa dipakai.
+- Kalau jendela ditutup (Alt+F4 dll) atau program mati, **dibuka lagi otomatis dalam ~3 detik**. Kalau terus gagal, jedanya dinaikkan jadi 30 detik.
+- **Cara berhenti:** buka halaman laporan (login password) lalu tekan **Hentikan pemantauan**. Setelah itu tidak dibuka lagi sampai shortcut dijalankan manual atau PC dinyalakan ulang.
+- **Nyala otomatis saat Windows login:** jalankan `PASANG-NYALA-OTOMATIS.bat` sekali. Hapus dengan `HAPUS-NYALA-OTOMATIS.bat`. Supaya benar-benar nyala sendiri setelah mati listrik, Windows juga harus diatur login otomatis (dilakukan sendiri di PC; Windows meminta password-nya, jangan dititipkan ke program ini).
+- **Perawatan / login ulang Bardi:** pakai `START-BIASA.vbs` (tanpa kios dan tanpa pengawas; jendela ditutup = program berhenti).
+- Catatan: pengawas bisa dimatikan lewat Task Manager oleh orang yang paham Windows. Ini sengaja tidak dikunci agar PC tidak sulit dibuka saat perawatan.
+- Log pengawas: `guard.log`.
+
+## Kamera ONVIF (tahap 1: konfigurasi + tes koneksi)
+
+- Buka halaman laporan lalu tombol **Kamera ONVIF** (atau alamat `/onvif`). Di sana Anda mengisi nama, IP, port, username, dan password ONVIF tiap kamera, lalu **Tes koneksi** dan **Simpan**.
+- Tes menampilkan tersambung atau tidaknya, jenis perangkat, profil video (codec, resolusi, fps, bitrate), dan alamat stream RTSP. Gagal akan dijelaskan penyebabnya (port ditolak, tidak ada jawaban, login salah, bukan ONVIF).
+- Kamera yang tersimpan **dicek otomatis dan dicoba lagi sendiri** kalau putus (jeda 5, 10, 15, 30, lalu 60 detik). Tidak perlu konfigurasi ulang.
+- Kalau **username/password salah**, program berhenti mencoba (supaya akun ONVIF di kamera tidak terkunci). Perbaiki lewat tombol Ubah, lalu otomatis mencoba lagi.
+- Hanya IP jaringan lokal yang diterima (192.168.x.x, 10.x.x.x, 172.16-31.x.x).
+- Data tersimpan di `onvif-kamera.json`; password disamarkan (AES-256) dengan kunci di `onvif.key`. Keduanya data lokal PC, tidak ikut GitHub dan tidak ditimpa pembaruan. Jangan hapus `onvif.key` (password jadi tidak terbaca). Itu penyamaran, bukan pengamanan penuh: siapa pun yang bisa membuka folder ini bisa membaca keduanya.
+- **Sekali saja:** jalankan `PASANG-PUSTAKA-ONVIF.bat` untuk memasang pustaka ONVIF (butuh internet), lalu buka ulang Bardi Monitor.
+- **Live view (tahap 2):** kamera yang berstatus Tersambung punya tombol **Lihat**. Video ditarik langsung dari kamera lewat RTSP dan diteruskan ke browser apa adanya (kamera H.264; tanpa diolah ulang jadi ringan). Pilihan **Hemat** (resolusi kecil, default) atau **Kualitas tinggi**. Tertunda beberapa detik dari aslinya. Maksimal 4 live view sekaligus. Kalau kamera putus atau video macet, sambungan dipulihkan sendiri selama jendela live masih terbuka; kalau jendela ditutup atau tidak ada yang menonton ~25 detik, penarikan video berhenti sendiri.
+- **Dua mode live view:** **Real-time** (bawaan; jeda sekitar 1 detik, gambar pertama ~2-3 detik; video mengalir langsung ke browser, tiap jendela membuka satu sambungan sendiri ke kamera) dan **Stabil** (HLS; jeda beberapa detik tapi lebih tahan WiFi kamera yang tidak mulus). Kalau gambar di mode Real-time tersendat-sendat, pindah ke Stabil. Maksimal 8 siaran real-time dan 4 siaran Stabil sekaligus.
+- Kamera H.265 belum didukung untuk live view (perlu pengolahan tambahan).
+- Belum ada: multiview grid dan rekaman (tahap berikutnya).

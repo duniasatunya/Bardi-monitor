@@ -30,6 +30,7 @@ const CFG = {
 const args = new Set(process.argv.slice(2));
 const DRY = args.has('--dry');
 const LOGIN = args.has('--login');
+const KIOSK = args.has('--kiosk'); // mode kios: layar penuh tanpa tombol silang
 const FULL = args.has('--fullscreen'); // layar penuh ala F11 (tanpa tab/address bar)
 const STATE = { dry: DRY, cams: {} };   // status terkini tiap kamera, dibaca server laporan
 
@@ -309,7 +310,7 @@ async function monitor(page) {
   const ctx = await chromium.launchPersistentContext(CFG.profileDir, {
     headless: false,
     viewport: null, // halaman mengikuti ukuran jendela (bukan ukuran tetap)
-    args: [FULL ? '--start-fullscreen' : '--start-maximized'],
+    args: KIOSK ? ['--kiosk', '--start-fullscreen'] : [FULL ? '--start-fullscreen' : '--start-maximized'],
     permissions: [],
   });
   const page = ctx.pages()[0] || (await ctx.newPage());
@@ -366,11 +367,18 @@ async function monitor(page) {
   };
   const restart = async () => {
     log('INFO', 'Memulai ulang setelah pembaruan...');
-    try { relaunch(); } catch (e) { log('WARN', `Gagal menjadwalkan mulai ulang: ${e.message}. Buka Bardi Monitor manual.`); }
+    try { if (!process.env.BM_GUARD) relaunch(); /* di bawah pengawas: cukup keluar, pengawas membukanya lagi */ } catch (e) { log('WARN', `Gagal menjadwalkan mulai ulang: ${e.message}. Buka Bardi Monitor manual.`); }
     try { await Promise.race([ctx.close(), sleep(5000)]); } catch (_) {}
     process.exit(0);
   };
-  startReportServer({ dir: __dirname, csvFile: CFG.csvFile, floorsFile: CFG.floorsFile, getState: () => STATE, log, restart });
+  // Berhenti total (tombol "Hentikan pemantauan"): tulis penanda supaya pengawas tidak membukanya lagi.
+  const stop = async () => {
+    log('INFO', 'Pemantauan dihentikan dari halaman laporan.');
+    try { fs.writeFileSync(path.join(__dirname, 'berhenti.flag'), new Date().toISOString()); } catch (e) { log('WARN', `Gagal menulis berhenti.flag: ${e.message}`); }
+    try { await Promise.race([ctx.close(), sleep(5000)]); } catch (_) {}
+    process.exit(0);
+  };
+  startReportServer({ dir: __dirname, csvFile: CFG.csvFile, floorsFile: CFG.floorsFile, getState: () => STATE, log, restart, stop });
   log('INFO', `Monitor jalan${DRY ? ' (DRY-RUN)' : ''}. Pastikan grid kamera yang mau dipantau sudah tampil di halaman.`);
   ctx.on('close', () => { log('INFO', 'Browser ditutup, monitor berhenti.'); process.exit(0); });
   await monitor(page);
