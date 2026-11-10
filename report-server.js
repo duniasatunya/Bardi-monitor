@@ -7,6 +7,7 @@ const path = require('path');
 const crypto = require('crypto');
 const { createCapturer } = require('./screen-capture');
 const { createLiveStream } = require('./live-stream');
+const { createUpdater } = require('./updater');
 
 // ---------- password & sesi ----------
 function loadConfig(dir) {
@@ -211,14 +212,19 @@ table{width:100%;border-collapse:collapse;font-size:14px}th,td{text-align:left;p
 .b{display:inline-block;padding:1px 8px;border-radius:99px;font-size:12px;font-weight:600;color:#fff}
 .PLAY{background:var(--ok)}.ERROR,.OFFLINE{background:var(--bad)}.CONNECTING,.FROZEN,.ACTED{background:var(--warn)}.INIT,.HIDE{background:var(--mut)}
 .tot{display:flex;flex-wrap:wrap;gap:16px}.tot div{min-width:90px}.tot b{display:block;font-size:22px}
+button:disabled{opacity:.5;cursor:default}.pri-b{background:var(--pri);border-color:var(--pri);color:#fff}
 tr.clk{cursor:pointer}tr.clk:hover td{background:rgba(232,89,12,.08)}tr.sel td{background:rgba(232,89,12,.16)}
 .lnk{color:var(--pri);cursor:pointer;text-decoration:underline;background:none;border:0;padding:0;font:inherit}
 .det{border:2px solid var(--pri);border-radius:10px;padding:12px;margin:14px 0 4px;overflow-x:auto}.det h3{margin:0 0 8px;font-size:15px}
 .det th,.det td{white-space:normal;padding:6px 5px;font-size:13px}
 </style></head><body>
 <header><h1>Laporan Bardi Monitor</h1><div class="row"><span class="mut" id="upd">memuat...</span>
-<a class="btn" href="/layar" target="_blank" rel="noopener">Lihat layar PC</a><a class="btn pri" href="/report.pdf">Unduh PDF</a><a class="btn" href="/logout">Keluar</a></div></header>
+<button id="upb">Pembaruan</button><a class="btn" href="/layar" target="_blank" rel="noopener">Lihat layar PC</a><a class="btn pri" href="/report.pdf">Unduh PDF</a><a class="btn" href="/logout">Keluar</a></div></header>
 <main>
+<div class="card" id="upc" style="display:none"><div class="row" style="justify-content:space-between"><h2>Pembaruan dari GitHub</h2><button id="upx">Tutup</button></div>
+<p class="mut" id="upv"></p><p id="upm"></p>
+<div class="row"><button id="upchk">Cek pembaruan</button><button id="upgo" class="pri-b" style="display:none">Perbarui sekarang</button></div>
+<p class="mut">Saat diperbarui, Bardi Monitor menutup dan membuka ulang sendiri (sekitar 15 detik). Login Bardi, password, dan data kamera tidak berubah.</p></div>
 <div class="card"><div class="tot" id="tot"></div><p class="mut" id="meta"></p></div>
 <div class="card"><div class="row" style="justify-content:space-between"><h2>Status kamera sekarang</h2>
 <select id="filt"><option value="all">Semua</option><option value="bad">Hanya bermasalah</option></select></div>
@@ -285,6 +291,31 @@ async function loadSummary(){const d=await api('/api/summary?hours='+$('per').va
   $('cm').innerHTML=d.cams.map(c=>'<tr><td>'+esc(c.name)+'</td><td>'+esc(c.floor)+'</td><td>'+c.error+'</td><td>'+esc(Object.entries(c.codes).map(([k,v])=>k+' ('+v+')').join(', ')||'-')+'</td><td>'+c.retry+'</td><td>'+c.reopen+'</td><td>'+c.pulih+'</td><td>'+c.offline+'</td></tr>').join('')||'<tr><td colspan="8" class="mut">Belum ada kejadian pada periode ini.</td></tr>';}
 async function loadEvents(){const d=await api('/api/events?limit=200');
   $('ev').innerHTML=d.events.map(e=>'<tr><td>'+esc(e.waktu)+'</td><td>'+esc(e.kamera)+'</td><td>'+esc(e.kejadian)+'</td><td>'+esc(e.kode_error||'-')+'</td><td>'+esc(e.percobaan)+'</td><td>'+esc(e.durasi_detik)+'</td><td>'+esc(e.hasil)+'</td></tr>').join('')||'<tr><td colspan="7" class="mut">Belum ada kejadian.</td></tr>';}
+const post=async u=>{const r=await fetch(u,{method:'POST',cache:'no-store'});if(r.status===401){location.href='/login';throw 0}return r.json()};
+function drawUp(d){
+  $('upb').textContent='Pembaruan'+(d.current?' ('+d.current.short+')':'');
+  $('upv').textContent=(d.current?'Terpasang: '+d.current.short+(d.current.message?' - '+d.current.message:''):'Terpasang: belum tercatat (pemasangan manual)')+' | Repo: '+d.repo+(d.hasToken?'':' | Token belum dipasang (perlu untuk repo privat: PASANG-TOKEN-UPDATE.bat)');
+  const busy=['checking','downloading','installing','restarting'].includes(d.state);
+  let m='Klik "Cek pembaruan".';
+  if(d.state==='error')m='Gagal: '+d.error;
+  else if(busy||d.state==='done')m=d.message;
+  else if(d.latest)m=d.upToDate?'Sudah versi terbaru ('+d.latest.short+').':'Ada versi baru: '+d.latest.short+(d.latest.message?' - '+d.latest.message:'');
+  $('upm').textContent=m;
+  $('upchk').disabled=busy;
+  $('upgo').style.display=(d.latest&&!d.upToDate&&!busy&&d.state!=='done')?'':'none';
+}
+async function upStatus(){try{drawUp(await api('/api/update/status'))}catch(e){}}
+function waitBack(){let down=false;const t0=Date.now();const iv=setInterval(async()=>{
+  try{const r=await fetch('/api/status',{cache:'no-store'});if(r.ok&&down){clearInterval(iv);location.reload()}}catch(e){down=true}
+  if(Date.now()-t0>120000){clearInterval(iv);$('upm').textContent='Belum kembali setelah 2 menit. Buka Bardi Monitor dari shortcut di Desktop.'}},1500)}
+async function upPoll(){try{const d=await api('/api/update/status');drawUp(d);
+  if(['checking','downloading','installing'].includes(d.state))setTimeout(upPoll,1000);else if(d.state==='restarting')waitBack()}catch(e){}}
+$('upb').onclick=()=>{$('upc').style.display='';upStatus()};
+$('upx').onclick=()=>{$('upc').style.display='none'};
+$('upchk').onclick=async()=>{$('upm').textContent='Memeriksa GitHub...';try{drawUp(await post('/api/update/check'))}catch(e){}};
+$('upgo').onclick=async()=>{if(!confirm('Perbarui sekarang? Bardi Monitor akan menutup dan membuka ulang sendiri (sekitar 15 detik).'))return;
+  const r=await post('/api/update/apply');if(r.ok)upPoll();else $('upm').textContent=r.error||'Gagal memulai pembaruan'};
+upStatus();
 $('filt').onchange=drawStatus;$('per').onchange=loadSummary;
 loadStatus();loadSummary();loadEvents();
 setInterval(loadStatus,2000);setInterval(()=>{loadSummary();loadEvents()},10000);
@@ -321,6 +352,7 @@ function startReportServer(opts) {
   const fails = new Map(); // ip -> {n, until}
   let publicIp = '';
   const startedAt = Date.now();
+  const upd = createUpdater({ dir, log, apiBase: opts.updateApiBase });
 
   const fetchIp = () => {
     try {
@@ -446,6 +478,21 @@ function startReportServer(opts) {
       }
       if (p === '/api/status') return json(res, statusData());
       if (p === '/api/summary') return json(res, buildSummary(loadEvents(csvFile), loadFloors(floorsFile), Math.max(0, parseInt(url.searchParams.get('hours') || '24', 10) || 0), loadFloorEntries(floorsFile)));
+      if (p === '/api/update/status') return json(res, upd.status());
+      if (p === '/api/update/check' || p === '/api/update/apply') {
+        if (req.method !== 'POST') return send(res, 405, 'text/plain; charset=utf-8', 'Gunakan POST');
+        const origin = req.headers.origin;
+        if (origin) { let okOrigin = false; try { okOrigin = new URL(origin).host === req.headers.host; } catch (_) {} if (!okOrigin) return send(res, 403, 'text/plain; charset=utf-8', 'Forbidden'); }
+        if (p === '/api/update/check') return json(res, await upd.check());
+        if (upd.isBusy()) return json(res, { ok: false, error: 'Pembaruan lain sedang berjalan' });
+        log('INFO', `Pembaruan dari GitHub diminta dari ${ip}`);
+        upd.apply(ip).then((r) => {
+          if (!r.restart) return;
+          if (opts.restart) setTimeout(() => opts.restart(), 1500);
+          else upd.finish('Berhasil diperbarui. Tutup lalu buka lagi Bardi Monitor dari shortcut di Desktop.');
+        }).catch(() => {});
+        return json(res, { ok: true, started: true });
+      }
       if (p === '/api/events') {
         const limit = Math.min(1000, Math.max(1, parseInt(url.searchParams.get('limit') || '200', 10) || 200));
         const cam = url.searchParams.get('camera');

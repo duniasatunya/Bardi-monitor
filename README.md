@@ -67,7 +67,7 @@ Alamat dari jaringan yang sama: `http://<IP-PC>:3000/displaycostum.html` (contoh
 
 ### Lihat layar PC (hanya melihat)
 
-Tombol **Lihat layar PC** di halaman laporan membuka siaran layar monitor PC ini (seluruh layar Windows, bukan hanya jendela Bardi). ffmpeg menangkap layar 15 gambar per detik, dan browser memutarnya dengan jeda sekitar 5-10 detik di belakang aslinya supaya lancar. Potongan video disimpan sementara di folder temp Windows (hanya beberapa segmen terakhir, dihapus otomatis) dan siaran mati sendiri sekitar 25 detik setelah tab ditutup. Hanya melihat: tidak bisa klik atau mengetik. Kalau Windows terkunci (Win+L) atau layar tidur, gambar hitam. Membuka halaman ini tercatat di `monitor.log`.
+Tombol **Lihat layar PC** di halaman laporan membuka siaran layar monitor PC ini (seluruh layar Windows, bukan hanya jendela Bardi). ffmpeg menangkap layar 15 gambar per detik (kursor mouse sengaja tidak ditampilkan karena menyebabkan kursor di PC berkedip), dan browser memutarnya dengan jeda sekitar 5-10 detik di belakang aslinya supaya lancar. Potongan video disimpan sementara di folder temp Windows (hanya beberapa segmen terakhir, dihapus otomatis) dan siaran mati sendiri sekitar 25 detik setelah tab ditutup. Hanya melihat: tidak bisa klik atau mengetik. Kalau Windows terkunci (Win+L) atau layar tidur, gambar hitam. Membuka halaman ini tercatat di `monitor.log`.
 
 - ffmpeg dipasang oleh `INSTALL.bat` ke folder `ffmpeg\` (kalau gagal, jalankan `INSTALL.bat` lagi).
 - Kalau ffmpeg bermasalah, halaman menyediakan tautan **Pakai mode foto** (foto layar berulang, `/layar-foto`).
@@ -80,3 +80,15 @@ Tombol **Lihat layar PC** di halaman laporan membuka siaran layar monitor PC ini
 3. Buka dari luar: `http://<IP-publik>:3000/displaycostum.html`.
 
 Peringatan: alamat `http://` tidak dienkripsi, jadi password bisa terlihat oleh pihak yang menyadap jaringan. Pakai password panjang dan unik. Enkripsi (HTTPS) butuh domain, dan belum dibuat.
+
+## Pembaruan dari GitHub (tombol "Pembaruan")
+
+Di halaman laporan ada tombol **Pembaruan**: cek versi terbaru di GitHub, lalu **Perbarui sekarang** mengunduh file kode terbaru, mencadangkan yang lama ke folder `backup/`, menggantinya, dan memulai ulang Bardi Monitor sendiri (sekitar 15 detik; login Bardi tetap tersimpan).
+
+Pasang sekali (repo privat butuh token):
+1. Di GitHub: Settings > Developer settings > Personal access tokens > Fine-grained tokens > Generate new token. Pilih **Only select repositories** (hanya repo ini), izin **Contents: Read-only**, dan masa berlaku (mis. 1 tahun).
+2. Di PC monitoring, klik ganda **PASANG-TOKEN-UPDATE.bat**, tempel token (tidak terlihat di layar). Token disimpan di `update.json` (tidak ikut diunggah ke GitHub).
+
+Aman: data lokal tidak pernah ditimpa (`config.json`, `profile/`, `kamera-lantai.json`, CSV, log, `ffmpeg/`, `node_modules/`, `update.json`). Pembaruan ditolak kalau ada file kode yang rusak sintaksnya atau `report-server.js` tidak bisa dimuat. Kalau versi baru bermasalah setelah terpasang: tutup Bardi Monitor, klik ganda **PULIHKAN-VERSI-LAMA.bat**, lalu buka lagi. Cadangan disimpan 5 terakhir.
+
+Catatan: file yang dihapus dari repo tidak ikut terhapus di PC. Pembaruan ini hanya untuk versi Windows di folder ini; versi Mac belum punya.

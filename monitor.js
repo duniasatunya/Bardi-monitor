@@ -348,7 +348,29 @@ async function monitor(page) {
     }
   })();
 
-  startReportServer({ dir: __dirname, csvFile: CFG.csvFile, floorsFile: CFG.floorsFile, getState: () => STATE, log });
+  // Mulai ulang setelah pembaruan dari GitHub (tombol "Perbarui" di halaman laporan):
+  // jalankan program baru dengan jeda ~10 dtk (menunggu browser & port lama benar-benar tutup), lalu tutup yang lama.
+  const relaunch = () => {
+    const { spawn } = require('child_process');
+    let p;
+    if (process.platform === 'win32') {
+      const vbs = path.join(__dirname, 'START.vbs');
+      const cmd = fs.existsSync(vbs)
+        ? `/c ping -n 11 127.0.0.1 >nul & wscript.exe "${vbs}"`
+        : `/c ping -n 11 127.0.0.1 >nul & "${process.execPath}" monitor.js ${process.argv.slice(2).join(' ')}`;
+      p = spawn('cmd.exe', [cmd], { cwd: __dirname, detached: true, stdio: 'ignore', windowsHide: true, windowsVerbatimArguments: true });
+    } else {
+      p = spawn('/bin/sh', ['-c', 'sleep 10; exec "$@" >> start.log 2>&1', 'sh', process.execPath, 'monitor.js', ...process.argv.slice(2)], { cwd: __dirname, detached: true, stdio: 'ignore' });
+    }
+    p.unref();
+  };
+  const restart = async () => {
+    log('INFO', 'Memulai ulang setelah pembaruan...');
+    try { relaunch(); } catch (e) { log('WARN', `Gagal menjadwalkan mulai ulang: ${e.message}. Buka Bardi Monitor manual.`); }
+    try { await Promise.race([ctx.close(), sleep(5000)]); } catch (_) {}
+    process.exit(0);
+  };
+  startReportServer({ dir: __dirname, csvFile: CFG.csvFile, floorsFile: CFG.floorsFile, getState: () => STATE, log, restart });
   log('INFO', `Monitor jalan${DRY ? ' (DRY-RUN)' : ''}. Pastikan grid kamera yang mau dipantau sudah tampil di halaman.`);
   ctx.on('close', () => { log('INFO', 'Browser ditutup, monitor berhenti.'); process.exit(0); });
   await monitor(page);
