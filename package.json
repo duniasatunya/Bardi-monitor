@@ -1,0 +1,15 @@
+{
+  "name": "bardi-monitor",
+  "version": "1.0.0",
+  "description": "Auto-recover Bardi IPC web portal camera tiles (Playwright)",
+  "main": "monitor.js",
+  "scripts": {
+    "login": "node monitor.js --login",
+    "dry": "node monitor.js --dry",
+    "start": "node monitor.js",
+    "full": "node monitor.js --fullscreen"
+  },
+  "dependencies": {
+    "playwright": "^1.48.0"
+  }
+}

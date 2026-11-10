@@ -1,0 +1,10 @@
+Taruh logo Bardi di folder ini dengan nama persis:
+
+    logo.png
+
+Ukuran 1080 x 1080 piksel, format PNG (latar transparan boleh).
+Saat INSTALL.bat dijalankan, logo otomatis diubah menjadi ikon (bardi.ico)
+untuk shortcut di Desktop.
+
+Catatan: Windows hanya memakai ikon sampai 256 x 256, jadi 1080 x 1080 akan
+diperkecil. Beri ruang kosong di sekeliling logo supaya tidak terpotong.

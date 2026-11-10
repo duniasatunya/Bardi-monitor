@@ -1,0 +1,1132 @@
+2026-11-09T10:01:14.852Z [INFO] Monitor jalan. Pastikan grid kamera yang mau dipantau sudah tampil di halaman.
+2026-11-09T10:01:14.877Z [VIEW] layarPenuh=false daftarKiriTerlihat=false
+2026-11-09T10:01:44.994Z [VIEW] layarPenuh=false daftarKiriTerlihat=true
+2026-11-09T10:01:50.004Z [VIEW] layarPenuh=false daftarKiriTerlihat=false
+2026-11-09T10:02:00.012Z [VIEW] layarPenuh=false daftarKiriTerlihat=true
+2026-11-09T10:02:00.012Z [STATE] Kamar Jakarta 4 (Anak baru): INIT -> CONNECTING
+2026-11-09T10:02:00.012Z [STATE] Kamar Jakarta 5 (Anak baru): INIT -> CONNECTING
+2026-11-09T10:02:05.028Z [STATE] Kamar Jakarta 4 (Anak baru): CONNECTING -> PLAY
+2026-11-09T10:02:05.028Z [STATE] Kamar Jakarta 5 (Anak baru): CONNECTING -> PLAY
+2026-11-09T10:02:05.078Z [STATE] Kamar Jakarta 1 (Anak Baru): INIT -> PLAY
+2026-11-09T10:02:05.078Z [STATE] Kamar Jakarta 2 (Anak baru): INIT -> PLAY
+2026-11-09T10:02:05.078Z [STATE] Kamar Madura 1 (Anak baru): INIT -> CONNECTING
+2026-11-09T10:02:05.078Z [STATE] Kamar Madura 2 (Anak baru): INIT -> CONNECTING
+2026-11-09T10:02:05.078Z [STATE] Kamar Madura 3 (Anak baru): INIT -> CONNECTING
+2026-11-09T10:02:05.079Z [STATE] Kamar Solo 2 (Anggota): INIT -> CONNECTING
+2026-11-09T10:02:10.095Z [STATE] Kamar Madura 1 (Anak baru): CONNECTING -> PLAY
+2026-11-09T10:02:10.096Z [STATE] Kamar Madura 2 (Anak baru): CONNECTING -> PLAY
+2026-11-09T10:02:10.096Z [STATE] Kamar Solo 2 (Anggota): CONNECTING -> PLAY
+2026-11-09T10:02:10.096Z [STATE] Kamar Solo 1 (Anggota): INIT -> PLAY
+2026-11-09T10:02:15.111Z [STATE] Kamar Madura 3 (Anak baru): CONNECTING -> PLAY
+2026-11-09T10:02:40.157Z [STATE] Kamar Jakarta 3 (Anak baru): INIT -> CONNECTING
+2026-11-09T10:02:50.182Z [STATE] Kamar Jakarta 3 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-09T10:02:50.183Z [ACT] Kamar Jakarta 3 (Anak baru): retry (percobaan 1, state ERROR 0s)
+2026-11-09T10:02:50.232Z [INFO] Kamar Jakarta 3 (Anak baru): retry dikirim
+2026-11-09T10:02:56.747Z [STATE] Kamar Jakarta 3 (Anak baru): ACTED -> CONNECTING
+2026-11-09T10:03:01.753Z [STATE] Kamar Jakarta 3 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-09T10:03:11.783Z [ACT] Kamar Jakarta 3 (Anak baru): retry (percobaan 2, state ERROR 10s)
+2026-11-09T10:03:11.809Z [INFO] Kamar Jakarta 3 (Anak baru): retry dikirim
+2026-11-09T10:03:18.325Z [STATE] Kamar Jakarta 3 (Anak baru): ACTED -> CONNECTING
+2026-11-09T10:03:23.333Z [STATE] Kamar Jakarta 3 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-09T10:03:33.353Z [ACT] Kamar Jakarta 3 (Anak baru): retry (percobaan 3, state ERROR 10s)
+2026-11-09T10:03:33.381Z [INFO] Kamar Jakarta 3 (Anak baru): retry dikirim
+2026-11-09T10:03:39.897Z [STATE] Kamar Jakarta 3 (Anak baru): ACTED -> CONNECTING
+2026-11-09T10:03:44.904Z [STATE] Kamar Jakarta 3 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-09T10:03:54.911Z [ACT] Kamar Jakarta 3 (Anak baru): retry (percobaan 4, state ERROR 10s)
+2026-11-09T10:03:54.942Z [INFO] Kamar Jakarta 3 (Anak baru): retry dikirim
+2026-11-09T10:04:01.452Z [STATE] Kamar Jakarta 3 (Anak baru): ACTED -> CONNECTING
+2026-11-09T10:04:06.458Z [STATE] Kamar Jakarta 3 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-09T10:04:16.482Z [STATE] Kamar Madura 1 (Anak baru): PLAY -> CONNECTING
+2026-11-09T10:04:21.499Z [STATE] Kamar Madura 1 (Anak baru): CONNECTING -> PLAY
+2026-11-09T10:07:11.853Z [WARN] gagal baca halaman: page.evaluate: Target page, context or browser has been closed
+2026-11-09T10:07:11.854Z [INFO] Browser ditutup, monitor berhenti.
+2026-11-09T10:08:55.956Z [INFO] Monitor jalan. Pastikan grid kamera yang mau dipantau sudah tampil di halaman.
+2026-11-09T10:08:55.960Z [INFO] Laporan aktif: http://<IP-PC>:3000/displaycostum.html (wajib password)
+2026-11-09T10:08:55.976Z [VIEW] layarPenuh=false daftarKiriTerlihat=false
+2026-11-09T10:09:03.357Z [INFO] Laporan: login berhasil dari 192.168.18.43
+2026-11-09T10:09:26.159Z [VIEW] layarPenuh=false daftarKiriTerlihat=true
+2026-11-09T10:09:26.159Z [STATE] Kamar Jakarta 4 (Anak baru): INIT -> CONNECTING
+2026-11-09T10:09:31.167Z [STATE] Kamar Jakarta 4 (Anak baru): CONNECTING -> PLAY
+2026-11-09T10:09:31.167Z [STATE] Kamar Jakarta 3 (Anak baru): INIT -> CONNECTING
+2026-11-09T10:09:31.167Z [STATE] Kamar Jakarta 5 (Anak baru): INIT -> CONNECTING
+2026-11-09T10:09:31.168Z [STATE] Kamar Jakarta 1 (Anak Baru): INIT -> CONNECTING
+2026-11-09T10:09:31.168Z [STATE] Kamar Jakarta 2 (Anak baru): INIT -> CONNECTING
+2026-11-09T10:09:31.168Z [STATE] Kamar Madura 1 (Anak baru): INIT -> CONNECTING
+2026-11-09T10:09:31.168Z [STATE] Kamar Madura 2 (Anak baru): INIT -> CONNECTING
+2026-11-09T10:09:36.179Z [STATE] Kamar Jakarta 5 (Anak baru): CONNECTING -> PLAY
+2026-11-09T10:09:36.179Z [STATE] Kamar Jakarta 1 (Anak Baru): CONNECTING -> PLAY
+2026-11-09T10:09:36.179Z [STATE] Kamar Jakarta 2 (Anak baru): CONNECTING -> PLAY
+2026-11-09T10:09:36.179Z [STATE] Kamar Madura 1 (Anak baru): CONNECTING -> PLAY
+2026-11-09T10:09:36.179Z [STATE] Kamar Madura 3 (Anak baru): INIT -> CONNECTING
+2026-11-09T10:09:41.194Z [STATE] Kamar Madura 3 (Anak baru): CONNECTING -> PLAY
+2026-11-09T10:09:46.208Z [STATE] Kamar Madura 2 (Anak baru): CONNECTING -> PLAY
+2026-11-09T10:10:07.669Z [INFO] Laporan: login berhasil dari 192.168.18.128
+2026-11-09T10:10:16.269Z [ACT] Kamar Jakarta 3 (Anak baru): reopen (percobaan 1, state CONNECTING 45s)
+2026-11-09T10:10:18.222Z [INFO] Kamar Jakarta 3 (Anak baru): reopen dikirim
+2026-11-09T10:10:24.728Z [STATE] Kamar Aula Kiri Pojok: INIT -> CONNECTING
+2026-11-09T10:10:29.740Z [STATE] Kamar Aula Kiri Pojok: CONNECTING -> PLAY
+2026-11-09T10:18:55.992Z [MEM] JS heap 45 MB, DOM nodes 3431, elemen video 8
+2026-11-09T10:22:21.384Z [STATE] Kamar Solo 4 (Anggota): INIT -> CONNECTING
+2026-11-09T10:22:26.393Z [STATE] Kamar Solo 4 (Anggota): CONNECTING -> PLAY
+2026-11-09T10:22:26.393Z [STATE] Kamar Solo 3 (Anggota): INIT -> PLAY
+2026-11-09T10:22:26.393Z [STATE] Kamar Solo 1 (Anggota): INIT -> PLAY
+2026-11-09T10:22:26.393Z [STATE] Kamar Solo 2 (Anggota): INIT -> PLAY
+2026-11-09T10:22:31.405Z [STATE] Kamar Surabaya 3 (Anggota): INIT -> PLAY
+2026-11-09T10:28:56.006Z [MEM] JS heap 51 MB, DOM nodes 4736, elemen video 13
+2026-11-09T10:29:07.208Z [STATE] Kamar Surabaya 1 (Anggota): INIT -> CONNECTING
+2026-11-09T10:29:07.208Z [STATE] Kamar Pengurus: INIT -> CONNECTING
+2026-11-09T10:29:07.208Z [STATE] Kamar Pengurus 2: INIT -> CONNECTING
+2026-11-09T10:29:12.225Z [STATE] Kamar Surabaya 1 (Anggota): CONNECTING -> PLAY
+2026-11-09T10:29:12.225Z [STATE] Kamar Pengurus: CONNECTING -> PLAY
+2026-11-09T10:29:12.225Z [STATE] Kamar Pengurus 2: CONNECTING -> PLAY
+2026-11-09T10:30:02.341Z [STATE] Kamar Surabaya 1 (Anggota): PLAY -> ERROR (Failed to connect: 11)
+2026-11-09T10:30:02.341Z [ACT] Kamar Surabaya 1 (Anggota): retry (percobaan 1, state ERROR 0s)
+2026-11-09T10:30:02.521Z [INFO] Kamar Surabaya 1 (Anggota): retry dikirim
+2026-11-09T10:30:09.026Z [STATE] Kamar Surabaya 1 (Anggota): ACTED -> CONNECTING
+2026-11-09T10:30:14.041Z [STATE] Kamar Surabaya 1 (Anggota): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-09T10:30:14.042Z [STATE] Kamar Pengurus: PLAY -> ERROR (Failed to connect: 11)
+2026-11-09T10:30:14.042Z [ACT] Kamar Pengurus: retry (percobaan 1, state ERROR 0s)
+2026-11-09T10:30:14.223Z [INFO] Kamar Pengurus: retry dikirim
+2026-11-09T10:30:20.743Z [STATE] Kamar Pengurus: ACTED -> CONNECTING
+2026-11-09T10:30:25.757Z [ACT] Kamar Surabaya 1 (Anggota): retry (percobaan 2, state ERROR 12s)
+2026-11-09T10:30:25.928Z [INFO] Kamar Surabaya 1 (Anggota): retry dikirim
+2026-11-09T10:30:27.437Z [STATE] Kamar Pengurus: CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-09T10:30:32.455Z [STATE] Kamar Surabaya 1 (Anggota): ACTED -> CONNECTING
+2026-11-09T10:30:37.472Z [STATE] Kamar Surabaya 1 (Anggota): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-09T10:30:37.473Z [ACT] Kamar Pengurus: retry (percobaan 2, state ERROR 12s)
+2026-11-09T10:30:37.654Z [INFO] Kamar Pengurus: retry dikirim
+2026-11-09T10:30:44.173Z [STATE] Kamar Pengurus: ACTED -> CONNECTING
+2026-11-09T10:30:49.179Z [ACT] Kamar Surabaya 1 (Anggota): retry (percobaan 3, state ERROR 12s)
+2026-11-09T10:30:49.364Z [INFO] Kamar Surabaya 1 (Anggota): retry dikirim
+2026-11-09T10:30:50.874Z [STATE] Kamar Pengurus: CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-09T10:30:55.892Z [STATE] Kamar Surabaya 1 (Anggota): ACTED -> CONNECTING
+2026-11-09T10:31:00.898Z [STATE] Kamar Surabaya 1 (Anggota): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-09T10:31:00.898Z [ACT] Kamar Pengurus: retry (percobaan 3, state ERROR 12s)
+2026-11-09T10:31:01.085Z [INFO] Kamar Pengurus: retry dikirim
+2026-11-09T10:31:07.608Z [STATE] Kamar Pengurus: ACTED -> CONNECTING
+2026-11-09T10:31:12.621Z [ACT] Kamar Surabaya 1 (Anggota): retry (percobaan 4, state ERROR 12s)
+2026-11-09T10:31:12.792Z [INFO] Kamar Surabaya 1 (Anggota): retry dikirim
+2026-11-09T10:31:14.293Z [STATE] Kamar Pengurus: CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-09T10:31:19.308Z [STATE] Kamar Surabaya 1 (Anggota): ACTED -> CONNECTING
+2026-11-09T10:31:24.318Z [STATE] Kamar Surabaya 1 (Anggota): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-09T10:31:24.318Z [ACT] Kamar Pengurus: retry (percobaan 4, state ERROR 12s)
+2026-11-09T10:31:24.499Z [INFO] Kamar Pengurus: retry dikirim
+2026-11-09T10:31:31.016Z [STATE] Kamar Pengurus: ACTED -> CONNECTING
+2026-11-09T10:31:36.022Z [ACT] Kamar Surabaya 1 (Anggota): retry (percobaan 5, state ERROR 12s)
+2026-11-09T10:31:36.196Z [INFO] Kamar Surabaya 1 (Anggota): retry dikirim
+2026-11-09T10:31:37.702Z [STATE] Kamar Pengurus: CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-09T10:31:42.709Z [STATE] Kamar Surabaya 1 (Anggota): ACTED -> CONNECTING
+2026-11-09T10:31:47.724Z [STATE] Kamar Surabaya 1 (Anggota): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-09T10:31:47.725Z [ACT] Kamar Pengurus: retry (percobaan 5, state ERROR 12s)
+2026-11-09T10:31:47.901Z [INFO] Kamar Pengurus: retry dikirim
+2026-11-09T10:31:54.423Z [STATE] Kamar Pengurus: ACTED -> CONNECTING
+2026-11-09T10:31:59.437Z [ACT] Kamar Surabaya 1 (Anggota): retry (percobaan 6, state ERROR 12s)
+2026-11-09T10:31:59.610Z [INFO] Kamar Surabaya 1 (Anggota): retry dikirim
+2026-11-09T10:32:01.116Z [STATE] Kamar Pengurus: CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-09T10:32:06.128Z [STATE] Kamar Surabaya 1 (Anggota): ACTED -> CONNECTING
+2026-11-09T10:32:11.133Z [STATE] Kamar Surabaya 1 (Anggota): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-09T10:32:11.133Z [ACT] Kamar Pengurus: retry (percobaan 6, state ERROR 12s)
+2026-11-09T10:32:11.312Z [INFO] Kamar Pengurus: retry dikirim
+2026-11-09T10:32:17.837Z [STATE] Kamar Pengurus: ACTED -> CONNECTING
+2026-11-09T10:32:22.847Z [ACT] Kamar Surabaya 1 (Anggota): retry (percobaan 7, state ERROR 12s)
+2026-11-09T10:32:23.017Z [INFO] Kamar Surabaya 1 (Anggota): retry dikirim
+2026-11-09T10:32:24.523Z [STATE] Kamar Pengurus: CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-09T10:32:29.532Z [STATE] Kamar Surabaya 1 (Anggota): ACTED -> CONNECTING
+2026-11-09T10:32:34.547Z [STATE] Kamar Surabaya 1 (Anggota): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-09T10:32:34.548Z [ACT] Kamar Pengurus: retry (percobaan 7, state ERROR 12s)
+2026-11-09T10:32:34.726Z [INFO] Kamar Pengurus: retry dikirim
+2026-11-09T10:32:41.239Z [STATE] Kamar Pengurus: ACTED -> CONNECTING
+2026-11-09T10:32:46.248Z [ACT] Kamar Surabaya 1 (Anggota): retry (percobaan 8, state ERROR 12s)
+2026-11-09T10:32:46.421Z [INFO] Kamar Surabaya 1 (Anggota): retry dikirim
+2026-11-09T10:32:47.929Z [STATE] Kamar Pengurus: CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-09T10:32:52.939Z [STATE] Kamar Surabaya 1 (Anggota): ACTED -> CONNECTING
+2026-11-09T10:32:55.407Z [INFO] Browser ditutup, monitor berhenti.
+2026-11-09T10:41:29.609Z [INFO] Monitor jalan. Pastikan grid kamera yang mau dipantau sudah tampil di halaman.
+2026-11-09T10:41:29.612Z [INFO] Laporan aktif: http://<IP-PC>:3000/displaycostum.html (wajib password)
+2026-11-09T10:41:29.627Z [VIEW] layarPenuh=false daftarKiriTerlihat=false
+2026-11-09T10:41:39.650Z [VIEW] layarPenuh=false daftarKiriTerlihat=true
+2026-11-09T10:41:44.764Z [STATE] Kamar Pengurus: INIT -> PLAY
+2026-11-09T10:41:44.854Z [STATE] Kamar Surabaya 1 (Anggota): INIT -> CONNECTING
+2026-11-09T10:41:44.963Z [STATE] Kamar Pengurus 2: INIT -> PLAY
+2026-11-09T10:41:45.078Z [STATE] Kamar Bandung 1 (Anggota): INIT -> CONNECTING
+2026-11-09T10:41:45.183Z [STATE] Kamar Bandung 4 (Anggota): INIT -> CONNECTING
+2026-11-09T10:41:45.307Z [STATE] Kamar Bandung 2 (Anggota): INIT -> CONNECTING
+2026-11-09T10:41:45.414Z [STATE] Kamar Bandung 3 (Anggota): INIT -> CONNECTING
+2026-11-09T10:41:50.509Z [STATE] Kamar Surabaya 1 (Anggota): CONNECTING -> PLAY
+2026-11-09T10:41:50.509Z [STATE] Kamar Bandung 1 (Anggota): CONNECTING -> PLAY
+2026-11-09T10:41:50.509Z [STATE] Kamar Bandung 4 (Anggota): CONNECTING -> PLAY
+2026-11-09T10:41:50.509Z [STATE] Kamar Bandung 2 (Anggota): CONNECTING -> PLAY
+2026-11-09T10:41:50.509Z [STATE] Kamar Bandung 3 (Anggota): CONNECTING -> PLAY
+2026-11-09T10:41:50.510Z [STATE] Kamar Surabaya 2 (Anggota): INIT -> CONNECTING
+2026-11-09T10:41:50.510Z [STATE] Kamar Surabaya 3 (Anggota): INIT -> PLAY
+2026-11-09T10:41:55.525Z [STATE] Kamar Solo 2 (Anggota): INIT -> PLAY
+2026-11-09T10:41:55.525Z [STATE] Kamar Solo 1 (Anggota): INIT -> CONNECTING
+2026-11-09T10:41:55.525Z [STATE] Kamar Solo 3 (Anggota): INIT -> CONNECTING
+2026-11-09T10:41:55.525Z [STATE] Kamar Solo 4 (Anggota): INIT -> CONNECTING
+2026-11-09T10:42:00.542Z [STATE] Kamar Surabaya 2 (Anggota): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-09T10:42:00.543Z [ACT] Kamar Surabaya 2 (Anggota): retry (percobaan 1, state ERROR 0s)
+2026-11-09T10:42:00.753Z [INFO] Kamar Surabaya 2 (Anggota): retry dikirim
+2026-11-09T10:42:02.256Z [STATE] Kamar Solo 1 (Anggota): CONNECTING -> PLAY
+2026-11-09T10:42:02.256Z [STATE] Kamar Solo 3 (Anggota): CONNECTING -> PLAY
+2026-11-09T10:42:02.256Z [STATE] Kamar Solo 4 (Anggota): CONNECTING -> PLAY
+2026-11-09T10:42:02.256Z [STATE] Kamar Madura 3 (Anak baru): INIT -> CONNECTING
+2026-11-09T10:42:02.257Z [STATE] Kamar Madura 2 (Anak baru): INIT -> CONNECTING
+2026-11-09T10:42:02.257Z [STATE] Kamar Madura 1 (Anak baru): INIT -> CONNECTING
+2026-11-09T10:42:07.291Z [STATE] Kamar Surabaya 2 (Anggota): ACTED -> CONNECTING
+2026-11-09T10:42:07.291Z [STATE] Kamar Madura 3 (Anak baru): CONNECTING -> PLAY
+2026-11-09T10:42:07.291Z [STATE] Kamar Madura 2 (Anak baru): CONNECTING -> PLAY
+2026-11-09T10:42:07.291Z [STATE] Kamar Madura 1 (Anak baru): CONNECTING -> PLAY
+2026-11-09T10:42:12.300Z [STATE] Kamar Surabaya 2 (Anggota): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-09T10:42:17.314Z [STATE] Kamar Solo 1 (Anggota): PLAY -> CONNECTING
+2026-11-09T10:42:22.326Z [STATE] Kamar Jakarta 1 (Anak Baru): INIT -> CONNECTING
+2026-11-09T10:42:27.330Z [STATE] Kamar Jakarta 1 (Anak Baru): CONNECTING -> PLAY
+2026-11-09T10:42:27.330Z [STATE] Kamar Solo 1 (Anggota): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-09T10:42:27.331Z [ACT] Kamar Solo 1 (Anggota): retry (percobaan 1, state ERROR 0s)
+2026-11-09T10:42:27.506Z [INFO] Kamar Solo 1 (Anggota): retry dikirim
+2026-11-09T10:42:39.042Z [STATE] Kamar Jakarta 2 (Anak baru): INIT -> PLAY
+2026-11-09T10:51:29.626Z [MEM] JS heap 47 MB, DOM nodes 5431, elemen video 16
+2026-11-09T10:52:45.345Z [INFO] Browser ditutup, monitor berhenti.
+2026-11-09T10:56:45.637Z [INFO] Monitor jalan. Pastikan grid kamera yang mau dipantau sudah tampil di halaman.
+2026-11-09T10:56:45.640Z [INFO] Laporan aktif: http://<IP-PC>:3000/displaycostum.html (wajib password)
+2026-11-09T10:56:45.653Z [VIEW] layarPenuh=false daftarKiriTerlihat=false
+2026-11-09T10:57:20.739Z [VIEW] layarPenuh=false daftarKiriTerlihat=true
+2026-11-09T10:57:26.077Z [STATE] Kamar Solo 2 (Anggota): INIT -> CONNECTING
+2026-11-09T10:57:26.078Z [STATE] Kamar Solo 1 (Anggota): INIT -> CONNECTING
+2026-11-09T10:57:26.078Z [STATE] Kamar Solo 3 (Anggota): INIT -> CONNECTING
+2026-11-09T10:57:26.078Z [STATE] Kamar Solo 4 (Anggota): INIT -> CONNECTING
+2026-11-09T10:57:31.094Z [STATE] Kamar Solo 2 (Anggota): CONNECTING -> PLAY
+2026-11-09T10:57:31.094Z [STATE] Kamar Solo 1 (Anggota): CONNECTING -> PLAY
+2026-11-09T10:57:31.094Z [STATE] Kamar Solo 3 (Anggota): CONNECTING -> PLAY
+2026-11-09T10:57:31.094Z [STATE] Kamar Solo 4 (Anggota): CONNECTING -> PLAY
+2026-11-09T10:57:31.095Z [STATE] Kamar Madura 3 (Anak baru): INIT -> CONNECTING
+2026-11-09T10:57:38.626Z [STATE] Kamar Madura 3 (Anak baru): CONNECTING -> PLAY
+2026-11-09T10:57:38.626Z [STATE] Kamar Madura 2 (Anak baru): INIT -> PLAY
+2026-11-09T10:57:38.626Z [STATE] Kamar Madura 1 (Anak baru): INIT -> PLAY
+2026-11-09T10:57:38.627Z [STATE] Kamar Jakarta 2 (Anak baru): INIT -> PLAY
+2026-11-09T10:57:38.627Z [STATE] Kamar Jakarta 1 (Anak Baru): INIT -> PLAY
+2026-11-09T10:57:38.627Z [STATE] Kamar Jakarta 5 (Anak baru): INIT -> PLAY
+2026-11-09T10:57:38.627Z [STATE] Kamar Jakarta 4 (Anak baru): INIT -> PLAY
+2026-11-09T10:57:38.627Z [STATE] Kamar Surabaya 3 (Anggota): INIT -> CONNECTING
+2026-11-09T10:57:43.632Z [STATE] Kamar Surabaya 3 (Anggota): CONNECTING -> PLAY
+2026-11-09T10:57:43.633Z [STATE] Kamar Surabaya 2 (Anggota): INIT -> CONNECTING
+2026-11-09T10:57:43.633Z [STATE] Kamar Bandung 3 (Anggota): INIT -> PLAY
+2026-11-09T10:57:43.633Z [STATE] Kamar Bandung 2 (Anggota): INIT -> PLAY
+2026-11-09T10:57:43.633Z [STATE] Kamar Bandung 4 (Anggota): INIT -> PLAY
+2026-11-09T10:57:48.642Z [STATE] Kamar Surabaya 2 (Anggota): CONNECTING -> PLAY
+2026-11-09T10:58:23.718Z [STATE] Kamar Surabaya 2 (Anggota): PLAY -> ERROR (Failed to connect: 11)
+2026-11-09T10:58:23.768Z [ACT] Kamar Surabaya 2 (Anggota): retry (percobaan 1, state ERROR 0s)
+2026-11-09T10:58:24.205Z [INFO] Kamar Surabaya 2 (Anggota): retry dikirim
+2026-11-09T10:58:30.721Z [STATE] Kamar Surabaya 2 (Anggota): ACTED -> CONNECTING
+2026-11-09T10:58:35.738Z [STATE] Kamar Surabaya 2 (Anggota): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-09T10:58:45.764Z [ACT] Kamar Surabaya 2 (Anggota): retry (percobaan 2, state ERROR 10s)
+2026-11-09T10:58:45.798Z [INFO] Kamar Surabaya 2 (Anggota): retry dikirim
+2026-11-09T10:58:51.548Z [INFO] Browser ditutup, monitor berhenti.
+2026-11-09T10:59:30.982Z [INFO] Monitor jalan. Pastikan grid kamera yang mau dipantau sudah tampil di halaman.
+2026-11-09T10:59:30.985Z [INFO] Laporan aktif: http://<IP-PC>:3000/displaycostum.html (wajib password)
+2026-11-09T10:59:31.002Z [VIEW] layarPenuh=false daftarKiriTerlihat=false
+2026-11-09T11:00:26.156Z [INFO] Laporan: login berhasil dari 169.254.83.107
+2026-11-09T11:00:41.198Z [VIEW] layarPenuh=false daftarKiriTerlihat=true
+2026-11-09T11:00:41.227Z [STATE] Kamar Jakarta 1 (Anak Baru): INIT -> CONNECTING
+2026-11-09T11:00:46.242Z [STATE] Kamar Jakarta 1 (Anak Baru): CONNECTING -> PLAY
+2026-11-09T11:00:56.265Z [STATE] Kamar Jakarta 5 (Anak baru): INIT -> PLAY
+2026-11-09T11:00:56.266Z [STATE] Kamar Jakarta 4 (Anak baru): INIT -> PLAY
+2026-11-09T11:00:56.266Z [STATE] Kamar Jakarta 2 (Anak baru): INIT -> PLAY
+2026-11-09T11:00:56.266Z [STATE] Kamar Madura 1 (Anak baru): INIT -> CONNECTING
+2026-11-09T11:00:56.266Z [STATE] Kamar Madura 2 (Anak baru): INIT -> CONNECTING
+2026-11-09T11:00:56.266Z [STATE] Kamar Madura 3 (Anak baru): INIT -> CONNECTING
+2026-11-09T11:01:01.277Z [STATE] Kamar Madura 1 (Anak baru): CONNECTING -> PLAY
+2026-11-09T11:01:01.278Z [STATE] Kamar Madura 2 (Anak baru): CONNECTING -> PLAY
+2026-11-09T11:01:01.278Z [STATE] Kamar Madura 3 (Anak baru): CONNECTING -> PLAY
+2026-11-09T11:01:01.278Z [STATE] Kamar Aula Kiri Pojok: INIT -> CONNECTING
+2026-11-09T11:01:01.278Z [STATE] Kamar Aula Kiri: INIT -> CONNECTING
+2026-11-09T11:01:01.279Z [STATE] Kamar Aula Tengah Kiri: INIT -> CONNECTING
+2026-11-09T11:01:01.279Z [STATE] Kamar Aula Tengah Kanan: INIT -> CONNECTING
+2026-11-09T11:01:06.300Z [STATE] Kamar Aula Kiri Pojok: CONNECTING -> PLAY
+2026-11-09T11:01:06.300Z [STATE] Kamar Aula Kiri: CONNECTING -> PLAY
+2026-11-09T11:01:06.301Z [STATE] Kamar Aula Tengah Kiri: CONNECTING -> PLAY
+2026-11-09T11:01:06.301Z [STATE] Kamar Aula Tengah Kanan: CONNECTING -> PLAY
+2026-11-09T11:01:06.301Z [STATE] Kamar Solo 2 (Anggota): INIT -> PLAY
+2026-11-09T11:01:06.301Z [STATE] Kamar Solo 1 (Anggota): INIT -> CONNECTING
+2026-11-09T11:01:06.302Z [STATE] Kamar Solo 3 (Anggota): INIT -> PLAY
+2026-11-09T11:01:06.302Z [STATE] Kamar Solo 4 (Anggota): INIT -> PLAY
+2026-11-09T11:01:06.302Z [STATE] Kamar Aula Pojok Kanan: INIT -> CONNECTING
+2026-11-09T11:01:11.314Z [STATE] Kamar Solo 1 (Anggota): CONNECTING -> PLAY
+2026-11-09T11:01:11.314Z [STATE] Kamar Aula Pojok Kanan: CONNECTING -> PLAY
+2026-11-09T11:07:42.533Z [STATE] Kamar Aula Tengah Kiri: PLAY -> ERROR (Failed to connect: 11)
+2026-11-09T11:07:42.535Z [ACT] Kamar Aula Tengah Kiri: retry (percobaan 1, state ERROR 0s)
+2026-11-09T11:07:43.015Z [INFO] Kamar Aula Tengah Kiri: retry dikirim
+2026-11-09T11:07:49.542Z [STATE] Kamar Aula Tengah Kiri: ACTED -> CONNECTING
+2026-11-09T11:08:04.605Z [STATE] Kamar Aula Tengah Kiri: CONNECTING -> PLAY
+2026-11-09T11:08:09.621Z [STATE] Kamar Solo 1 (Anggota): PLAY -> ERROR (Failed to connect: 11)
+2026-11-09T11:08:09.622Z [ACT] Kamar Solo 1 (Anggota): retry (percobaan 1, state ERROR 0s)
+2026-11-09T11:08:10.027Z [INFO] Kamar Solo 1 (Anggota): retry dikirim
+2026-11-09T11:08:16.553Z [STATE] Kamar Solo 1 (Anggota): ACTED -> CONNECTING
+2026-11-09T11:08:21.569Z [STATE] Kamar Solo 1 (Anggota): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-09T11:08:31.594Z [ACT] Kamar Solo 1 (Anggota): retry (percobaan 2, state ERROR 10s)
+2026-11-09T11:08:31.671Z [INFO] Kamar Solo 1 (Anggota): retry dikirim
+2026-11-09T11:08:38.187Z [STATE] Kamar Solo 1 (Anggota): ACTED -> CONNECTING
+2026-11-09T11:08:43.204Z [STATE] Kamar Solo 1 (Anggota): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-09T11:08:53.241Z [ACT] Kamar Solo 1 (Anggota): retry (percobaan 3, state ERROR 10s)
+2026-11-09T11:08:53.310Z [INFO] Kamar Solo 1 (Anggota): retry dikirim
+2026-11-09T11:08:59.838Z [STATE] Kamar Solo 1 (Anggota): ACTED -> CONNECTING
+2026-11-09T11:09:04.851Z [STATE] Kamar Solo 1 (Anggota): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-09T11:09:14.883Z [ACT] Kamar Solo 1 (Anggota): retry (percobaan 4, state ERROR 10s)
+2026-11-09T11:09:14.954Z [INFO] Kamar Solo 1 (Anggota): retry dikirim
+2026-11-09T11:09:21.476Z [STATE] Kamar Solo 1 (Anggota): ACTED -> CONNECTING
+2026-11-09T11:09:26.497Z [STATE] Kamar Solo 1 (Anggota): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-09T11:09:31.020Z [MEM] JS heap 63 MB, DOM nodes 4879, elemen video 16
+2026-11-09T11:09:36.540Z [ACT] Kamar Solo 1 (Anggota): retry (percobaan 5, state ERROR 10s)
+2026-11-09T11:09:36.606Z [INFO] Kamar Solo 1 (Anggota): retry dikirim
+2026-11-09T11:09:43.132Z [STATE] Kamar Solo 1 (Anggota): ACTED -> CONNECTING
+2026-11-09T11:09:48.153Z [STATE] Kamar Solo 1 (Anggota): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-09T11:09:58.178Z [ACT] Kamar Solo 1 (Anggota): retry (percobaan 6, state ERROR 10s)
+2026-11-09T11:09:58.245Z [INFO] Kamar Solo 1 (Anggota): retry dikirim
+2026-11-09T11:10:04.767Z [STATE] Kamar Solo 1 (Anggota): ACTED -> CONNECTING
+2026-11-09T11:10:09.791Z [STATE] Kamar Solo 1 (Anggota): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-09T11:10:19.822Z [ACT] Kamar Solo 1 (Anggota): retry (percobaan 7, state ERROR 10s)
+2026-11-09T11:10:19.895Z [INFO] Kamar Solo 1 (Anggota): retry dikirim
+2026-11-09T11:10:26.421Z [STATE] Kamar Solo 1 (Anggota): ACTED -> CONNECTING
+2026-11-09T11:10:31.461Z [STATE] Kamar Solo 1 (Anggota): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-09T11:10:41.490Z [ACT] Kamar Solo 1 (Anggota): retry (percobaan 8, state ERROR 10s)
+2026-11-09T11:10:41.561Z [INFO] Kamar Solo 1 (Anggota): retry dikirim
+2026-11-09T11:10:48.083Z [STATE] Kamar Solo 1 (Anggota): ACTED -> CONNECTING
+2026-11-09T11:10:53.093Z [STATE] Kamar Solo 1 (Anggota): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-09T11:11:03.133Z [ACT] Kamar Solo 1 (Anggota): retry (percobaan 9, state ERROR 10s)
+2026-11-09T11:11:03.211Z [INFO] Kamar Solo 1 (Anggota): retry dikirim
+2026-11-09T11:11:09.734Z [STATE] Kamar Solo 1 (Anggota): ACTED -> CONNECTING
+2026-11-09T11:11:14.751Z [STATE] Kamar Solo 1 (Anggota): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-09T11:11:24.781Z [ACT] Kamar Solo 1 (Anggota): retry (percobaan 10, state ERROR 10s)
+2026-11-09T11:11:24.840Z [INFO] Kamar Solo 1 (Anggota): retry dikirim
+2026-11-09T11:11:31.351Z [STATE] Kamar Solo 1 (Anggota): ACTED -> CONNECTING
+2026-11-09T11:11:36.374Z [STATE] Kamar Solo 1 (Anggota): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-09T11:11:46.405Z [ACT] Kamar Solo 1 (Anggota): retry (percobaan 11, state ERROR 10s)
+2026-11-09T11:11:46.485Z [INFO] Kamar Solo 1 (Anggota): retry dikirim
+2026-11-09T11:11:53.008Z [STATE] Kamar Solo 1 (Anggota): ACTED -> CONNECTING
+2026-11-09T11:11:58.029Z [STATE] Kamar Solo 1 (Anggota): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-09T11:12:08.069Z [ACT] Kamar Solo 1 (Anggota): retry (percobaan 12, state ERROR 10s)
+2026-11-09T11:12:08.156Z [INFO] Kamar Solo 1 (Anggota): retry dikirim
+2026-11-09T11:12:14.681Z [STATE] Kamar Solo 1 (Anggota): ACTED -> CONNECTING
+2026-11-09T11:12:19.695Z [STATE] Kamar Solo 1 (Anggota): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-09T11:12:29.730Z [ACT] Kamar Solo 1 (Anggota): retry (percobaan 13, state ERROR 10s)
+2026-11-09T11:12:29.799Z [INFO] Kamar Solo 1 (Anggota): retry dikirim
+2026-11-09T11:12:36.324Z [STATE] Kamar Solo 1 (Anggota): ACTED -> CONNECTING
+2026-11-09T11:12:41.337Z [STATE] Kamar Solo 1 (Anggota): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-09T11:12:51.375Z [ACT] Kamar Solo 1 (Anggota): retry (percobaan 14, state ERROR 10s)
+2026-11-09T11:12:51.458Z [INFO] Kamar Solo 1 (Anggota): retry dikirim
+2026-11-09T11:12:57.993Z [STATE] Kamar Solo 1 (Anggota): ACTED -> CONNECTING
+2026-11-09T11:13:03.008Z [STATE] Kamar Solo 1 (Anggota): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-09T11:13:13.031Z [ACT] Kamar Solo 1 (Anggota): retry (percobaan 15, state ERROR 10s)
+2026-11-09T11:13:13.090Z [INFO] Kamar Solo 1 (Anggota): retry dikirim
+2026-11-09T11:13:19.622Z [STATE] Kamar Solo 1 (Anggota): ACTED -> CONNECTING
+2026-11-09T11:13:24.633Z [STATE] Kamar Solo 1 (Anggota): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-09T11:13:34.667Z [ACT] Kamar Solo 1 (Anggota): retry (percobaan 16, state ERROR 10s)
+2026-11-09T11:13:34.731Z [INFO] Kamar Solo 1 (Anggota): retry dikirim
+2026-11-09T11:13:41.257Z [STATE] Kamar Solo 1 (Anggota): ACTED -> CONNECTING
+2026-11-09T11:13:46.280Z [STATE] Kamar Solo 1 (Anggota): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-09T11:13:56.306Z [ACT] Kamar Solo 1 (Anggota): retry (percobaan 17, state ERROR 10s)
+2026-11-09T11:13:56.370Z [INFO] Kamar Solo 1 (Anggota): retry dikirim
+2026-11-09T11:14:02.897Z [STATE] Kamar Solo 1 (Anggota): ACTED -> CONNECTING
+2026-11-09T11:14:07.911Z [STATE] Kamar Solo 1 (Anggota): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-09T11:14:17.953Z [ACT] Kamar Solo 1 (Anggota): retry (percobaan 18, state ERROR 10s)
+2026-11-09T11:14:18.036Z [INFO] Kamar Solo 1 (Anggota): retry dikirim
+2026-11-09T11:14:24.567Z [STATE] Kamar Solo 1 (Anggota): ACTED -> CONNECTING
+2026-11-09T11:14:29.586Z [STATE] Kamar Solo 1 (Anggota): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-09T11:14:39.616Z [ACT] Kamar Solo 1 (Anggota): retry (percobaan 19, state ERROR 10s)
+2026-11-09T11:14:39.696Z [INFO] Kamar Solo 1 (Anggota): retry dikirim
+2026-11-09T11:14:46.221Z [STATE] Kamar Solo 1 (Anggota): ACTED -> CONNECTING
+2026-11-09T11:14:51.234Z [STATE] Kamar Solo 1 (Anggota): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-09T11:14:56.243Z [STATE] Kamar Surabaya 3 (Anggota): INIT -> PLAY
+2026-11-09T11:14:56.244Z [STATE] Kamar Bandung 3 (Anggota): INIT -> CONNECTING
+2026-11-09T11:15:01.254Z [STATE] Kamar Bandung 3 (Anggota): CONNECTING -> PLAY
+2026-11-09T11:16:39.368Z [INFO] Laporan: login berhasil dari 100.121.149.70
+2026-11-09T11:17:17.910Z [INFO] Laporan: login berhasil dari 100.90.147.8
+2026-11-09T11:19:31.031Z [MEM] JS heap 53 MB, DOM nodes 5446, elemen video 16
+2026-11-09T11:23:28.556Z [INFO] Browser ditutup, monitor berhenti.
+2026-11-09T11:23:37.143Z [INFO] Monitor jalan. Pastikan grid kamera yang mau dipantau sudah tampil di halaman.
+2026-11-09T11:23:37.149Z [INFO] Laporan aktif: http://<IP-PC>:3000/displaycostum.html (wajib password)
+2026-11-09T11:23:37.190Z [VIEW] layarPenuh=false daftarKiriTerlihat=false
+2026-11-09T11:23:47.214Z [VIEW] layarPenuh=false daftarKiriTerlihat=true
+2026-11-09T11:23:52.226Z [STATE] Kamar Jakarta 4 (Anak baru): INIT -> PLAY
+2026-11-09T11:23:52.226Z [STATE] Kamar Jakarta 5 (Anak baru): INIT -> CONNECTING
+2026-11-09T11:23:52.227Z [STATE] Kamar Jakarta 1 (Anak Baru): INIT -> CONNECTING
+2026-11-09T11:23:52.227Z [STATE] Kamar Jakarta 2 (Anak baru): INIT -> CONNECTING
+2026-11-09T11:23:57.248Z [STATE] Kamar Jakarta 5 (Anak baru): CONNECTING -> PLAY
+2026-11-09T11:23:57.249Z [STATE] Kamar Jakarta 1 (Anak Baru): CONNECTING -> PLAY
+2026-11-09T11:23:57.249Z [STATE] Kamar Jakarta 2 (Anak baru): CONNECTING -> PLAY
+2026-11-09T11:24:10.424Z [INFO] Lihat layar PC: dibuka dari 100.90.147.8
+2026-11-09T11:24:20.382Z [INFO] Lihat layar PC: dibuka dari 100.121.149.70
+2026-11-09T11:27:24.374Z [INFO] Lihat layar PC: tidak ada penonton, pengambil layar dimatikan
+2026-11-09T11:28:23.301Z [STATE] Kamar Solo 4 (Anggota): INIT -> CONNECTING
+2026-11-09T11:28:28.321Z [STATE] Kamar Solo 4 (Anggota): CONNECTING -> PLAY
+2026-11-09T11:28:38.349Z [STATE] Kamar Jakarta 4 (Anak baru): PLAY -> FROZEN
+2026-11-09T11:28:38.349Z [STATE] Kamar Jakarta 5 (Anak baru): PLAY -> FROZEN
+2026-11-09T11:28:38.349Z [STATE] Kamar Jakarta 1 (Anak Baru): PLAY -> FROZEN
+2026-11-09T11:29:38.538Z [STATE] Kamar Jakarta 4 (Anak baru): FROZEN -> PLAY
+2026-11-09T11:29:38.539Z [STATE] Kamar Jakarta 5 (Anak baru): FROZEN -> PLAY
+2026-11-09T11:29:38.540Z [STATE] Kamar Jakarta 1 (Anak Baru): FROZEN -> PLAY
+2026-11-09T11:30:53.756Z [STATE] Kamar Surabaya 3 (Anggota): INIT -> PLAY
+2026-11-09T11:30:53.757Z [STATE] Kamar Bandung 3 (Anggota): INIT -> CONNECTING
+2026-11-09T11:30:58.876Z [STATE] Kamar Bandung 3 (Anggota): CONNECTING -> PLAY
+2026-11-09T11:30:58.877Z [STATE] Kamar Bandung 2 (Anggota): INIT -> PLAY
+2026-11-09T11:30:58.878Z [STATE] Kamar Bandung 4 (Anggota): INIT -> PLAY
+2026-11-09T11:30:58.878Z [STATE] Kamar Bandung 1 (Anggota): INIT -> CONNECTING
+2026-11-09T11:30:58.878Z [STATE] Kamar Pengurus 2: INIT -> CONNECTING
+2026-11-09T11:31:03.889Z [STATE] Kamar Bandung 1 (Anggota): CONNECTING -> PLAY
+2026-11-09T11:31:03.890Z [STATE] Kamar Pengurus 2: CONNECTING -> PLAY
+2026-11-09T11:31:03.890Z [STATE] Kamar Pengurus: INIT -> PLAY
+2026-11-09T11:31:03.891Z [STATE] Kamar Surabaya 1 (Anggota): INIT -> CONNECTING
+2026-11-09T11:31:08.908Z [STATE] Kamar Surabaya 1 (Anggota): CONNECTING -> PLAY
+2026-11-09T11:33:37.196Z [MEM] JS heap 81 MB, DOM nodes 4543, elemen video 13
+2026-11-09T11:43:04.396Z [INFO] Lihat layar PC: dibuka dari 100.90.147.8
+2026-11-09T11:43:37.205Z [MEM] JS heap 59 MB, DOM nodes 4426, elemen video 13
+2026-11-09T11:43:59.668Z [INFO] Lihat layar PC: tidak ada penonton, pengambil layar dimatikan
+2026-11-09T11:53:37.213Z [MEM] JS heap 51 MB, DOM nodes 4424, elemen video 13
+2026-11-09T11:55:17.339Z [INFO] Browser ditutup, monitor berhenti.
+2026-11-09T11:55:23.899Z [INFO] Monitor jalan. Pastikan grid kamera yang mau dipantau sudah tampil di halaman.
+2026-11-09T11:55:23.906Z [INFO] Laporan aktif: http://<IP-PC>:3000/displaycostum.html (wajib password)
+2026-11-09T11:55:29.259Z [VIEW] layarPenuh=false daftarKiriTerlihat=false
+2026-11-09T11:58:24.767Z [ALERT] Tidak ada tile kamera selama 180s. Kemungkinan sesi logout (QR) atau layout kosong. URL: https://ipc.bardi.co.id/playback
+2026-11-09T12:05:24.017Z [MEM] JS heap 40 MB, DOM nodes 821, elemen video 0
+2026-11-09T12:07:22.087Z [INFO] Browser ditutup, monitor berhenti.
+2026-11-09T12:07:28.400Z [INFO] Monitor jalan. Pastikan grid kamera yang mau dipantau sudah tampil di halaman.
+2026-11-09T12:07:28.407Z [INFO] Laporan aktif: http://<IP-PC>:3000/displaycostum.html (wajib password)
+2026-11-09T12:07:28.438Z [VIEW] layarPenuh=false daftarKiriTerlihat=false
+2026-11-09T12:07:38.478Z [VIEW] layarPenuh=false daftarKiriTerlihat=true
+2026-11-09T12:07:38.478Z [STATE] Kamar Madura 3 (Anak baru): INIT -> CONNECTING
+2026-11-09T12:07:38.479Z [STATE] Kamar Madura 2 (Anak baru): INIT -> CONNECTING
+2026-11-09T12:07:38.479Z [STATE] Kamar Madura 1 (Anak baru): INIT -> CONNECTING
+2026-11-09T12:07:38.479Z [STATE] Kamar Jakarta 2 (Anak baru): INIT -> CONNECTING
+2026-11-09T12:07:43.495Z [STATE] Kamar Madura 3 (Anak baru): CONNECTING -> PLAY
+2026-11-09T12:07:43.496Z [STATE] Kamar Madura 2 (Anak baru): CONNECTING -> PLAY
+2026-11-09T12:07:43.496Z [STATE] Kamar Madura 1 (Anak baru): CONNECTING -> PLAY
+2026-11-09T12:07:43.496Z [STATE] Kamar Jakarta 2 (Anak baru): CONNECTING -> PLAY
+2026-11-09T12:07:46.008Z [INFO] Lihat layar PC (siaran): dibuka dari 100.121.149.70
+2026-11-09T12:07:46.022Z [INFO] Siaran layar PC dimulai
+2026-11-09T12:08:36.080Z [INFO] Siaran layar PC dihentikan (tidak ada penonton)
+2026-11-09T12:09:08.767Z [STATE] Kamar Jakarta 1 (Anak Baru): INIT -> CONNECTING
+2026-11-09T12:09:08.768Z [STATE] Kamar Surabaya 1 (Anggota): INIT -> CONNECTING
+2026-11-09T12:09:08.769Z [STATE] Kamar Pengurus: INIT -> CONNECTING
+2026-11-09T12:09:13.939Z [STATE] Kamar Jakarta 1 (Anak Baru): CONNECTING -> PLAY
+2026-11-09T12:09:13.939Z [STATE] Kamar Surabaya 1 (Anggota): CONNECTING -> PLAY
+2026-11-09T12:09:13.940Z [STATE] Kamar Pengurus: CONNECTING -> PLAY
+2026-11-09T12:09:13.940Z [STATE] Kamar Solo 2 (Anggota): INIT -> PLAY
+2026-11-09T12:09:13.940Z [STATE] Kamar Pengurus 2: INIT -> PLAY
+2026-11-09T12:09:13.940Z [STATE] Kamar Bandung 1 (Anggota): INIT -> PLAY
+2026-11-09T12:09:13.941Z [STATE] Kamar Solo 3 (Anggota): INIT -> PLAY
+2026-11-09T12:09:13.941Z [STATE] Kamar Solo 4 (Anggota): INIT -> CONNECTING
+2026-11-09T12:09:13.941Z [STATE] Kamar Bandung 4 (Anggota): INIT -> CONNECTING
+2026-11-09T12:09:13.941Z [STATE] Kamar Bandung 2 (Anggota): INIT -> CONNECTING
+2026-11-09T12:09:18.958Z [STATE] Kamar Solo 4 (Anggota): CONNECTING -> PLAY
+2026-11-09T12:09:18.959Z [STATE] Kamar Bandung 4 (Anggota): CONNECTING -> PLAY
+2026-11-09T12:09:18.959Z [STATE] Kamar Bandung 2 (Anggota): CONNECTING -> PLAY
+2026-11-09T12:09:18.959Z [STATE] Kamar Jakarta 5 (Anak baru): INIT -> PLAY
+2026-11-09T12:09:18.959Z [STATE] Kamar Jakarta 4 (Anak baru): INIT -> PLAY
+2026-11-09T12:09:28.628Z [INFO] Lihat layar PC (siaran): dibuka dari 100.90.147.8
+2026-11-09T12:09:28.635Z [INFO] Siaran layar PC dimulai
+2026-11-09T12:10:53.742Z [INFO] Siaran layar PC dihentikan (tidak ada penonton)
+2026-11-09T12:11:43.407Z [INFO] Lihat layar PC (siaran): dibuka dari 100.121.149.70
+2026-11-09T12:11:43.415Z [INFO] Siaran layar PC dimulai
+2026-11-09T12:12:08.455Z [INFO] Siaran layar PC dihentikan (tidak ada penonton)
+2026-11-09T12:15:45.335Z [STATE] Kamar Pengurus: PLAY -> ERROR (Failed to connect: 11)
+2026-11-09T12:15:45.337Z [ACT] Kamar Pengurus: retry (percobaan 1, state ERROR 0s)
+2026-11-09T12:15:45.824Z [INFO] Kamar Pengurus: retry dikirim
+2026-11-09T12:15:52.347Z [STATE] Kamar Pengurus: ACTED -> CONNECTING
+2026-11-09T12:15:57.335Z [INFO] Lihat layar PC (siaran): dibuka dari 100.90.147.8
+2026-11-09T12:15:57.343Z [INFO] Siaran layar PC dimulai
+2026-11-09T12:15:57.367Z [STATE] Kamar Pengurus: CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-09T12:16:07.408Z [ACT] Kamar Pengurus: retry (percobaan 2, state ERROR 10s)
+2026-11-09T12:16:07.498Z [INFO] Kamar Pengurus: retry dikirim
+2026-11-09T12:16:14.026Z [STATE] Kamar Pengurus: ACTED -> CONNECTING
+2026-11-09T12:16:19.050Z [STATE] Kamar Pengurus: CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-09T12:16:29.082Z [ACT] Kamar Pengurus: retry (percobaan 3, state ERROR 10s)
+2026-11-09T12:16:29.181Z [INFO] Kamar Pengurus: retry dikirim
+2026-11-09T12:16:35.714Z [STATE] Kamar Pengurus: ACTED -> CONNECTING
+2026-11-09T12:16:40.726Z [STATE] Kamar Pengurus: CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-09T12:16:47.418Z [INFO] Siaran layar PC dihentikan (tidak ada penonton)
+2026-11-09T12:16:50.747Z [ACT] Kamar Pengurus: retry (percobaan 4, state ERROR 10s)
+2026-11-09T12:16:50.828Z [INFO] Kamar Pengurus: retry dikirim
+2026-11-09T12:16:57.355Z [STATE] Kamar Pengurus: ACTED -> CONNECTING
+2026-11-09T12:17:02.563Z [STATE] Kamar Pengurus: CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-09T12:17:12.743Z [STATE] Kamar Pengurus: ERROR -> CONNECTING
+2026-11-09T12:17:22.773Z [STATE] Kamar Pengurus: CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-09T12:17:22.774Z [ACT] Kamar Pengurus: retry (percobaan 5, state ERROR 0s)
+2026-11-09T12:17:23.178Z [INFO] Kamar Pengurus: retry dikirim
+2026-11-09T12:17:28.445Z [MEM] JS heap 49 MB, DOM nodes 5062, elemen video 16
+2026-11-09T12:17:29.706Z [STATE] Kamar Pengurus: ACTED -> CONNECTING
+2026-11-09T12:17:34.718Z [STATE] Kamar Pengurus: CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-09T12:17:44.754Z [ACT] Kamar Pengurus: retry (percobaan 6, state ERROR 10s)
+2026-11-09T12:17:45.158Z [INFO] Kamar Pengurus: retry dikirim
+2026-11-09T12:17:51.673Z [STATE] Kamar Pengurus: ACTED -> CONNECTING
+2026-11-09T12:17:56.691Z [STATE] Kamar Pengurus: CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-09T12:18:06.732Z [ACT] Kamar Pengurus: retry (percobaan 7, state ERROR 10s)
+2026-11-09T12:18:06.817Z [INFO] Kamar Pengurus: retry dikirim
+2026-11-09T12:18:13.343Z [STATE] Kamar Pengurus: ACTED -> CONNECTING
+2026-11-09T12:18:18.363Z [STATE] Kamar Pengurus: CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-09T12:18:28.395Z [ACT] Kamar Pengurus: retry (percobaan 8, state ERROR 10s)
+2026-11-09T12:18:28.479Z [INFO] Kamar Pengurus: retry dikirim
+2026-11-09T12:18:35.000Z [STATE] Kamar Pengurus: ACTED -> CONNECTING
+2026-11-09T12:18:40.021Z [STATE] Kamar Pengurus: CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-09T12:18:50.045Z [ACT] Kamar Pengurus: retry (percobaan 9, state ERROR 10s)
+2026-11-09T12:18:50.120Z [INFO] Kamar Pengurus: retry dikirim
+2026-11-09T12:18:56.638Z [STATE] Kamar Pengurus: ACTED -> CONNECTING
+2026-11-09T12:19:01.648Z [STATE] Kamar Pengurus: CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-09T12:19:11.673Z [ACT] Kamar Pengurus: retry (percobaan 10, state ERROR 10s)
+2026-11-09T12:19:11.740Z [INFO] Kamar Pengurus: retry dikirim
+2026-11-09T12:19:18.268Z [STATE] Kamar Pengurus: ACTED -> CONNECTING
+2026-11-09T12:19:23.291Z [STATE] Kamar Pengurus: CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-09T12:19:33.331Z [ACT] Kamar Pengurus: retry (percobaan 11, state ERROR 10s)
+2026-11-09T12:19:33.408Z [INFO] Kamar Pengurus: retry dikirim
+2026-11-09T12:19:39.934Z [STATE] Kamar Pengurus: ACTED -> CONNECTING
+2026-11-09T12:19:44.944Z [STATE] Kamar Pengurus: CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-09T12:19:54.985Z [ACT] Kamar Pengurus: retry (percobaan 12, state ERROR 10s)
+2026-11-09T12:19:55.066Z [INFO] Kamar Pengurus: retry dikirim
+2026-11-09T12:20:01.587Z [STATE] Kamar Pengurus: ACTED -> CONNECTING
+2026-11-09T12:20:06.598Z [STATE] Kamar Pengurus: CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-09T12:20:16.637Z [ACT] Kamar Pengurus: retry (percobaan 13, state ERROR 10s)
+2026-11-09T12:20:16.710Z [INFO] Kamar Pengurus: retry dikirim
+2026-11-09T12:20:23.236Z [STATE] Kamar Pengurus: ACTED -> CONNECTING
+2026-11-09T12:20:28.254Z [STATE] Kamar Pengurus: CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-09T12:20:38.290Z [ACT] Kamar Pengurus: retry (percobaan 14, state ERROR 10s)
+2026-11-09T12:20:38.367Z [INFO] Kamar Pengurus: retry dikirim
+2026-11-09T12:20:44.897Z [STATE] Kamar Pengurus: ACTED -> CONNECTING
+2026-11-09T12:20:49.912Z [STATE] Kamar Pengurus: CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-09T12:20:59.946Z [ACT] Kamar Pengurus: retry (percobaan 15, state ERROR 10s)
+2026-11-09T12:21:00.030Z [INFO] Kamar Pengurus: retry dikirim
+2026-11-09T12:21:06.557Z [STATE] Kamar Pengurus: ACTED -> CONNECTING
+2026-11-09T12:21:11.582Z [STATE] Kamar Pengurus: CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-09T12:21:21.615Z [ACT] Kamar Pengurus: retry (percobaan 16, state ERROR 10s)
+2026-11-09T12:21:21.687Z [INFO] Kamar Pengurus: retry dikirim
+2026-11-09T12:21:28.220Z [STATE] Kamar Madura 3 (Anak baru): PLAY -> ERROR (Failed to connect: 11)
+2026-11-09T12:21:28.221Z [ACT] Kamar Madura 3 (Anak baru): retry (percobaan 1, state ERROR 0s)
+2026-11-09T12:21:28.691Z [INFO] Kamar Madura 3 (Anak baru): retry dikirim
+2026-11-09T12:21:30.203Z [STATE] Kamar Madura 2 (Anak baru): PLAY -> ERROR (Failed to connect: 11)
+2026-11-09T12:21:30.204Z [ACT] Kamar Madura 2 (Anak baru): retry (percobaan 1, state ERROR 0s)
+2026-11-09T12:21:30.668Z [INFO] Kamar Madura 2 (Anak baru): retry dikirim
+2026-11-09T12:21:32.186Z [STATE] Kamar Madura 1 (Anak baru): PLAY -> ERROR (Failed to connect: 11)
+2026-11-09T12:21:32.187Z [ACT] Kamar Madura 1 (Anak baru): retry (percobaan 1, state ERROR 0s)
+2026-11-09T12:21:32.212Z [WARN] Kamar Madura 1 (Anak baru): retry GAGAL (elemen tidak ketemu)
+2026-11-09T12:21:33.718Z [STATE] Kamar Jakarta 2 (Anak baru): PLAY -> ERROR (Failed to connect: 11)
+2026-11-09T12:21:33.720Z [ACT] Kamar Jakarta 2 (Anak baru): retry (percobaan 1, state ERROR 0s)
+2026-11-09T12:21:33.742Z [WARN] Kamar Jakarta 2 (Anak baru): retry GAGAL (elemen tidak ketemu)
+2026-11-09T12:21:35.255Z [STATE] Kamar Jakarta 1 (Anak Baru): PLAY -> ERROR (Failed to connect: 11)
+2026-11-09T12:21:35.256Z [ACT] Kamar Jakarta 1 (Anak Baru): retry (percobaan 1, state ERROR 0s)
+2026-11-09T12:21:35.279Z [WARN] Kamar Jakarta 1 (Anak Baru): retry GAGAL (elemen tidak ketemu)
+2026-11-09T12:21:36.781Z [STATE] Kamar Surabaya 1 (Anggota): PLAY -> ERROR (Failed to connect: 11)
+2026-11-09T12:21:36.782Z [ACT] Kamar Surabaya 1 (Anggota): retry (percobaan 1, state ERROR 0s)
+2026-11-09T12:21:36.806Z [WARN] Kamar Surabaya 1 (Anggota): retry GAGAL (elemen tidak ketemu)
+2026-11-09T12:21:38.313Z [STATE] Kamar Pengurus: ACTED -> ERROR (Failed to connect: noConfig)
+2026-11-09T12:21:38.391Z [STATE] Kamar Solo 2 (Anggota): PLAY -> ERROR (Failed to connect: 11)
+2026-11-09T12:21:38.392Z [ACT] Kamar Solo 2 (Anggota): retry (percobaan 1, state ERROR 0s)
+2026-11-09T12:21:38.417Z [WARN] Kamar Solo 2 (Anggota): retry GAGAL (elemen tidak ketemu)
+2026-11-09T12:21:39.932Z [STATE] Kamar Pengurus 2: PLAY -> ERROR (Failed to connect: 11)
+2026-11-09T12:21:39.934Z [ACT] Kamar Pengurus 2: retry (percobaan 1, state ERROR 0s)
+2026-11-09T12:21:39.957Z [WARN] Kamar Pengurus 2: retry GAGAL (elemen tidak ketemu)
+2026-11-09T12:21:41.463Z [STATE] Kamar Bandung 1 (Anggota): PLAY -> ERROR (Failed to connect: 11)
+2026-11-09T12:21:41.464Z [ACT] Kamar Bandung 1 (Anggota): retry (percobaan 1, state ERROR 0s)
+2026-11-09T12:21:41.490Z [WARN] Kamar Bandung 1 (Anggota): retry GAGAL (elemen tidak ketemu)
+2026-11-09T12:21:42.995Z [STATE] Kamar Solo 3 (Anggota): PLAY -> ERROR (Failed to connect: 11)
+2026-11-09T12:21:42.996Z [ACT] Kamar Solo 3 (Anggota): retry (percobaan 1, state ERROR 0s)
+2026-11-09T12:21:43.019Z [WARN] Kamar Solo 3 (Anggota): retry GAGAL (elemen tidak ketemu)
+2026-11-09T12:21:44.523Z [STATE] Kamar Solo 4 (Anggota): PLAY -> ERROR (Failed to connect: 11)
+2026-11-09T12:21:44.525Z [ACT] Kamar Solo 4 (Anggota): retry (percobaan 1, state ERROR 0s)
+2026-11-09T12:21:44.547Z [WARN] Kamar Solo 4 (Anggota): retry GAGAL (elemen tidak ketemu)
+2026-11-09T12:21:46.062Z [STATE] Kamar Bandung 4 (Anggota): PLAY -> ERROR (Failed to connect: 11)
+2026-11-09T12:21:46.063Z [ACT] Kamar Bandung 4 (Anggota): retry (percobaan 1, state ERROR 0s)
+2026-11-09T12:21:46.087Z [WARN] Kamar Bandung 4 (Anggota): retry GAGAL (elemen tidak ketemu)
+2026-11-09T12:21:47.598Z [STATE] Kamar Bandung 2 (Anggota): PLAY -> ERROR (Failed to connect: 11)
+2026-11-09T12:21:47.599Z [ACT] Kamar Bandung 2 (Anggota): retry (percobaan 1, state ERROR 0s)
+2026-11-09T12:21:47.621Z [WARN] Kamar Bandung 2 (Anggota): retry GAGAL (elemen tidak ketemu)
+2026-11-09T12:21:49.132Z [STATE] Kamar Jakarta 5 (Anak baru): PLAY -> ERROR (Failed to connect: 11)
+2026-11-09T12:21:49.134Z [ACT] Kamar Jakarta 5 (Anak baru): retry (percobaan 1, state ERROR 0s)
+2026-11-09T12:21:49.157Z [WARN] Kamar Jakarta 5 (Anak baru): retry GAGAL (elemen tidak ketemu)
+2026-11-09T12:21:50.669Z [STATE] Kamar Jakarta 4 (Anak baru): PLAY -> ERROR (Failed to connect: 11)
+2026-11-09T12:21:50.671Z [ACT] Kamar Jakarta 4 (Anak baru): retry (percobaan 1, state ERROR 0s)
+2026-11-09T12:21:50.695Z [WARN] Kamar Jakarta 4 (Anak baru): retry GAGAL (elemen tidak ketemu)
+2026-11-09T12:21:57.226Z [STATE] Kamar Madura 3 (Anak baru): ACTED -> ERROR (Failed to connect: noConfig)
+2026-11-09T12:21:57.227Z [ACT] Kamar Madura 3 (Anak baru): retry (percobaan 2, state ERROR 0s)
+2026-11-09T12:21:57.624Z [INFO] Kamar Madura 3 (Anak baru): retry dikirim
+2026-11-09T12:21:59.131Z [STATE] Kamar Madura 2 (Anak baru): ACTED -> ERROR (Failed to connect: noConfig)
+2026-11-09T12:21:59.132Z [ACT] Kamar Madura 2 (Anak baru): retry (percobaan 2, state ERROR 0s)
+2026-11-09T12:21:59.517Z [INFO] Kamar Madura 2 (Anak baru): retry dikirim
+2026-11-09T12:22:01.023Z [STATE] Kamar Madura 1 (Anak baru): ACTED -> PLAY
+2026-11-09T12:22:01.024Z [STATE] Kamar Jakarta 2 (Anak baru): ACTED -> PLAY
+2026-11-09T12:22:01.025Z [STATE] Kamar Jakarta 1 (Anak Baru): ACTED -> PLAY
+2026-11-09T12:22:01.025Z [STATE] Kamar Surabaya 1 (Anggota): ACTED -> PLAY
+2026-11-09T12:22:01.026Z [ACT] Kamar Pengurus: retry (percobaan 17, state ERROR 29s)
+2026-11-09T12:22:01.433Z [INFO] Kamar Pengurus: retry dikirim
+2026-11-09T12:22:02.934Z [STATE] Kamar Solo 2 (Anggota): ACTED -> PLAY
+2026-11-09T12:22:02.935Z [STATE] Kamar Pengurus 2: ACTED -> PLAY
+2026-11-09T12:22:02.936Z [STATE] Kamar Bandung 1 (Anggota): ACTED -> PLAY
+2026-11-09T12:22:02.936Z [STATE] Kamar Solo 3 (Anggota): ACTED -> PLAY
+2026-11-09T12:22:02.937Z [STATE] Kamar Solo 4 (Anggota): ACTED -> PLAY
+2026-11-09T12:22:02.937Z [STATE] Kamar Bandung 4 (Anggota): ACTED -> PLAY
+2026-11-09T12:22:02.937Z [STATE] Kamar Bandung 2 (Anggota): ACTED -> PLAY
+2026-11-09T12:22:02.938Z [STATE] Kamar Jakarta 5 (Anak baru): ACTED -> PLAY
+2026-11-09T12:22:02.939Z [STATE] Kamar Jakarta 4 (Anak baru): ACTED -> PLAY
+2026-11-09T12:22:07.948Z [STATE] Kamar Madura 3 (Anak baru): ACTED -> FROZEN
+2026-11-09T12:22:07.949Z [STATE] Kamar Madura 2 (Anak baru): ACTED -> FROZEN
+2026-11-09T12:22:07.949Z [STATE] Kamar Pengurus: ACTED -> CONNECTING
+2026-11-09T12:22:12.958Z [STATE] Kamar Madura 3 (Anak baru): FROZEN -> PLAY
+2026-11-09T12:22:12.959Z [STATE] Kamar Madura 2 (Anak baru): FROZEN -> PLAY
+2026-11-09T12:22:12.959Z [STATE] Kamar Pengurus: CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-09T12:22:17.983Z [ACT] Kamar Pengurus: retry (percobaan 18, state ERROR 5s)
+2026-11-09T12:22:18.063Z [INFO] Kamar Pengurus: retry dikirim
+2026-11-09T12:22:23.861Z [INFO] Browser ditutup, monitor berhenti.
+2026-11-09T14:19:23.610Z [INFO] Monitor jalan. Pastikan grid kamera yang mau dipantau sudah tampil di halaman.
+2026-11-09T14:19:23.617Z [INFO] Laporan aktif: http://<IP-PC>:3000/displaycostum.html (wajib password)
+2026-11-09T14:19:23.736Z [VIEW] layarPenuh=false daftarKiriTerlihat=false
+2026-11-09T14:19:33.782Z [VIEW] layarPenuh=false daftarKiriTerlihat=true
+2026-11-09T14:20:26.072Z [INFO] Browser ditutup, monitor berhenti.
+2026-11-09T14:22:54.164Z [INFO] Monitor jalan. Pastikan grid kamera yang mau dipantau sudah tampil di halaman.
+2026-11-09T14:22:54.167Z [INFO] Laporan aktif: http://<IP-PC>:3000/displaycostum.html (wajib password)
+2026-11-09T14:22:54.181Z [VIEW] layarPenuh=false daftarKiriTerlihat=false
+2026-11-09T14:22:59.211Z [VIEW] layarPenuh=false daftarKiriTerlihat=true
+2026-11-09T14:23:09.163Z [INFO] Browser ditutup, monitor berhenti.
+2026-11-10T08:50:54.964Z [INFO] Monitor jalan. Pastikan grid kamera yang mau dipantau sudah tampil di halaman.
+2026-11-10T08:50:54.971Z [INFO] Laporan aktif: http://<IP-PC>:3000/displaycostum.html (wajib password)
+2026-11-10T08:50:55.005Z [VIEW] layarPenuh=false daftarKiriTerlihat=false
+2026-11-10T08:51:10.066Z [VIEW] layarPenuh=false daftarKiriTerlihat=true
+2026-11-10T08:51:20.092Z [STATE] Kamar Jakarta 3 (Anak baru): INIT -> CONNECTING
+2026-11-10T08:51:25.107Z [STATE] Kamar Jakarta 3 (Anak baru): CONNECTING -> PLAY
+2026-11-10T08:51:30.118Z [STATE] Kamar Madura 3 (Anak baru): INIT -> CONNECTING
+2026-11-10T08:51:30.119Z [STATE] Kamar Madura 2 (Anak baru): INIT -> CONNECTING
+2026-11-10T08:51:30.119Z [STATE] Kamar Madura 1 (Anak baru): INIT -> CONNECTING
+2026-11-10T08:51:35.132Z [STATE] Kamar Madura 3 (Anak baru): CONNECTING -> PLAY
+2026-11-10T08:51:35.133Z [STATE] Kamar Madura 2 (Anak baru): CONNECTING -> PLAY
+2026-11-10T08:51:35.133Z [STATE] Kamar Madura 1 (Anak baru): CONNECTING -> PLAY
+2026-11-10T08:54:10.458Z [INFO] Laporan: login berhasil dari 192.168.18.43
+2026-11-10T08:54:20.843Z [STATE] Kamar Jakarta 2 (Anak baru): INIT -> CONNECTING
+2026-11-10T08:54:20.844Z [STATE] Kamar Jakarta 1 (Anak Baru): INIT -> CONNECTING
+2026-11-10T08:54:20.844Z [STATE] Kamar Jakarta 4 (Anak baru): INIT -> CONNECTING
+2026-11-10T08:54:25.855Z [STATE] Kamar Jakarta 2 (Anak baru): CONNECTING -> PLAY
+2026-11-10T08:54:25.855Z [STATE] Kamar Jakarta 1 (Anak Baru): CONNECTING -> PLAY
+2026-11-10T08:54:25.856Z [STATE] Kamar Jakarta 4 (Anak baru): CONNECTING -> PLAY
+2026-11-10T08:54:39.627Z [INFO] Lihat layar PC (siaran): dibuka dari 192.168.18.43
+2026-11-10T08:54:39.681Z [INFO] Siaran layar PC dimulai
+2026-11-10T08:55:29.752Z [INFO] Siaran layar PC dihentikan (tidak ada penonton)
+2026-11-10T09:00:55.020Z [MEM] JS heap 70 MB, DOM nodes 2734, elemen video 7
+2026-11-10T09:01:37.123Z [STATE] Kamar Madura 2 (Anak baru): PLAY -> ERROR (Failed to connect: 11)
+2026-11-10T09:01:37.125Z [ACT] Kamar Madura 2 (Anak baru): retry (percobaan 1, state ERROR 0s)
+2026-11-10T09:01:37.660Z [INFO] Kamar Madura 2 (Anak baru): retry dikirim
+2026-11-10T09:01:44.186Z [STATE] Kamar Madura 2 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:01:49.209Z [STATE] Kamar Madura 2 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T09:01:59.239Z [ACT] Kamar Madura 2 (Anak baru): retry (percobaan 2, state ERROR 10s)
+2026-11-10T09:01:59.315Z [INFO] Kamar Madura 2 (Anak baru): retry dikirim
+2026-11-10T09:02:05.829Z [STATE] Kamar Madura 2 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:02:10.836Z [STATE] Kamar Madura 2 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T09:02:20.857Z [ACT] Kamar Madura 2 (Anak baru): retry (percobaan 3, state ERROR 10s)
+2026-11-10T09:02:20.927Z [INFO] Kamar Madura 2 (Anak baru): retry dikirim
+2026-11-10T09:02:27.454Z [STATE] Kamar Madura 2 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:02:32.470Z [STATE] Kamar Madura 2 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T09:02:42.492Z [ACT] Kamar Madura 2 (Anak baru): retry (percobaan 4, state ERROR 10s)
+2026-11-10T09:02:42.569Z [INFO] Kamar Madura 2 (Anak baru): retry dikirim
+2026-11-10T09:02:49.102Z [STATE] Kamar Madura 2 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:02:54.125Z [STATE] Kamar Madura 2 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T09:03:04.154Z [ACT] Kamar Madura 2 (Anak baru): retry (percobaan 5, state ERROR 10s)
+2026-11-10T09:03:04.219Z [INFO] Kamar Madura 2 (Anak baru): retry dikirim
+2026-11-10T09:03:10.740Z [STATE] Kamar Madura 2 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:03:15.749Z [STATE] Kamar Madura 2 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T09:03:25.766Z [ACT] Kamar Madura 2 (Anak baru): retry (percobaan 6, state ERROR 10s)
+2026-11-10T09:03:25.834Z [INFO] Kamar Madura 2 (Anak baru): retry dikirim
+2026-11-10T09:03:32.356Z [STATE] Kamar Madura 2 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:03:37.376Z [STATE] Kamar Madura 2 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T09:03:47.407Z [ACT] Kamar Madura 2 (Anak baru): retry (percobaan 7, state ERROR 10s)
+2026-11-10T09:03:47.463Z [INFO] Kamar Madura 2 (Anak baru): retry dikirim
+2026-11-10T09:03:53.992Z [STATE] Kamar Madura 2 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:03:59.007Z [STATE] Kamar Madura 2 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T09:04:09.038Z [ACT] Kamar Madura 2 (Anak baru): retry (percobaan 8, state ERROR 10s)
+2026-11-10T09:04:09.115Z [INFO] Kamar Madura 2 (Anak baru): retry dikirim
+2026-11-10T09:04:15.649Z [STATE] Kamar Madura 2 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:04:20.663Z [STATE] Kamar Madura 2 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T09:04:30.686Z [ACT] Kamar Madura 2 (Anak baru): retry (percobaan 9, state ERROR 10s)
+2026-11-10T09:04:30.748Z [INFO] Kamar Madura 2 (Anak baru): retry dikirim
+2026-11-10T09:04:37.262Z [STATE] Kamar Madura 2 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:04:42.275Z [STATE] Kamar Madura 2 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T09:04:52.302Z [ACT] Kamar Madura 2 (Anak baru): retry (percobaan 10, state ERROR 10s)
+2026-11-10T09:04:52.368Z [INFO] Kamar Madura 2 (Anak baru): retry dikirim
+2026-11-10T09:04:58.884Z [STATE] Kamar Madura 2 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:05:03.897Z [STATE] Kamar Madura 2 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T09:05:13.932Z [ACT] Kamar Madura 2 (Anak baru): retry (percobaan 11, state ERROR 10s)
+2026-11-10T09:05:14.071Z [INFO] Kamar Madura 2 (Anak baru): retry dikirim
+2026-11-10T09:05:20.587Z [STATE] Kamar Madura 2 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:05:25.605Z [STATE] Kamar Madura 2 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T09:05:35.633Z [ACT] Kamar Madura 2 (Anak baru): retry (percobaan 12, state ERROR 10s)
+2026-11-10T09:05:35.683Z [INFO] Kamar Madura 2 (Anak baru): retry dikirim
+2026-11-10T09:05:42.206Z [STATE] Kamar Madura 2 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:05:47.225Z [STATE] Kamar Madura 2 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T09:05:57.260Z [ACT] Kamar Madura 2 (Anak baru): retry (percobaan 13, state ERROR 10s)
+2026-11-10T09:05:57.331Z [INFO] Kamar Madura 2 (Anak baru): retry dikirim
+2026-11-10T09:06:03.858Z [STATE] Kamar Madura 2 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:06:08.878Z [STATE] Kamar Madura 2 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T09:06:18.906Z [ACT] Kamar Madura 2 (Anak baru): retry (percobaan 14, state ERROR 10s)
+2026-11-10T09:06:18.974Z [INFO] Kamar Madura 2 (Anak baru): retry dikirim
+2026-11-10T09:06:25.492Z [STATE] Kamar Madura 2 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:06:30.500Z [STATE] Kamar Madura 2 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T09:06:40.529Z [ACT] Kamar Madura 2 (Anak baru): retry (percobaan 15, state ERROR 10s)
+2026-11-10T09:06:40.578Z [INFO] Kamar Madura 2 (Anak baru): retry dikirim
+2026-11-10T09:06:47.104Z [STATE] Kamar Madura 2 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:06:52.123Z [STATE] Kamar Madura 2 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T09:07:02.154Z [ACT] Kamar Madura 2 (Anak baru): retry (percobaan 16, state ERROR 10s)
+2026-11-10T09:07:02.216Z [INFO] Kamar Madura 2 (Anak baru): retry dikirim
+2026-11-10T09:07:08.750Z [STATE] Kamar Madura 2 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:07:13.763Z [STATE] Kamar Madura 2 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T09:07:23.789Z [ACT] Kamar Madura 2 (Anak baru): retry (percobaan 17, state ERROR 10s)
+2026-11-10T09:07:23.869Z [INFO] Kamar Madura 2 (Anak baru): retry dikirim
+2026-11-10T09:07:30.400Z [STATE] Kamar Madura 2 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:07:35.419Z [STATE] Kamar Madura 2 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T09:07:45.449Z [ACT] Kamar Madura 2 (Anak baru): retry (percobaan 18, state ERROR 10s)
+2026-11-10T09:07:45.508Z [INFO] Kamar Madura 2 (Anak baru): retry dikirim
+2026-11-10T09:07:52.031Z [STATE] Kamar Madura 2 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:07:57.051Z [STATE] Kamar Madura 2 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T09:08:07.077Z [ACT] Kamar Madura 2 (Anak baru): retry (percobaan 19, state ERROR 10s)
+2026-11-10T09:08:07.142Z [INFO] Kamar Madura 2 (Anak baru): retry dikirim
+2026-11-10T09:08:13.664Z [STATE] Kamar Madura 2 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:08:18.677Z [STATE] Kamar Madura 2 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T09:08:28.700Z [ACT] Kamar Madura 2 (Anak baru): retry (percobaan 20, state ERROR 10s)
+2026-11-10T09:08:28.754Z [INFO] Kamar Madura 2 (Anak baru): retry dikirim
+2026-11-10T09:08:35.266Z [STATE] Kamar Madura 2 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:08:40.276Z [STATE] Kamar Madura 2 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T09:08:50.311Z [WARN] Kamar Madura 2 (Anak baru): masih ERROR setelah 20 kali Retry (tetap dicoba terus)
+2026-11-10T09:08:50.312Z [ACT] Kamar Madura 2 (Anak baru): retry (percobaan 21, state ERROR 10s)
+2026-11-10T09:08:50.366Z [INFO] Kamar Madura 2 (Anak baru): retry dikirim
+2026-11-10T09:08:56.885Z [STATE] Kamar Madura 2 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:09:01.904Z [STATE] Kamar Madura 2 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T09:09:11.931Z [ACT] Kamar Madura 2 (Anak baru): retry (percobaan 22, state ERROR 10s)
+2026-11-10T09:09:11.987Z [INFO] Kamar Madura 2 (Anak baru): retry dikirim
+2026-11-10T09:09:18.505Z [STATE] Kamar Madura 2 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:09:23.526Z [STATE] Kamar Madura 2 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T09:09:33.551Z [ACT] Kamar Madura 2 (Anak baru): retry (percobaan 23, state ERROR 10s)
+2026-11-10T09:09:33.615Z [INFO] Kamar Madura 2 (Anak baru): retry dikirim
+2026-11-10T09:09:40.138Z [STATE] Kamar Madura 2 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:09:45.153Z [STATE] Kamar Madura 2 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T09:09:55.178Z [ACT] Kamar Madura 2 (Anak baru): retry (percobaan 24, state ERROR 10s)
+2026-11-10T09:09:55.229Z [INFO] Kamar Madura 2 (Anak baru): retry dikirim
+2026-11-10T09:10:01.743Z [STATE] Kamar Madura 2 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:10:06.759Z [STATE] Kamar Madura 2 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T09:10:16.790Z [ACT] Kamar Madura 2 (Anak baru): retry (percobaan 25, state ERROR 10s)
+2026-11-10T09:10:16.859Z [INFO] Kamar Madura 2 (Anak baru): retry dikirim
+2026-11-10T09:10:23.381Z [STATE] Kamar Madura 2 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:10:28.391Z [STATE] Kamar Madura 2 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T09:10:38.416Z [ACT] Kamar Madura 2 (Anak baru): retry (percobaan 26, state ERROR 10s)
+2026-11-10T09:10:38.463Z [INFO] Kamar Madura 2 (Anak baru): retry dikirim
+2026-11-10T09:10:44.990Z [STATE] Kamar Jakarta 3 (Anak baru): PLAY -> ERROR (Failed to connect: 11)
+2026-11-10T09:10:44.991Z [ACT] Kamar Jakarta 3 (Anak baru): retry (percobaan 1, state ERROR 0s)
+2026-11-10T09:10:50.014Z [WARN] Kamar Jakarta 3 (Anak baru): retry error: locator.click: Timeout 5000ms exceeded.
+Call log:
+[2m  - waiting for locator('[class*="gridShow_common-grid-item"]').filter({ has: locator('[class*="device-name"]').filter({ hasText: 'Kamar Jakarta 3 (Anak baru)' }) }).first().locator('[class*="rtcVideo_retry"]').filter({ hasText: /^Retry$/ }).first()[22m
+[2m    - locator resolved to <span class="rtcVideo_retry__3AIEF">Retry</span>[22m
+[2m  - attempting click action[22m
+[2m    - waiting for element to be visible, enabled and stable[22m
+[2m    - element is not stable[22m
+[2m  - retrying click action[22m
+[2m    - waiting for element to be visible, enabled and stable[22m
+[2m  - element was detached from the DOM, retrying[22m
+
+2026-11-10T09:10:51.531Z [STATE] Kamar Madura 2 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:10:55.039Z [MEM] JS heap 48 MB, DOM nodes 3213, elemen video 7
+2026-11-10T09:10:56.545Z [STATE] Kamar Jakarta 3 (Anak baru): ERROR -> PLAY
+2026-11-10T09:10:56.546Z [STATE] Kamar Madura 2 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T09:11:01.563Z [ACT] Kamar Madura 2 (Anak baru): retry (percobaan 27, state ERROR 5s)
+2026-11-10T09:11:01.634Z [INFO] Kamar Madura 2 (Anak baru): retry dikirim
+2026-11-10T09:11:08.155Z [STATE] Kamar Madura 2 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:11:13.177Z [STATE] Kamar Madura 2 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T09:11:23.213Z [ACT] Kamar Madura 2 (Anak baru): retry (percobaan 28, state ERROR 10s)
+2026-11-10T09:11:23.276Z [INFO] Kamar Madura 2 (Anak baru): retry dikirim
+2026-11-10T09:11:29.802Z [STATE] Kamar Madura 2 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:11:34.820Z [STATE] Kamar Madura 2 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T09:11:44.865Z [ACT] Kamar Madura 2 (Anak baru): retry (percobaan 29, state ERROR 10s)
+2026-11-10T09:11:44.936Z [INFO] Kamar Madura 2 (Anak baru): retry dikirim
+2026-11-10T09:11:51.461Z [STATE] Kamar Madura 2 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:11:56.479Z [STATE] Kamar Madura 2 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T09:12:06.511Z [ACT] Kamar Madura 2 (Anak baru): retry (percobaan 30, state ERROR 10s)
+2026-11-10T09:12:06.580Z [INFO] Kamar Madura 2 (Anak baru): retry dikirim
+2026-11-10T09:12:13.099Z [STATE] Kamar Madura 2 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:12:18.111Z [STATE] Kamar Madura 2 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T09:12:28.142Z [ACT] Kamar Madura 2 (Anak baru): retry (percobaan 31, state ERROR 10s)
+2026-11-10T09:12:28.208Z [INFO] Kamar Madura 2 (Anak baru): retry dikirim
+2026-11-10T09:12:34.729Z [STATE] Kamar Madura 2 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:12:39.750Z [STATE] Kamar Madura 2 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T09:12:49.775Z [ACT] Kamar Madura 2 (Anak baru): retry (percobaan 32, state ERROR 10s)
+2026-11-10T09:12:49.833Z [INFO] Kamar Madura 2 (Anak baru): retry dikirim
+2026-11-10T09:12:56.365Z [STATE] Kamar Madura 2 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:13:01.374Z [STATE] Kamar Madura 2 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T09:13:11.414Z [ACT] Kamar Madura 2 (Anak baru): retry (percobaan 33, state ERROR 10s)
+2026-11-10T09:13:11.481Z [INFO] Kamar Madura 2 (Anak baru): retry dikirim
+2026-11-10T09:13:18.006Z [STATE] Kamar Madura 2 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:13:23.027Z [STATE] Kamar Madura 2 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T09:13:33.048Z [ACT] Kamar Madura 2 (Anak baru): retry (percobaan 34, state ERROR 10s)
+2026-11-10T09:13:33.111Z [INFO] Kamar Madura 2 (Anak baru): retry dikirim
+2026-11-10T09:13:39.646Z [STATE] Kamar Madura 2 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:13:44.653Z [STATE] Kamar Madura 2 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T09:13:54.682Z [ACT] Kamar Madura 2 (Anak baru): retry (percobaan 35, state ERROR 10s)
+2026-11-10T09:13:54.737Z [INFO] Kamar Madura 2 (Anak baru): retry dikirim
+2026-11-10T09:14:01.267Z [STATE] Kamar Madura 2 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:14:06.288Z [STATE] Kamar Madura 2 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T09:14:16.321Z [ACT] Kamar Madura 2 (Anak baru): retry (percobaan 36, state ERROR 10s)
+2026-11-10T09:14:16.388Z [INFO] Kamar Madura 2 (Anak baru): retry dikirim
+2026-11-10T09:14:22.905Z [STATE] Kamar Madura 2 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:14:27.916Z [STATE] Kamar Madura 2 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T09:14:37.953Z [ACT] Kamar Madura 2 (Anak baru): retry (percobaan 37, state ERROR 10s)
+2026-11-10T09:14:38.010Z [INFO] Kamar Madura 2 (Anak baru): retry dikirim
+2026-11-10T09:14:44.534Z [STATE] Kamar Madura 2 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:14:49.547Z [STATE] Kamar Madura 2 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T09:14:59.583Z [ACT] Kamar Madura 2 (Anak baru): retry (percobaan 38, state ERROR 10s)
+2026-11-10T09:14:59.639Z [INFO] Kamar Madura 2 (Anak baru): retry dikirim
+2026-11-10T09:15:06.156Z [STATE] Kamar Madura 2 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:15:11.176Z [STATE] Kamar Madura 2 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T09:15:21.198Z [ACT] Kamar Madura 2 (Anak baru): retry (percobaan 39, state ERROR 10s)
+2026-11-10T09:15:21.311Z [INFO] Kamar Madura 2 (Anak baru): retry dikirim
+2026-11-10T09:15:27.826Z [STATE] Kamar Madura 2 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:15:32.846Z [STATE] Kamar Madura 2 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T09:15:42.884Z [ACT] Kamar Madura 2 (Anak baru): retry (percobaan 40, state ERROR 10s)
+2026-11-10T09:15:42.934Z [INFO] Kamar Madura 2 (Anak baru): retry dikirim
+2026-11-10T09:15:49.463Z [STATE] Kamar Madura 2 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:15:54.473Z [STATE] Kamar Madura 2 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T09:16:04.509Z [WARN] Kamar Madura 2 (Anak baru): masih ERROR setelah 40 kali Retry (tetap dicoba terus)
+2026-11-10T09:16:04.510Z [ACT] Kamar Madura 2 (Anak baru): retry (percobaan 41, state ERROR 10s)
+2026-11-10T09:16:04.557Z [INFO] Kamar Madura 2 (Anak baru): retry dikirim
+2026-11-10T09:16:11.077Z [STATE] Kamar Madura 2 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:16:16.087Z [STATE] Kamar Madura 2 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T09:16:26.114Z [ACT] Kamar Madura 2 (Anak baru): retry (percobaan 42, state ERROR 10s)
+2026-11-10T09:16:26.184Z [INFO] Kamar Madura 2 (Anak baru): retry dikirim
+2026-11-10T09:16:32.708Z [STATE] Kamar Madura 2 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:16:37.729Z [STATE] Kamar Madura 2 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T09:16:47.756Z [ACT] Kamar Madura 2 (Anak baru): retry (percobaan 43, state ERROR 10s)
+2026-11-10T09:16:47.808Z [INFO] Kamar Madura 2 (Anak baru): retry dikirim
+2026-11-10T09:16:54.320Z [STATE] Kamar Madura 2 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:16:59.336Z [STATE] Kamar Madura 2 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T09:17:09.369Z [ACT] Kamar Madura 2 (Anak baru): retry (percobaan 44, state ERROR 10s)
+2026-11-10T09:17:09.427Z [INFO] Kamar Madura 2 (Anak baru): retry dikirim
+2026-11-10T09:17:15.946Z [STATE] Kamar Madura 2 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:17:20.963Z [STATE] Kamar Madura 2 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T09:17:30.988Z [ACT] Kamar Madura 2 (Anak baru): retry (percobaan 45, state ERROR 10s)
+2026-11-10T09:17:31.052Z [INFO] Kamar Madura 2 (Anak baru): retry dikirim
+2026-11-10T09:17:37.595Z [STATE] Kamar Madura 2 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:17:42.618Z [STATE] Kamar Madura 2 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T09:17:52.640Z [ACT] Kamar Madura 2 (Anak baru): retry (percobaan 46, state ERROR 10s)
+2026-11-10T09:17:52.704Z [INFO] Kamar Madura 2 (Anak baru): retry dikirim
+2026-11-10T09:17:59.221Z [STATE] Kamar Madura 2 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:18:04.232Z [STATE] Kamar Madura 2 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T09:18:14.263Z [ACT] Kamar Madura 2 (Anak baru): retry (percobaan 47, state ERROR 10s)
+2026-11-10T09:18:14.314Z [INFO] Kamar Madura 2 (Anak baru): retry dikirim
+2026-11-10T09:18:20.826Z [STATE] Kamar Madura 2 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:18:25.847Z [STATE] Kamar Madura 2 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T09:18:35.877Z [ACT] Kamar Madura 2 (Anak baru): retry (percobaan 48, state ERROR 10s)
+2026-11-10T09:18:35.934Z [INFO] Kamar Madura 2 (Anak baru): retry dikirim
+2026-11-10T09:18:42.449Z [STATE] Kamar Madura 2 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:18:47.462Z [STATE] Kamar Madura 2 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T09:18:57.496Z [ACT] Kamar Madura 2 (Anak baru): retry (percobaan 49, state ERROR 10s)
+2026-11-10T09:18:57.554Z [INFO] Kamar Madura 2 (Anak baru): retry dikirim
+2026-11-10T09:19:04.071Z [STATE] Kamar Madura 2 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:19:09.084Z [STATE] Kamar Jakarta 3 (Anak baru): PLAY -> ERROR (Failed to connect: 11)
+2026-11-10T09:19:09.085Z [ACT] Kamar Jakarta 3 (Anak baru): retry (percobaan 1, state ERROR 0s)
+2026-11-10T09:19:09.455Z [INFO] Kamar Jakarta 3 (Anak baru): retry dikirim
+2026-11-10T09:19:10.959Z [STATE] Kamar Madura 2 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T09:19:15.972Z [STATE] Kamar Jakarta 3 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:19:20.994Z [STATE] Kamar Jakarta 3 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T09:19:20.995Z [ACT] Kamar Madura 2 (Anak baru): retry (percobaan 50, state ERROR 12s)
+2026-11-10T09:19:21.345Z [INFO] Kamar Madura 2 (Anak baru): retry dikirim
+2026-11-10T09:19:27.864Z [STATE] Kamar Madura 2 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:19:32.878Z [ACT] Kamar Jakarta 3 (Anak baru): retry (percobaan 2, state ERROR 12s)
+2026-11-10T09:19:33.213Z [INFO] Kamar Jakarta 3 (Anak baru): retry dikirim
+2026-11-10T09:19:34.728Z [STATE] Kamar Madura 2 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T09:19:39.743Z [STATE] Kamar Jakarta 3 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:19:44.759Z [STATE] Kamar Jakarta 3 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T09:19:44.760Z [ACT] Kamar Madura 2 (Anak baru): retry (percobaan 51, state ERROR 12s)
+2026-11-10T09:19:45.101Z [INFO] Kamar Madura 2 (Anak baru): retry dikirim
+2026-11-10T09:19:51.737Z [STATE] Kamar Madura 2 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:19:56.760Z [ACT] Kamar Jakarta 3 (Anak baru): retry (percobaan 3, state ERROR 12s)
+2026-11-10T09:19:57.086Z [INFO] Kamar Jakarta 3 (Anak baru): retry dikirim
+2026-11-10T09:19:58.600Z [STATE] Kamar Madura 2 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T09:20:03.615Z [STATE] Kamar Jakarta 3 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:20:08.630Z [STATE] Kamar Jakarta 3 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T09:20:08.631Z [ACT] Kamar Madura 2 (Anak baru): retry (percobaan 52, state ERROR 12s)
+2026-11-10T09:20:08.936Z [INFO] Kamar Madura 2 (Anak baru): retry dikirim
+2026-11-10T09:20:15.459Z [STATE] Kamar Madura 2 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:20:20.474Z [ACT] Kamar Jakarta 3 (Anak baru): retry (percobaan 4, state ERROR 12s)
+2026-11-10T09:20:20.779Z [INFO] Kamar Jakarta 3 (Anak baru): retry dikirim
+2026-11-10T09:20:22.285Z [STATE] Kamar Madura 2 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T09:20:27.303Z [STATE] Kamar Jakarta 3 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:20:32.312Z [STATE] Kamar Jakarta 3 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T09:20:32.313Z [ACT] Kamar Madura 2 (Anak baru): retry (percobaan 53, state ERROR 12s)
+2026-11-10T09:20:32.652Z [INFO] Kamar Madura 2 (Anak baru): retry dikirim
+2026-11-10T09:20:39.186Z [STATE] Kamar Madura 2 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:20:44.203Z [ACT] Kamar Jakarta 3 (Anak baru): retry (percobaan 5, state ERROR 12s)
+2026-11-10T09:20:44.536Z [INFO] Kamar Jakarta 3 (Anak baru): retry dikirim
+2026-11-10T09:20:46.040Z [STATE] Kamar Madura 2 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T09:20:51.061Z [STATE] Kamar Jakarta 3 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:20:55.043Z [MEM] JS heap 43 MB, DOM nodes 2629, elemen video 7
+2026-11-10T09:20:56.078Z [STATE] Kamar Jakarta 3 (Anak baru): CONNECTING -> ERROR (Failed to connect: 11)
+2026-11-10T09:20:56.079Z [ACT] Kamar Madura 2 (Anak baru): retry (percobaan 54, state ERROR 12s)
+2026-11-10T09:20:56.392Z [INFO] Kamar Madura 2 (Anak baru): retry dikirim
+2026-11-10T09:21:02.926Z [STATE] Kamar Jakarta 3 (Anak baru): ERROR -> FROZEN
+2026-11-10T09:21:02.927Z [STATE] Kamar Madura 2 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:21:07.947Z [STATE] Kamar Madura 2 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T09:21:17.979Z [ACT] Kamar Madura 2 (Anak baru): retry (percobaan 55, state ERROR 10s)
+2026-11-10T09:21:18.050Z [INFO] Kamar Madura 2 (Anak baru): retry dikirim
+2026-11-10T09:21:24.574Z [STATE] Kamar Madura 2 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:21:29.584Z [STATE] Kamar Madura 2 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T09:21:39.628Z [ACT] Kamar Madura 2 (Anak baru): retry (percobaan 56, state ERROR 10s)
+2026-11-10T09:21:39.683Z [INFO] Kamar Madura 2 (Anak baru): retry dikirim
+2026-11-10T09:21:46.201Z [STATE] Kamar Jakarta 3 (Anak baru): FROZEN -> ERROR (Failed to connect: 11)
+2026-11-10T09:21:46.201Z [ACT] Kamar Jakarta 3 (Anak baru): retry (percobaan 6, state ERROR 0s)
+2026-11-10T09:21:46.523Z [INFO] Kamar Jakarta 3 (Anak baru): retry dikirim
+2026-11-10T09:21:48.056Z [STATE] Kamar Madura 2 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:21:53.074Z [STATE] Kamar Jakarta 3 (Anak baru): ACTED -> PLAY
+2026-11-10T09:21:53.075Z [STATE] Kamar Madura 2 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T09:21:58.088Z [STATE] Kamar Jakarta 3 (Anak baru): PLAY -> ERROR (Failed to connect: 15)
+2026-11-10T09:22:03.101Z [ACT] Kamar Madura 2 (Anak baru): retry (percobaan 57, state ERROR 10s)
+2026-11-10T09:22:03.459Z [INFO] Kamar Madura 2 (Anak baru): retry dikirim
+2026-11-10T09:22:09.983Z [ACT] Kamar Jakarta 3 (Anak baru): retry (percobaan 7, state ERROR 12s)
+2026-11-10T09:22:10.310Z [INFO] Kamar Jakarta 3 (Anak baru): retry dikirim
+2026-11-10T09:22:11.820Z [STATE] Kamar Madura 2 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:22:16.829Z [STATE] Kamar Jakarta 3 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:22:16.830Z [STATE] Kamar Madura 2 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T09:22:21.846Z [STATE] Kamar Jakarta 3 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T09:22:26.866Z [ACT] Kamar Madura 2 (Anak baru): retry (percobaan 58, state ERROR 10s)
+2026-11-10T09:22:27.193Z [INFO] Kamar Madura 2 (Anak baru): retry dikirim
+2026-11-10T09:22:33.714Z [ACT] Kamar Jakarta 3 (Anak baru): retry (percobaan 8, state ERROR 12s)
+2026-11-10T09:22:34.034Z [INFO] Kamar Jakarta 3 (Anak baru): retry dikirim
+2026-11-10T09:22:35.545Z [STATE] Kamar Madura 2 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:22:40.553Z [STATE] Kamar Jakarta 3 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:22:40.554Z [STATE] Kamar Madura 2 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T09:22:45.561Z [STATE] Kamar Jakarta 3 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T09:22:50.571Z [ACT] Kamar Madura 2 (Anak baru): retry (percobaan 59, state ERROR 10s)
+2026-11-10T09:22:50.881Z [INFO] Kamar Madura 2 (Anak baru): retry dikirim
+2026-11-10T09:22:57.404Z [ACT] Kamar Jakarta 3 (Anak baru): retry (percobaan 9, state ERROR 12s)
+2026-11-10T09:22:57.740Z [INFO] Kamar Jakarta 3 (Anak baru): retry dikirim
+2026-11-10T09:22:59.246Z [STATE] Kamar Madura 2 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:23:04.263Z [STATE] Kamar Jakarta 3 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:23:04.263Z [STATE] Kamar Madura 2 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T09:23:09.278Z [STATE] Kamar Jakarta 3 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T09:23:14.289Z [ACT] Kamar Madura 2 (Anak baru): retry (percobaan 60, state ERROR 10s)
+2026-11-10T09:23:14.621Z [INFO] Kamar Madura 2 (Anak baru): retry dikirim
+2026-11-10T09:23:21.138Z [ACT] Kamar Jakarta 3 (Anak baru): retry (percobaan 10, state ERROR 12s)
+2026-11-10T09:23:21.468Z [INFO] Kamar Jakarta 3 (Anak baru): retry dikirim
+2026-11-10T09:23:22.980Z [STATE] Kamar Madura 2 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:23:27.999Z [STATE] Kamar Jakarta 3 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:23:28.000Z [STATE] Kamar Madura 2 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T09:23:33.013Z [STATE] Kamar Jakarta 3 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T09:23:38.030Z [WARN] Kamar Madura 2 (Anak baru): masih ERROR setelah 60 kali Retry (tetap dicoba terus)
+2026-11-10T09:23:38.030Z [ACT] Kamar Madura 2 (Anak baru): retry (percobaan 61, state ERROR 10s)
+2026-11-10T09:23:38.344Z [INFO] Kamar Madura 2 (Anak baru): retry dikirim
+2026-11-10T09:23:44.869Z [ACT] Kamar Jakarta 3 (Anak baru): retry (percobaan 11, state ERROR 12s)
+2026-11-10T09:23:45.177Z [INFO] Kamar Jakarta 3 (Anak baru): retry dikirim
+2026-11-10T09:23:46.693Z [STATE] Kamar Madura 2 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:23:51.703Z [STATE] Kamar Jakarta 3 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:23:51.704Z [STATE] Kamar Madura 2 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T09:23:56.713Z [STATE] Kamar Jakarta 3 (Anak baru): CONNECTING -> PLAY
+2026-11-10T09:24:01.726Z [ACT] Kamar Madura 2 (Anak baru): retry (percobaan 62, state ERROR 10s)
+2026-11-10T09:24:02.026Z [INFO] Kamar Madura 2 (Anak baru): retry dikirim
+2026-11-10T09:24:08.535Z [STATE] Kamar Madura 2 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:24:13.551Z [STATE] Kamar Madura 2 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T09:24:23.581Z [ACT] Kamar Madura 2 (Anak baru): retry (percobaan 63, state ERROR 10s)
+2026-11-10T09:24:23.638Z [INFO] Kamar Madura 2 (Anak baru): retry dikirim
+2026-11-10T09:24:30.151Z [STATE] Kamar Madura 2 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:24:35.167Z [STATE] Kamar Madura 2 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T09:24:45.196Z [ACT] Kamar Madura 2 (Anak baru): retry (percobaan 64, state ERROR 10s)
+2026-11-10T09:24:45.251Z [INFO] Kamar Madura 2 (Anak baru): retry dikirim
+2026-11-10T09:24:51.775Z [STATE] Kamar Madura 2 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:24:56.788Z [STATE] Kamar Madura 2 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T09:25:01.801Z [STATE] Kamar Jakarta 3 (Anak baru): PLAY -> ERROR (Failed to connect: 11)
+2026-11-10T09:25:01.802Z [ACT] Kamar Jakarta 3 (Anak baru): retry (percobaan 1, state ERROR 0s)
+2026-11-10T09:25:02.125Z [INFO] Kamar Jakarta 3 (Anak baru): retry dikirim
+2026-11-10T09:25:08.636Z [STATE] Kamar Jakarta 3 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:25:08.637Z [ACT] Kamar Madura 2 (Anak baru): retry (percobaan 65, state ERROR 12s)
+2026-11-10T09:25:08.961Z [INFO] Kamar Madura 2 (Anak baru): retry dikirim
+2026-11-10T09:25:15.477Z [STATE] Kamar Jakarta 3 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T09:25:15.478Z [STATE] Kamar Madura 2 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:25:20.498Z [STATE] Kamar Madura 2 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T09:25:25.510Z [ACT] Kamar Jakarta 3 (Anak baru): retry (percobaan 2, state ERROR 10s)
+2026-11-10T09:25:25.801Z [INFO] Kamar Jakarta 3 (Anak baru): retry dikirim
+2026-11-10T09:25:32.321Z [STATE] Kamar Jakarta 3 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:25:32.322Z [ACT] Kamar Madura 2 (Anak baru): retry (percobaan 66, state ERROR 12s)
+2026-11-10T09:25:32.655Z [INFO] Kamar Madura 2 (Anak baru): retry dikirim
+2026-11-10T09:25:39.171Z [STATE] Kamar Madura 2 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:25:44.194Z [STATE] Kamar Madura 2 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T09:25:49.213Z [STATE] Kamar Jakarta 3 (Anak baru): CONNECTING -> ERROR (Failed to connect: 11)
+2026-11-10T09:25:49.214Z [ACT] Kamar Jakarta 3 (Anak baru): retry (percobaan 3, state ERROR 0s)
+2026-11-10T09:25:49.530Z [INFO] Kamar Jakarta 3 (Anak baru): retry dikirim
+2026-11-10T09:25:56.056Z [STATE] Kamar Jakarta 3 (Anak baru): ACTED -> PLAY
+2026-11-10T09:25:56.057Z [ACT] Kamar Madura 2 (Anak baru): retry (percobaan 67, state ERROR 12s)
+2026-11-10T09:25:56.382Z [INFO] Kamar Madura 2 (Anak baru): retry dikirim
+2026-11-10T09:26:02.915Z [STATE] Kamar Jakarta 3 (Anak baru): PLAY -> ERROR (Failed to connect: 15)
+2026-11-10T09:26:02.916Z [STATE] Kamar Madura 2 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:26:07.928Z [STATE] Kamar Madura 2 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T09:26:12.943Z [ACT] Kamar Jakarta 3 (Anak baru): retry (percobaan 4, state ERROR 10s)
+2026-11-10T09:26:13.275Z [INFO] Kamar Jakarta 3 (Anak baru): retry dikirim
+2026-11-10T09:26:19.789Z [STATE] Kamar Jakarta 3 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:26:19.790Z [ACT] Kamar Madura 2 (Anak baru): retry (percobaan 68, state ERROR 12s)
+2026-11-10T09:26:20.122Z [INFO] Kamar Madura 2 (Anak baru): retry dikirim
+2026-11-10T09:26:26.645Z [STATE] Kamar Madura 2 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:26:31.667Z [STATE] Kamar Jakarta 3 (Anak baru): CONNECTING -> PLAY
+2026-11-10T09:26:31.667Z [STATE] Kamar Madura 2 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T09:26:41.692Z [ACT] Kamar Madura 2 (Anak baru): retry (percobaan 69, state ERROR 10s)
+2026-11-10T09:26:41.751Z [INFO] Kamar Madura 2 (Anak baru): retry dikirim
+2026-11-10T09:26:48.266Z [STATE] Kamar Madura 2 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:26:53.278Z [STATE] Kamar Madura 2 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T09:27:03.303Z [ACT] Kamar Madura 2 (Anak baru): retry (percobaan 70, state ERROR 10s)
+2026-11-10T09:27:03.365Z [INFO] Kamar Madura 2 (Anak baru): retry dikirim
+2026-11-10T09:27:09.889Z [STATE] Kamar Madura 2 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:27:14.897Z [STATE] Kamar Madura 2 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T09:27:24.926Z [ACT] Kamar Madura 2 (Anak baru): retry (percobaan 71, state ERROR 10s)
+2026-11-10T09:27:24.978Z [INFO] Kamar Madura 2 (Anak baru): retry dikirim
+2026-11-10T09:27:31.492Z [STATE] Kamar Madura 2 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:27:36.507Z [STATE] Kamar Madura 2 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T09:27:46.525Z [ACT] Kamar Madura 2 (Anak baru): retry (percobaan 72, state ERROR 10s)
+2026-11-10T09:27:46.577Z [INFO] Kamar Madura 2 (Anak baru): retry dikirim
+2026-11-10T09:27:53.098Z [STATE] Kamar Madura 2 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:28:03.134Z [STATE] Kamar Jakarta 3 (Anak baru): PLAY -> ERROR (Failed to connect: 11)
+2026-11-10T09:28:03.135Z [ACT] Kamar Jakarta 3 (Anak baru): retry (percobaan 1, state ERROR 0s)
+2026-11-10T09:28:03.445Z [INFO] Kamar Jakarta 3 (Anak baru): retry dikirim
+2026-11-10T09:28:04.947Z [STATE] Kamar Madura 2 (Anak baru): CONNECTING -> PLAY
+2026-11-10T09:28:09.961Z [STATE] Kamar Jakarta 3 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:28:14.980Z [STATE] Kamar Jakarta 3 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T09:28:25.000Z [ACT] Kamar Jakarta 3 (Anak baru): retry (percobaan 2, state ERROR 10s)
+2026-11-10T09:28:25.059Z [INFO] Kamar Jakarta 3 (Anak baru): retry dikirim
+2026-11-10T09:28:31.580Z [STATE] Kamar Jakarta 3 (Anak baru): ACTED -> CONNECTING
+2026-11-10T09:28:51.646Z [STATE] Kamar Jakarta 3 (Anak baru): CONNECTING -> PLAY
+2026-11-10T09:30:55.062Z [MEM] JS heap 50 MB, DOM nodes 2659, elemen video 7
+2026-11-10T09:40:55.068Z [MEM] JS heap 58 MB, DOM nodes 2659, elemen video 7
+2026-11-10T09:50:55.087Z [MEM] JS heap 44 MB, DOM nodes 2659, elemen video 7
+2026-11-10T09:59:31.010Z [INFO] Browser ditutup, monitor berhenti.
+2026-11-10T11:52:46.925Z [INFO] Monitor jalan. Pastikan grid kamera yang mau dipantau sudah tampil di halaman.
+2026-11-10T11:52:46.932Z [INFO] Laporan aktif: http://<IP-PC>:3000/displaycostum.html (wajib password)
+2026-11-10T11:52:47.052Z [VIEW] layarPenuh=false daftarKiriTerlihat=false
+2026-11-10T11:53:07.130Z [VIEW] layarPenuh=false daftarKiriTerlihat=true
+2026-11-10T11:53:07.131Z [STATE] Kamar Madura 3 (Anak baru): INIT -> CONNECTING
+2026-11-10T11:53:12.346Z [STATE] Kamar Madura 2 (Anak baru): INIT -> CONNECTING
+2026-11-10T11:53:12.346Z [STATE] Kamar Madura 1 (Anak baru): INIT -> CONNECTING
+2026-11-10T11:53:12.347Z [STATE] Kamar Jakarta 2 (Anak baru): INIT -> CONNECTING
+2026-11-10T11:53:12.347Z [STATE] Kamar Jakarta 1 (Anak Baru): INIT -> CONNECTING
+2026-11-10T11:53:17.364Z [STATE] Kamar Madura 3 (Anak baru): CONNECTING -> PLAY
+2026-11-10T11:53:17.365Z [STATE] Kamar Madura 2 (Anak baru): CONNECTING -> PLAY
+2026-11-10T11:53:17.365Z [STATE] Kamar Madura 1 (Anak baru): CONNECTING -> PLAY
+2026-11-10T11:53:17.366Z [STATE] Kamar Jakarta 2 (Anak baru): CONNECTING -> PLAY
+2026-11-10T11:53:17.366Z [STATE] Kamar Jakarta 1 (Anak Baru): CONNECTING -> PLAY
+2026-11-10T11:53:17.366Z [STATE] Kamar Jakarta 5 (Anak baru): INIT -> PLAY
+2026-11-10T11:53:17.366Z [STATE] Kamar Jakarta 3 (Anak baru): INIT -> CONNECTING
+2026-11-10T11:53:17.367Z [STATE] Kamar Jakarta 4 (Anak baru): INIT -> PLAY
+2026-11-10T11:53:22.381Z [STATE] Kamar Jakarta 3 (Anak baru): CONNECTING -> PLAY
+2026-11-10T11:53:27.396Z [STATE] Kamar Solo 2 (Anggota): INIT -> PLAY
+2026-11-10T11:53:27.396Z [STATE] Kamar Solo 3 (Anggota): INIT -> PLAY
+2026-11-10T11:53:27.397Z [STATE] Kamar Solo 4 (Anggota): INIT -> CONNECTING
+2026-11-10T11:53:27.397Z [STATE] Kamar Aula Pojok Kanan: INIT -> CONNECTING
+2026-11-10T11:53:27.397Z [STATE] Kamar Aula Kanan: INIT -> CONNECTING
+2026-11-10T11:53:32.420Z [STATE] Kamar Solo 4 (Anggota): CONNECTING -> PLAY
+2026-11-10T11:53:32.420Z [STATE] Kamar Aula Pojok Kanan: CONNECTING -> PLAY
+2026-11-10T11:53:32.421Z [STATE] Kamar Aula Kanan: CONNECTING -> PLAY
+2026-11-10T11:53:32.421Z [STATE] Kamar Aula Tengah Kanan: INIT -> CONNECTING
+2026-11-10T11:53:32.421Z [STATE] Kamar Aula Tengah Kiri: INIT -> CONNECTING
+2026-11-10T11:53:32.421Z [STATE] Kamar Aula Kiri: INIT -> PLAY
+2026-11-10T11:53:37.443Z [STATE] Kamar Aula Tengah Kanan: CONNECTING -> PLAY
+2026-11-10T11:53:37.444Z [STATE] Kamar Aula Tengah Kiri: CONNECTING -> PLAY
+2026-11-10T12:02:46.974Z [MEM] JS heap 45 MB, DOM nodes 4776, elemen video 15
+2026-11-10T12:03:24.424Z [STATE] Kamar Aula Tengah Kiri: PLAY -> ERROR (Failed to connect: 11)
+2026-11-10T12:03:24.426Z [ACT] Kamar Aula Tengah Kiri: retry (percobaan 1, state ERROR 0s)
+2026-11-10T12:03:24.806Z [INFO] Kamar Aula Tengah Kiri: retry dikirim
+2026-11-10T12:03:31.323Z [STATE] Kamar Aula Tengah Kiri: ACTED -> CONNECTING
+2026-11-10T12:04:26.517Z [ACT] Kamar Aula Tengah Kiri: reopen (percobaan 2, state CONNECTING 55s)
+2026-11-10T12:04:30.100Z [INFO] Kamar Aula Tengah Kiri: reopen dikirim
+2026-11-10T12:04:36.631Z [STATE] Kamar Aula Tengah Kiri: ACTED -> PLAY
+2026-11-10T12:06:27.011Z [STATE] Kamar Bandung 2 (Anggota): INIT -> PLAY
+2026-11-10T12:11:21.425Z [INFO] Browser ditutup, monitor berhenti.
+2026-11-10T12:11:29.812Z [INFO] Monitor jalan. Pastikan grid kamera yang mau dipantau sudah tampil di halaman.
+2026-11-10T12:11:29.833Z [INFO] Laporan aktif: http://<IP-PC>:3000/displaycostum.html (wajib password)
+2026-11-10T12:11:29.866Z [VIEW] layarPenuh=false daftarKiriTerlihat=false
+2026-11-10T12:12:04.968Z [VIEW] layarPenuh=false daftarKiriTerlihat=true
+2026-11-10T12:12:10.181Z [STATE] Kamar Madura 3 (Anak baru): INIT -> CONNECTING
+2026-11-10T12:12:10.182Z [STATE] Kamar Madura 2 (Anak baru): INIT -> CONNECTING
+2026-11-10T12:12:10.182Z [STATE] Kamar Madura 1 (Anak baru): INIT -> CONNECTING
+2026-11-10T12:12:10.182Z [STATE] Kamar Jakarta 2 (Anak baru): INIT -> CONNECTING
+2026-11-10T12:12:15.196Z [STATE] Kamar Madura 3 (Anak baru): CONNECTING -> PLAY
+2026-11-10T12:12:15.197Z [STATE] Kamar Madura 2 (Anak baru): CONNECTING -> PLAY
+2026-11-10T12:12:15.197Z [STATE] Kamar Madura 1 (Anak baru): CONNECTING -> PLAY
+2026-11-10T12:12:15.197Z [STATE] Kamar Jakarta 2 (Anak baru): CONNECTING -> PLAY
+2026-11-10T12:12:20.568Z [STATE] Kamar Jakarta 1 (Anak Baru): INIT -> PLAY
+2026-11-10T12:12:20.568Z [STATE] Kamar Solo 2 (Anggota): INIT -> PLAY
+2026-11-10T12:12:20.569Z [STATE] Kamar Pengurus 2: INIT -> PLAY
+2026-11-10T12:12:20.569Z [STATE] Kamar Bandung 1 (Anggota): INIT -> CONNECTING
+2026-11-10T12:12:20.569Z [STATE] Kamar Solo 3 (Anggota): INIT -> CONNECTING
+2026-11-10T12:12:20.569Z [STATE] Kamar Solo 4 (Anggota): INIT -> CONNECTING
+2026-11-10T12:12:25.648Z [STATE] Kamar Bandung 1 (Anggota): CONNECTING -> PLAY
+2026-11-10T12:12:25.648Z [STATE] Kamar Solo 3 (Anggota): CONNECTING -> PLAY
+2026-11-10T12:12:25.648Z [STATE] Kamar Solo 4 (Anggota): CONNECTING -> PLAY
+2026-11-10T12:12:25.649Z [STATE] Kamar Bandung 2 (Anggota): INIT -> PLAY
+2026-11-10T12:12:25.649Z [STATE] Kamar Jakarta 5 (Anak baru): INIT -> CONNECTING
+2026-11-10T12:12:25.649Z [STATE] Kamar Jakarta 4 (Anak baru): INIT -> CONNECTING
+2026-11-10T12:12:25.649Z [STATE] Kamar Jakarta 3 (Anak baru): INIT -> CONNECTING
+2026-11-10T12:12:25.649Z [STATE] Kamar Surabaya 3 (Anggota): INIT -> CONNECTING
+2026-11-10T12:12:30.684Z [STATE] Kamar Jakarta 5 (Anak baru): CONNECTING -> PLAY
+2026-11-10T12:12:30.684Z [STATE] Kamar Jakarta 4 (Anak baru): CONNECTING -> PLAY
+2026-11-10T12:12:30.685Z [STATE] Kamar Surabaya 3 (Anggota): CONNECTING -> PLAY
+2026-11-10T12:12:30.685Z [STATE] Kamar Surabaya 2 (Anggota): INIT -> PLAY
+2026-11-10T12:12:35.704Z [STATE] Kamar Jakarta 3 (Anak baru): CONNECTING -> PLAY
+2026-11-10T12:12:35.704Z [STATE] Kamar Surabaya 2 (Anggota): PLAY -> ERROR (Failed to connect: 11)
+2026-11-10T12:12:35.706Z [ACT] Kamar Surabaya 2 (Anggota): retry (percobaan 1, state ERROR 0s)
+2026-11-10T12:12:35.859Z [INFO] Kamar Surabaya 2 (Anggota): retry dikirim
+2026-11-10T12:12:42.400Z [STATE] Kamar Kiri Aula 5/6: INIT -> CONNECTING
+2026-11-10T12:12:47.413Z [STATE] Kamar Kiri Aula 5/6: CONNECTING -> PLAY
+2026-11-10T12:12:52.426Z [INFO] Kamar Surabaya 2 (Anggota): tidak tampil lagi di layar Bardi, dihapus dari status
+2026-11-10T12:13:22.644Z [INFO] Kamar Kiri Aula 5/6: tidak tampil lagi di layar Bardi, dihapus dari status
+2026-11-10T12:18:22.861Z [INFO] Browser ditutup, monitor berhenti.
+2026-11-10T12:18:27.453Z [INFO] Monitor jalan. Pastikan grid kamera yang mau dipantau sudah tampil di halaman.
+2026-11-10T12:18:27.460Z [INFO] Laporan aktif: http://<IP-PC>:3000/displaycostum.html (wajib password)
+2026-11-10T12:18:27.489Z [VIEW] layarPenuh=false daftarKiriTerlihat=false
+2026-11-10T12:18:45.219Z [VIEW] layarPenuh=false daftarKiriTerlihat=true
+2026-11-10T12:18:47.740Z [STATE] Kamar Madura 3 (Anak baru): INIT -> CONNECTING
+2026-11-10T12:18:50.253Z [STATE] Kamar Madura 2 (Anak baru): INIT -> CONNECTING
+2026-11-10T12:18:50.253Z [STATE] Kamar Madura 1 (Anak baru): INIT -> CONNECTING
+2026-11-10T12:18:55.273Z [STATE] Kamar Madura 3 (Anak baru): CONNECTING -> PLAY
+2026-11-10T12:18:55.274Z [STATE] Kamar Madura 2 (Anak baru): CONNECTING -> PLAY
+2026-11-10T12:18:55.274Z [STATE] Kamar Madura 1 (Anak baru): CONNECTING -> PLAY
+2026-11-10T12:18:55.274Z [STATE] Kamar Jakarta 2 (Anak baru): INIT -> PLAY
+2026-11-10T12:18:55.275Z [STATE] Kamar Jakarta 1 (Anak Baru): INIT -> CONNECTING
+2026-11-10T12:18:55.275Z [STATE] Kamar Solo 2 (Anggota): INIT -> CONNECTING
+2026-11-10T12:18:57.860Z [STATE] Kamar Jakarta 1 (Anak Baru): CONNECTING -> PLAY
+2026-11-10T12:18:57.861Z [STATE] Kamar Solo 2 (Anggota): CONNECTING -> PLAY
+2026-11-10T12:18:57.861Z [STATE] Kamar Pengurus 2: INIT -> CONNECTING
+2026-11-10T12:18:57.861Z [STATE] Kamar Bandung 1 (Anggota): INIT -> CONNECTING
+2026-11-10T12:18:57.861Z [STATE] Kamar Solo 3 (Anggota): INIT -> CONNECTING
+2026-11-10T12:19:00.375Z [STATE] Kamar Pengurus 2: CONNECTING -> PLAY
+2026-11-10T12:19:00.375Z [STATE] Kamar Bandung 1 (Anggota): CONNECTING -> PLAY
+2026-11-10T12:19:00.375Z [STATE] Kamar Solo 3 (Anggota): CONNECTING -> PLAY
+2026-11-10T12:19:00.376Z [STATE] Kamar Solo 4 (Anggota): INIT -> CONNECTING
+2026-11-10T12:19:00.376Z [STATE] Kamar Bandung 2 (Anggota): INIT -> CONNECTING
+2026-11-10T12:19:03.280Z [STATE] Kamar Solo 4 (Anggota): CONNECTING -> PLAY
+2026-11-10T12:19:03.281Z [STATE] Kamar Bandung 2 (Anggota): CONNECTING -> PLAY
+2026-11-10T12:19:03.281Z [STATE] Kamar Jakarta 5 (Anak baru): INIT -> CONNECTING
+2026-11-10T12:19:03.281Z [STATE] Kamar Jakarta 3 (Anak baru): INIT -> CONNECTING
+2026-11-10T12:19:03.282Z [STATE] Kamar Jakarta 4 (Anak baru): INIT -> CONNECTING
+2026-11-10T12:19:05.819Z [STATE] Kamar Jakarta 5 (Anak baru): CONNECTING -> PLAY
+2026-11-10T12:19:05.820Z [STATE] Kamar Jakarta 4 (Anak baru): CONNECTING -> PLAY
+2026-11-10T12:19:05.820Z [STATE] Kamar Surabaya 3 (Anggota): INIT -> CONNECTING
+2026-11-10T12:19:05.821Z [STATE] Kamar Surabaya 2 (Anggota): INIT -> CONNECTING
+2026-11-10T12:19:08.337Z [STATE] Kamar Surabaya 3 (Anggota): CONNECTING -> PLAY
+2026-11-10T12:19:10.860Z [STATE] Kamar Jakarta 3 (Anak baru): CONNECTING -> PLAY
+2026-11-10T12:19:18.422Z [STATE] Kamar Surabaya 2 (Anggota): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T12:19:18.424Z [ACT] Kamar Surabaya 2 (Anggota): retry (percobaan 1, state ERROR 0s)
+2026-11-10T12:19:18.599Z [INFO] Kamar Surabaya 2 (Anggota): retry dikirim
+2026-11-10T12:19:22.623Z [STATE] Kamar Surabaya 2 (Anggota): ACTED -> CONNECTING
+2026-11-10T12:19:32.810Z [INFO] Kamar Surabaya 2 (Anggota): tidak tampil lagi di layar Bardi, dihapus dari status
+2026-11-10T12:19:37.833Z [STATE] Kamar Kiri Aula 5/6: INIT -> CONNECTING
+2026-11-10T12:19:40.345Z [STATE] Kamar Kiri Aula 5/6: CONNECTING -> PLAY
+2026-11-10T12:20:08.549Z [INFO] Lihat layar PC (siaran): dibuka dari 192.168.18.43
+2026-11-10T12:20:08.558Z [INFO] Siaran layar PC dimulai
+2026-11-10T12:20:58.637Z [INFO] Siaran layar PC dihentikan (tidak ada penonton)
+2026-11-10T12:23:04.573Z [INFO] Kamar Jakarta 1 (Anak Baru): tidak tampil lagi di layar Bardi, dihapus dari status
+2026-11-10T12:23:04.574Z [STATE] Kamar Aula Kiri Pojok: INIT -> CONNECTING
+2026-11-10T12:23:07.097Z [STATE] Kamar Aula Kiri Pojok: CONNECTING -> PLAY
+2026-11-10T12:23:14.660Z [STATE] Kamar Jakarta 3 (Anak baru): PLAY -> ERROR (Failed to connect: 11)
+2026-11-10T12:23:14.662Z [ACT] Kamar Jakarta 3 (Anak baru): retry (percobaan 1, state ERROR 0s)
+2026-11-10T12:23:15.101Z [INFO] Kamar Jakarta 3 (Anak baru): retry dikirim
+2026-11-10T12:23:19.134Z [STATE] Kamar Jakarta 3 (Anak baru): ACTED -> CONNECTING
+2026-11-10T12:23:26.673Z [STATE] Kamar Jakarta 3 (Anak baru): CONNECTING -> ERROR (Failed to connect: 15)
+2026-11-10T12:23:36.745Z [ACT] Kamar Jakarta 3 (Anak baru): retry (percobaan 2, state ERROR 10s)
+2026-11-10T12:23:36.827Z [INFO] Kamar Jakarta 3 (Anak baru): retry dikirim
+2026-11-10T12:23:40.853Z [STATE] Kamar Jakarta 3 (Anak baru): ACTED -> CONNECTING
+2026-11-10T12:24:06.035Z [STATE] Kamar Jakarta 3 (Anak baru): CONNECTING -> PLAY
+2026-11-10T12:28:27.496Z [MEM] JS heap 62 MB, DOM nodes 5580, elemen video 16
+2026-11-10T12:38:27.505Z [MEM] JS heap 48 MB, DOM nodes 5561, elemen video 16
+2026-11-10T12:48:27.522Z [MEM] JS heap 49 MB, DOM nodes 5561, elemen video 16
+2026-11-10T12:58:27.531Z [MEM] JS heap 48 MB, DOM nodes 5561, elemen video 16
