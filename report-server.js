@@ -225,7 +225,7 @@ tr.clk{cursor:pointer}tr.clk:hover td{background:rgba(232,89,12,.08)}tr.sel td{b
 .det th,.det td{white-space:normal;padding:6px 5px;font-size:13px}
 </style></head><body>
 <header><h1>Laporan Bardi Monitor</h1><div class="row"><span class="mut" id="upd">memuat...</span>
-<a class="btn" href="/onvif">Kamera ONVIF</a><a class="btn" href="/multiview">Multiview</a><a class="btn" href="/kejadian">Rekaman kejadian</a><button id="upb">Pembaruan</button><button id="stopb" class="danger">Hentikan pemantauan</button><a class="btn" href="/layar" target="_blank" rel="noopener">Lihat layar PC</a><a class="btn pri" href="/report.pdf">Unduh PDF</a><a class="btn" href="/logout">Keluar</a></div></header>
+<a class="btn" href="/onvif">Kamera ONVIF</a><a class="btn" href="/multiview">Multiview</a><a class="btn" href="/kejadian">Rekaman kejadian</a><a class="btn" href="/klip">Papan klip</a><button id="upb">Pembaruan</button><button id="stopb" class="danger">Hentikan pemantauan</button><a class="btn" href="/layar" target="_blank" rel="noopener">Lihat layar PC</a><a class="btn pri" href="/report.pdf">Unduh PDF</a><a class="btn" href="/logout">Keluar</a></div></header>
 <main>
 <div class="card" id="upc" style="display:none"><div class="row" style="justify-content:space-between"><h2>Pembaruan dari GitHub</h2><button id="upx">Tutup</button></div>
 <p class="mut" id="upv"></p><p id="upm"></p>
@@ -368,6 +368,15 @@ function startReportServer(opts) {
   const incident = createIncidentRecorder({ log, rootDir: dir, ffmpegPath: opts.ffmpegPath, listCams: () => onvif.list().map((c) => ({ id: c.id, name: c.name })), getCamera: (id) => onvif.liveInfo(id), outDir: opts.incidentDir, bufBase: opts.incidentBuf, timing: opts.incidentTiming, minFreeBytes: opts.incidentMinFree, retentionDays: opts.incidentDays || 7 });
   if (!opts.noIncident) incident.start();
   const INCIDENT_PAGE = require('./onvif-kejadian')(BASE_CSS);
+  const { createClipStore, page: clipPage, MAX_ITEM_CHARS: CLIP_MAX } = require('./papan-klip');
+  const CLIP_PAGE = clipPage(BASE_CSS);
+  const clip = createClipStore({ dir, log, file: opts.clipFile });
+  const readBigJson = (req, max) => new Promise((resolve, reject) => {
+    const chunks = []; let n = 0;
+    req.on('data', (d) => { n += d.length; if (n > max) { req.destroy(); reject(new Error('terlalu besar')); } else chunks.push(d); });
+    req.on('end', () => { try { resolve(JSON.parse(Buffer.concat(chunks).toString('utf8') || '{}')); } catch (e) { reject(new Error('JSON tidak valid')); } });
+    req.on('error', reject);
+  });
   const ONVIF_PAGE = makeOnvifPage(BASE_CSS);
   const MULTIVIEW_PAGE = require('./onvif-multiview')(BASE_CSS);
   const ptz = createPtz({ getTarget: (id) => onvif.secret(id), log, camClass: opts.onvifCamClass });
@@ -519,6 +528,18 @@ function startReportServer(opts) {
       }
       if (p === '/onvif') return send(res, 200, 'text/html; charset=utf-8', ONVIF_PAGE);
       if (p === '/multiview') return send(res, 200, 'text/html; charset=utf-8', MULTIVIEW_PAGE);
+      if (p === '/klip') return send(res, 200, 'text/html; charset=utf-8', CLIP_PAGE);
+      if (p === '/api/klip/list' || p === '/api/klip/add' || p === '/api/klip/get' || p === '/api/klip/delete') {
+        if (req.method !== 'POST') return send(res, 405, 'text/plain; charset=utf-8', 'Gunakan POST');
+        const origin = req.headers.origin;
+        if (origin) { let okOrigin = false; try { okOrigin = new URL(origin).host === req.headers.host; } catch (_) {} if (!okOrigin) return send(res, 403, 'text/plain; charset=utf-8', 'Forbidden'); }
+        if (!/^application\/json\b/i.test(req.headers['content-type'] || '')) return send(res, 415, 'text/plain; charset=utf-8', 'Harus JSON');
+        let body; try { body = await readBigJson(req, CLIP_MAX * 4 + 4096); } catch (e) { return json(res, { ok: false, error: 'Data terlalu besar atau tidak valid.' }); }
+        if (p === '/api/klip/add') return json(res, clip.add(body.text));
+        if (p === '/api/klip/get') return json(res, clip.get(body.id));
+        if (p === '/api/klip/delete') return json(res, clip.remove(body.id));
+        return json(res, clip.list({ q: body.q, offset: body.offset }));
+      }
       if (p === '/kejadian') return send(res, 200, 'text/html; charset=utf-8', INCIDENT_PAGE);
       if (p === '/api/kejadian') return json(res, { ok: true, dir: incident.dir, recorder: incident.statusList(), days: incident.retentionDays, incidents: incident.incidents() });
       if (p.startsWith('/kejadian/f/')) { // /kejadian/f/<id8>/<tanggal_jam.mp4>: video klip (mendukung Range supaya bisa digeser)
