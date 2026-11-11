@@ -34,7 +34,7 @@ input{font:inherit;width:100%;padding:7px 9px;border-radius:8px;border:1px solid
 <div><label for="fpass">Password ONVIF</label><input id="fpass" type="password" autocomplete="new-password"></div>
 </div>
 <div class="row" style="margin-top:12px"><button id="ftest">Tes koneksi</button><button id="fsave" class="pri-b">Simpan</button><button id="fcancel" style="display:none">Batal ubah</button><span class="mut" id="fmsg"></span></div>
-<div class="row" style="margin-top:8px"><button id="fdisc">Cari kamera di jaringan</button><button id="fscan">Cek port IP ini</button><span class="small">Tidak tahu port ONVIF-nya? Pakai dua tombol ini.</span></div>
+<div class="row" style="margin-top:8px"><button id="fsweep">Pindai jaringan (disarankan)</button><button id="fdisc">Cari kamera di jaringan</button><button id="fscan">Cek port IP ini</button><span class="small">Tidak tahu IP/port ONVIF-nya? "Pindai jaringan" mengetuk semua alamat satu per satu dan biasanya lebih lengkap daripada "Cari kamera".</span></div>
 <div id="fres" class="res"></div>
 <div id="fsres" class="res"></div>
 </div>
@@ -108,6 +108,16 @@ $('fdisc').onclick=async function(){var b=$('fdisc');b.disabled=true;b.textConte
       r.devices.forEach(function(d){h+='<tr><td>'+esc(d.ip)+'</td><td>'+esc((d.ports||[]).join(', ')||'-')+'</td><td>'+esc([d.name,d.hardware].filter(Boolean).join(' / ')||'-')+'</td><td><button data-fill-ip="'+esc(d.ip)+'" data-fill-port="'+esc((d.ports||[])[0]||80)+'">Pakai</button></td></tr>'});
       box($('fsres'),true,h+'</tbody></table>')}}catch(e){}
   b.disabled=false;b.textContent='Cari kamera di jaringan'};
+$('fsweep').onclick=async function(){var b=$('fsweep');b.disabled=true;b.textContent='Memindai jaringan (sekitar 10-30 detik)...';$('fsres').style.display='none';
+  try{var r=await api('/api/onvif/sweep',{});
+    if(!r.ok){box($('fsres'),false,'<b>Gagal.</b> '+esc(r.error||''))}
+    else{var h='<b>Dipindai '+r.scanned+' alamat ('+esc((r.subnets||[]).join(', '))+') dalam '+Math.round((r.ms||0)/1000)+' detik. '+r.alive+' perangkat menjawab, '+r.devices.length+' di antaranya ONVIF.</b>';
+      if(r.devices.length){h+='<table style="margin-top:8px"><thead><tr><th>IP</th><th>Port ONVIF</th><th>Status</th><th></th></tr></thead><tbody>';
+        r.devices.forEach(function(d){h+='<tr><td>'+esc(d.ip)+'</td><td>'+esc(d.ports.join(', '))+'</td><td>'+(d.registered?'sudah terdaftar':'belum terdaftar')+'</td><td><button data-fill-ip="'+esc(d.ip)+'" data-fill-port="'+esc(d.ports[0])+'">Pakai</button></td></tr>'});
+        h+='</tbody></table>'}
+      h+='<div class="small" style="margin-top:6px">Perangkat yang menjawab tapi bukan ONVIF: '+r.others+' (router, HP, komputer, dll). Kamera yang mati, atau yang memblokir semua port umum, tidak akan terlihat.</div>';
+      box($('fsres'),r.devices.length>0,h)}}catch(e){box($('fsres'),false,'<b>Gagal.</b> Pemindaian terputus.')}
+  b.disabled=false;b.textContent='Pindai jaringan (disarankan)'};
 $('fscan').onclick=async function(){var host=$('fhost').value.trim();if(!host){box($('fsres'),false,'Isi dulu kolom <b>IP kamera</b>.');return}
   var b=$('fscan');b.disabled=true;b.textContent='Memeriksa port...';$('fsres').style.display='none';
   try{var r=await api('/api/onvif/scan',{host:host});

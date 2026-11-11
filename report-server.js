@@ -8,7 +8,7 @@ const crypto = require('crypto');
 const { createCapturer } = require('./screen-capture');
 const { createLiveStream } = require('./live-stream');
 const { createUpdater } = require('./updater');
-const { createOnvifManager, scanPorts, discover, isPrivateIPv4 } = require('./onvif-cams');
+const { createOnvifManager, scanPorts, sweep, discover, isPrivateIPv4 } = require('./onvif-cams');
 const makeOnvifPage = require('./onvif-page');
 const { createPtz } = require('./onvif-ptz');
 const { attachRealtimeWs } = require('./onvif-ws');
@@ -548,7 +548,7 @@ function startReportServer(opts) {
         return send(res, 200, f.type, f.body);
       }
       if (p === '/api/onvif/cameras') return json(res, { libOk: onvif.libOk(), libMessage: onvif.libMessage(), cameras: onvif.list() });
-      if (p === '/api/onvif/save' || p === '/api/onvif/delete' || p === '/api/onvif/test' || p === '/api/onvif/scan' || p === '/api/onvif/discover' || p === '/api/onvif/live/start' || p === '/api/onvif/live/stop' || p === '/api/onvif/diag' || p === '/api/onvif/ptz') {
+      if (p === '/api/onvif/save' || p === '/api/onvif/delete' || p === '/api/onvif/test' || p === '/api/onvif/scan' || p === '/api/onvif/sweep' || p === '/api/onvif/discover' || p === '/api/onvif/live/start' || p === '/api/onvif/live/stop' || p === '/api/onvif/diag' || p === '/api/onvif/ptz') {
         if (req.method !== 'POST') return send(res, 405, 'text/plain; charset=utf-8', 'Gunakan POST');
         const origin = req.headers.origin;
         if (origin) { let okOrigin = false; try { okOrigin = new URL(origin).host === req.headers.host; } catch (_) {} if (!okOrigin) return send(res, 403, 'text/plain; charset=utf-8', 'Forbidden'); }
@@ -569,6 +569,11 @@ function startReportServer(opts) {
         onvifTests++;
         try {
           if (p === '/api/onvif/discover') return json(res, await (opts.onvifDiscoverFn || discover)());
+          if (p === '/api/onvif/sweep') {
+            const r = await (opts.onvifSweepFn || sweep)();
+            if (r && r.ok) { const have = onvif.list(); r.devices.forEach((d) => { d.registered = have.some((c) => c.host === d.ip); }); }
+            return json(res, r);
+          }
           if (p === '/api/onvif/scan') {
             const host = String(body.host || '').trim();
             if (!isPrivateIPv4(host)) return json(res, { ok: false, error: 'IP harus alamat jaringan lokal, contoh 192.168.18.51.' });

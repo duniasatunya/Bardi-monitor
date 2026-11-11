@@ -157,6 +157,60 @@ async function scanPorts(host, ports = COMMON_PORTS, ms = 1500) {
   return { ok: true, host, scanned: ports.length, open: found.sort((a, b) => a.port - b.port) };
 }
 
+// 1b) Pindai jaringan (cepat, dua tahap) - pengganti pencarian "berteriak" yang sering tidak sampai lewat Wi-Fi/AP.
+// Tahap 1: ketuk beberapa port umum di setiap alamat /24; perangkat yang menjawab (terbuka ATAU menolak) berarti hidup.
+// Tahap 2: hanya di perangkat yang hidup, cek port umum lengkap dan kenali mana yang menjawab ONVIF.
+const SWEEP_PORTS = [80, 8080, 8000, 8899, 2020, 5000, 8081, 81, 554];
+const tcpState = (host, port, ms) => new Promise((resolve) => {
+  const s = net.connect({ host, port }); let d = false;
+  const f = (v) => { if (d) return; d = true; try { s.destroy(); } catch (_) {} resolve(v); };
+  s.setTimeout(ms, () => f('timeout')); s.on('connect', () => f('open')); s.on('error', (e) => f(e && e.code === 'ECONNREFUSED' ? 'refused' : 'timeout'));
+});
+async function runPool(items, limit, fn) {
+  const out = new Array(items.length); let i = 0;
+  const worker = async () => { for (;;) { const k = i++; if (k >= items.length) return; out[k] = await fn(items[k], k); } };
+  await Promise.all(Array.from({ length: Math.min(limit, items.length) }, worker));
+  return out;
+}
+function localSubnets() {
+  const bases = new Set(); const own = new Set(); const ni = os.networkInterfaces();
+  for (const name of Object.keys(ni)) for (const a of ni[name] || []) {
+    if (a.family !== 'IPv4' || a.internal || !isPrivateIPv4(a.address)) continue;
+    own.add(a.address); bases.add(a.address.split('.').slice(0, 3).join('.'));
+  }
+  return { bases: [...bases], own };
+}
+async function sweep(opts = {}) {
+  const t0 = Date.now();
+  const ms1 = opts.stage1Ms || 700;
+  let ips; let bases = []; let own = new Set();
+  if (Array.isArray(opts.targets)) ips = opts.targets.slice();
+  else {
+    ({ bases, own } = localSubnets());
+    if (!bases.length) return { ok: false, error: 'PC ini tidak terhubung ke jaringan lokal (192.168.x.x / 10.x.x.x).', devices: [] };
+    ips = []; for (const b of bases) for (let n = 1; n <= 254; n++) ips.push(b + '.' + n);
+    ips = ips.filter((x) => !own.has(x));
+  }
+  // Tahap 1
+  const alive = [];
+  await runPool(ips, 30, async (ip) => {
+    const st = await Promise.all(SWEEP_PORTS.map((p) => tcpState(ip, p, ms1)));
+    if (st.some((s) => s === 'open' || s === 'refused')) alive.push(ip);
+  });
+  alive.sort((a, b) => String(a).localeCompare(String(b), 'en', { numeric: true }));
+  // Tahap 2
+  const devices = []; let others = 0;
+  await runPool(alive, 8, async (ip) => {
+    let r; try { r = await scanPorts(ip, COMMON_PORTS, 1000); } catch (_) { r = null; }
+    const open = (r && r.open) || [];
+    const onvifPorts = open.filter((o) => o.type === 'onvif').map((o) => o.port);
+    if (onvifPorts.length) devices.push({ ip, ports: onvifPorts, rtsp: open.filter((o) => o.type === 'rtsp').map((o) => o.port) });
+    else others++;
+  });
+  devices.sort((a, b) => String(a.ip).localeCompare(String(b.ip), 'en', { numeric: true }));
+  return { ok: true, subnets: bases.map((b) => b + '.0/24'), scanned: ips.length, alive: alive.length, others, devices, ms: Date.now() - t0 };
+}
+
 // 2) Discovery (WS-Discovery): kamera ONVIF yang aktif menjawab sendiri dan menyebut alamat/port-nya.
 function parseDiscovered(data, rinfo) {
   try {
@@ -350,4 +404,4 @@ function createOnvifManager({ dir, log, probeFn, timing }) {
   };
 }
 
-module.exports = { createOnvifManager, probe, isPrivateIPv4, mapError, noCreds, scanPorts, discover, parseDiscovered, classifyPort };
+module.exports = { createOnvifManager, probe, isPrivateIPv4, mapError, noCreds, scanPorts, sweep, discover, parseDiscovered, classifyPort };
