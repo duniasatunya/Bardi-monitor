@@ -1,104 +1,111 @@
-// Halaman "Kamera ONVIF" di server laporan (tahap 1: konfigurasi + tes koneksi + daftar).
+// Halaman "Kamera ONVIF" di server laporan: tambah/cari kamera (kiri) dan daftar kamera (kanan); live view di jendela.
+// Di HP: dua tab (Daftar dan Tambah). Satu layar tanpa gulir panjang. Khusus iPhone: live view otomatis pakai mode Stabil (HLS asli Safari).
 // Catatan: isi halaman ada di dalam template literal; jangan pakai backtick atau ${ } atau backslash di skrip browser.
 'use strict';
-module.exports = (BASE_CSS) => `<!doctype html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Kamera ONVIF - Bardi Monitor</title><style>${BASE_CSS}
-header{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--card);border-bottom:1px solid var(--bd);position:sticky;top:0;z-index:2}
-h1{font-size:17px;margin:0}h2{font-size:15px;margin:0 0 10px}main{max-width:1100px;margin:0 auto;padding:12px 16px 40px}
-.card{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:14px;margin:12px 0;overflow-x:auto}
-.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.mut{color:var(--mut);font-size:13px}
-a.btn,button{font:inherit;padding:7px 12px;border-radius:8px;border:1px solid var(--bd);background:var(--card);color:var(--tx);cursor:pointer;text-decoration:none}
-button:disabled{opacity:.5;cursor:default}.pri-b{background:var(--pri);border-color:var(--pri);color:#fff}.danger{color:#b42318;border-color:#b42318}
-table{width:100%;border-collapse:collapse;font-size:14px}th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--bd);white-space:nowrap}th{color:var(--mut);font-weight:600}
-.b{display:inline-block;padding:1px 8px;border-radius:99px;font-size:12px;font-weight:600;color:#fff}
-.on{background:var(--ok)}.off{background:var(--bad)}.wait{background:var(--warn)}.idle{background:var(--mut)}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
-label{display:block;font-size:12px;color:var(--mut);margin-bottom:3px}
-input{font:inherit;width:100%;padding:7px 9px;border-radius:8px;border:1px solid var(--bd);background:var(--bg);color:var(--tx)}
-.res{margin-top:12px;padding:10px 12px;border-radius:8px;border:1px solid var(--bd);display:none}.res.ok{border-color:var(--ok)}.res.bad{border-color:var(--bad)}
-.warnbox{background:#fff4e5;color:#7a4b00;border:1px solid #f0c27a;border-radius:8px;padding:8px 12px;margin:8px 0;font-size:13px}
-.small{font-size:12px;color:var(--mut)}code{font-family:ui-monospace,Consolas,monospace;font-size:12px}
+const UIKIT = require('./ui-kit');
+module.exports = (BASE_CSS) => `<!doctype html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Kamera ONVIF - Bardi Monitor</title><style>${BASE_CSS}${UIKIT.css}
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.fg .full{grid-column:1/3}
+#vst{margin:0 0 6px}
+.vwrap{flex:1;min-height:0;position:relative;background:#000;border-radius:8px;overflow:hidden}
+.vwrap video{position:absolute;left:0;top:0;width:100%;height:100%;object-fit:contain;background:#000}
+.modal select{padding:4px 6px;font-size:13px}
+@media (max-width:820px){.modal select{font-size:14px}}
 </style></head><body>
-<header><h1>Kamera ONVIF</h1><div class="row"><span class="mut" id="upd">memuat...</span><a class="btn" href="/multiview">Multiview</a><a class="btn" href="/displaycostum.html">Kembali ke laporan</a></div></header>
-<main>
-<div id="libwarn" class="warnbox" style="display:none"></div>
-
-<div class="card"><h2 id="ftitle">Tambah kamera</h2>
-<p class="mut" style="margin:0 0 10px">Isi data ONVIF kamera (IP, port, username, password). Kamera akan dicoba tersambung otomatis dan dicoba lagi sendiri kalau putus, jadi tidak perlu diatur ulang. Password hanya disimpan di PC ini dan tidak pernah ditampilkan lagi.</p>
+${UIKIT.header('Kamera ONVIF', 'onvif')}
+<div class="tabs"><button data-p="pB">Daftar kamera</button><button data-p="pA">Tambah / cari</button></div>
+<main class="shell" style="grid-template-columns:minmax(300px,390px) minmax(0,1fr)">
+<section class="panel" id="pA"><div class="ph"><h2 id="ftitle">Tambah kamera</h2></div>
+<div class="pbody scroll">
+<p class="mut" style="margin:0 0 8px">Isi data ONVIF kamera. Kamera dicoba tersambung otomatis dan dicoba lagi sendiri kalau putus. Password hanya disimpan di PC ini dan tidak pernah ditampilkan lagi.</p>
 <input type="hidden" id="fid">
-<div class="grid">
-<div><label for="fname">Nama kamera</label><input id="fname" maxlength="60" placeholder="mis. Lt2 Lorong A"></div>
-<div><label for="ffloor">Lantai (opsional)</label><input id="ffloor" maxlength="30" placeholder="mis. Lantai 2"></div>
-<div><label for="fhost">IP kamera</label><input id="fhost" inputmode="decimal" placeholder="192.168.18.51"></div>
-<div><label for="fport">Port ONVIF</label><input id="fport" inputmode="numeric" value="80"></div>
-<div><label for="fuser">Username ONVIF</label><input id="fuser" autocomplete="off"></div>
-<div><label for="fpass">Password ONVIF</label><input id="fpass" type="password" autocomplete="new-password"></div>
+<div class="fg">
+<div class="full"><label for="fname">Nama kamera</label><input id="fname" maxlength="60" placeholder="mis. Kamar Jakarta 1 (Anak baru)" style="width:100%"></div>
+<div><label for="ffloor">Lantai (opsional)</label><input id="ffloor" maxlength="30" placeholder="mis. Lantai 2" style="width:100%"></div>
+<div><label for="fport">Port ONVIF</label><input id="fport" inputmode="numeric" value="80" style="width:100%"></div>
+<div class="full"><label for="fhost">IP kamera</label><input id="fhost" inputmode="decimal" placeholder="192.168.18.51" style="width:100%"></div>
+<div><label for="fuser">Username ONVIF</label><input id="fuser" autocomplete="off" style="width:100%"></div>
+<div><label for="fpass">Password ONVIF</label><input id="fpass" type="password" autocomplete="new-password" style="width:100%"></div>
 </div>
-<div class="row" style="margin-top:12px"><button id="ftest">Tes koneksi</button><button id="fsave" class="pri-b">Simpan</button><button id="fcancel" style="display:none">Batal ubah</button><span class="mut" id="fmsg"></span></div>
-<div class="row" style="margin-top:8px"><button id="fsweep">Pindai jaringan (disarankan)</button><button id="fdisc">Cari kamera di jaringan</button><button id="fscan">Cek port IP ini</button><span class="small">Tidak tahu IP/port ONVIF-nya? "Pindai jaringan" mengetuk semua alamat satu per satu dan biasanya lebih lengkap daripada "Cari kamera".</span></div>
-<div id="fres" class="res"></div>
-<div id="fsres" class="res"></div>
-</div>
-
-<div class="card" id="vcard" style="display:none"><div class="row" style="justify-content:space-between"><h2 id="vtitle">Live</h2><div class="row"><select id="vm" style="font:inherit;padding:6px 8px;border-radius:8px;border:1px solid var(--bd);background:var(--card);color:var(--tx)"><option value="rt">Real-time (cepat)</option><option value="hls">Stabil (jeda beberapa detik)</option></select><select id="vq" style="font:inherit;padding:6px 8px;border-radius:8px;border:1px solid var(--bd);background:var(--card);color:var(--tx)"><option value="auto">Otomatis (layar penuh = besar)</option><option value="sub">Selalu hemat (kecil)</option><option value="main">Selalu kualitas tinggi</option></select><button id="vsnd">Suara: mati</button><button id="vdiag">Diagnosa</button><button id="vclose">Tutup</button></div></div><p class="small" id="vst" style="margin:6px 0"></p><pre id="vdg" style="display:none;white-space:pre-wrap;font-size:12px;max-height:240px;overflow:auto;margin:8px 0 0"></pre><video id="vv" muted autoplay playsinline controls style="width:100%;max-height:72vh;background:#000;border-radius:8px"></video></div>
-
-<div class="card"><div class="row" style="justify-content:space-between"><h2>Daftar kamera</h2><span class="small" id="est"></span></div>
-<table><thead><tr><th>Nama</th><th>Lantai</th><th>Alamat</th><th>Status</th><th>Perangkat</th><th>Video utama</th><th>Terakhir tersambung</th><th></th></tr></thead><tbody id="lst"><tr><td colspan="8" class="mut">memuat...</td></tr></tbody></table>
-<p class="small" id="empty" style="display:none">Belum ada kamera. Tambahkan lewat form di atas.</p>
-</div>
+<div class="row" style="margin-top:10px"><button class="btn" id="ftest">Tes koneksi</button><button class="btn pri" id="fsave">Simpan</button><button class="btn" id="fcancel" style="display:none">Batal ubah</button></div>
+<div class="mut" id="fmsg" style="min-height:16px;margin-top:6px"></div>
+<div class="row" style="margin-top:8px"><button class="btn" id="fsweep">Pindai jaringan (disarankan)</button><button class="btn" id="fdisc">Cari kamera</button><button class="btn" id="fscan">Cek port IP ini</button></div>
+<p class="small" style="margin:8px 0 0">Tidak tahu IP/port ONVIF-nya? "Pindai jaringan" mengetuk semua alamat satu per satu dan biasanya lebih lengkap daripada "Cari kamera".</p>
+</div></section>
+<section class="panel" id="pB"><div class="ph"><h2>Daftar kamera</h2><span class="small" id="upd2"></span></div>
+<div id="libwarn" class="warnbox" style="display:none"></div>
+<div class="small" id="est" style="margin-bottom:6px;min-height:15px"></div>
+<div class="pbody" id="lsHost"></div><div class="pg" id="lsCtl"></div>
+<p class="small" id="empty" style="display:none">Belum ada kamera. Tambahkan lewat tab "Tambah / cari".</p></section>
 </main>
+<div class="modal" id="mRes"><div class="box" style="max-width:860px;max-height:92%"><div class="row" style="justify-content:space-between;margin-bottom:6px"><b>Hasil</b><button class="btn" id="rx">Tutup</button></div>
+<div class="mb"><div id="fres" class="res" style="display:none"></div><div id="fsres" class="res" style="display:none"></div></div></div></div>
+<div class="modal" id="mLv"><div class="box full"><div class="row" style="justify-content:space-between;margin-bottom:6px"><b id="vtitle">Live</b><div class="row"><select id="vm"><option value="rt">Real-time (cepat)</option><option value="hls">Stabil (jeda beberapa detik)</option></select><select id="vq"><option value="auto">Otomatis (layar penuh = besar)</option><option value="sub">Selalu hemat (kecil)</option><option value="main">Selalu kualitas tinggi</option></select><button class="btn sm" id="vsnd">Suara: mati</button><button class="btn sm" id="vdiag">Diagnosa</button><button class="btn sm" id="vclose">Tutup</button></div></div>
+<p class="small" id="vst"></p><pre id="vdg" style="display:none;white-space:pre-wrap;font-size:12px;max-height:110px;overflow:auto;margin:0 0 6px"></pre>
+<div class="vwrap"><video id="vv" muted autoplay playsinline controls></video></div></div></div>
 <script src="/vendor/hls.min.js"></script>
+<script>${UIKIT.js}</script>
 <script>
 var $=function(i){return document.getElementById(i)};
-function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+var esc=UI.esc;
 async function api(u,body){
   var o=body===undefined?{cache:'no-store'}:{method:'POST',cache:'no-store',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)};
   var r=await fetch(u,o);if(r.status===401){location.href='/login';throw 0}return r.json()}
 function ago(ts){if(!ts)return '-';var s=Math.max(0,Math.round((Date.now()-ts)/1000));if(s<60)return s+' detik lalu';if(s<3600)return Math.round(s/60)+' menit lalu';if(s<86400)return Math.round(s/3600)+' jam lalu';return Math.round(s/86400)+' hari lalu'}
 function mainProf(c){var best=null;(c.profiles||[]).forEach(function(p){if(!best||(p.width||0)*(p.height||0)>(best.width||0)*(best.height||0))best=p});return best}
-function profTxt(p){if(!p)return '-';var t=[];if(p.codec)t.push(p.codec);if(p.width&&p.height)t.push(p.width+'x'+p.height);if(p.fps)t.push(p.fps+' fps');if(p.bitrateKbps)t.push(p.bitrateKbps+' kbps');return t.join(' · ')||'-'}
-function badge(c){
+function profTxt(p){if(!p)return '-';var t=[];if(p.codec)t.push(p.codec);if(p.width&&p.height)t.push(p.width+'x'+p.height);if(p.fps)t.push(p.fps+' fps');return t.join(' · ')||'-'}
+function badgeS(c){
   if(c.status==='online')return '<span class="b on">Tersambung</span>';
-  if(c.status==='offline')return '<span class="b off">Putus</span> <span class="small">coba lagi '+(c.retryInSec==null?'':c.retryInSec+' dtk')+'</span>';
+  if(c.status==='offline')return '<span class="b off">Putus</span>';
   if(c.status==='auth')return '<span class="b off">Login salah</span>';
   if(c.status==='lib')return '<span class="b off">Pustaka belum ada</span>';
   return '<span class="b wait">Memeriksa...</span>'}
 function resBox(el,r){
   el.style.display='block';el.className='res '+(r.ok?'ok':'bad');
+  var o=el.id==='fres'?$('fsres'):$('fres');o.style.display='none';UI.show('mRes');
   if(!r.ok){el.innerHTML='<b>Gagal.</b> '+esc(r.error||'')+(r.detail?'<div class="small">Detail teknis: '+esc(r.detail)+'</div>':'');return}
   var h='<b>Tersambung</b> <span class="small">('+(r.ms||0)+' ms)</span>';
   var i=r.info||{};var d=[i.manufacturer,i.model,i.firmware?('fw '+i.firmware):''].filter(Boolean).join(' · ');
   if(d)h+='<div class="small">'+esc(d)+'</div>';
-  h+='<table style="margin-top:8px"><thead><tr><th>Profil</th><th>Video</th><th>Alamat stream (RTSP)</th></tr></thead><tbody>';
+  h+='<table class="t" style="margin-top:8px"><thead><tr><th>Profil</th><th>Video</th><th>Alamat stream (RTSP)</th></tr></thead><tbody>';
   (r.profiles||[]).forEach(function(p){h+='<tr><td>'+esc(p.name)+'</td><td>'+esc(profTxt(p))+'</td><td><code>'+esc(p.rtsp||'tidak ada')+'</code></td></tr>'});
   h+='</tbody></table>';
-  if((r.profiles||[]).some(function(p){return /265|hevc/i.test(p.codec||'')}))h+='<div class="warnbox">Kamera ini mengirim H.265. Browser biasanya tidak bisa memutarnya langsung, jadi live view nanti perlu pengolahan tambahan.</div>';
+  if((r.profiles||[]).some(function(p){return /265|hevc/i.test(p.codec||'')}))h+='<div class="warnbox" style="margin-top:8px">Kamera ini mengirim H.265. Browser biasanya tidak bisa memutarnya langsung, jadi live view nanti perlu pengolahan tambahan.</div>';
   el.innerHTML=h}
-var CAMS=[];
+var CAMS=[],RATE={};
 function formVals(){return {id:$('fid').value||undefined,name:$('fname').value,floor:$('ffloor').value,host:$('fhost').value.trim(),port:$('fport').value.trim(),username:$('fuser').value,password:$('fpass').value}}
 function resetForm(){$('fid').value='';['fname','ffloor','fhost','fuser','fpass'].forEach(function(k){$(k).value=''});$('fport').value='80';$('ftitle').textContent='Tambah kamera';$('fcancel').style.display='none';$('fpass').placeholder='';$('fres').style.display='none'}
+function num(x,d){return (Math.round(x*Math.pow(10,d))/Math.pow(10,d)).toFixed(d).replace('.',',')}
+var pg=UI.paged($('lsHost'),$('lsCtl'),{mode:'tiles',tw:270,th:136,gap:8,label:'kamera',empty:'',render:function(c){
+  var p=mainProf(c),inf=c.info||{},dev=[inf.manufacturer,inf.model].filter(Boolean).join(' ');
+  var r=RATE[c.id],rt=(r&&r.avgMbps!=null)?(' · <b>'+num(r.avgMbps,2)+' Mbps</b>'):'';
+  var l3=c.status==='online'?('Terakhir tersambung '+ago(c.lastOkAt)):(c.error||('coba lagi '+(c.retryInSec==null?'':c.retryInSec+' dtk')));
+  return '<div class="tile"><div class="row" style="flex-wrap:nowrap"><div class="tn" style="flex:1;min-width:0" title="'+esc(c.name)+'">'+esc(c.name)+'</div>'+badgeS(c)+'</div>'
+   +'<div class="tm">'+esc(c.host)+':'+c.port+(c.floor?' &middot; '+esc(c.floor):'')+(dev?' &middot; '+esc(dev):'')+'</div>'
+   +'<div class="tm">'+esc(profTxt(p))+rt+'</div>'
+   +'<div class="tm">'+esc(l3)+'</div>'
+   +'<div class="ta">'+(c.status==='online'?'<button class="btn sm pri" data-a="live" data-id="'+esc(c.id)+'">Lihat</button>':'')+'<button class="btn sm" data-a="test" data-id="'+esc(c.id)+'">Tes</button><button class="btn sm" data-a="edit" data-id="'+esc(c.id)+'">Ubah</button><button class="btn sm danger" data-a="del" data-id="'+esc(c.id)+'">Hapus</button></div></div>'}});
 function render(){
-  var rows=CAMS.map(function(c){var p=mainProf(c);var inf=c.info||{};var dev=[inf.manufacturer,inf.model].filter(Boolean).join(' ')||'-';
-    return '<tr><td><b>'+esc(c.name)+'</b></td><td>'+esc(c.floor||'-')+'</td><td>'+esc(c.host)+':'+c.port+'</td><td>'+badge(c)+(c.status!=='online'&&c.error?'<div class="small">'+esc(c.error)+'</div>':'')+'</td><td>'+esc(dev)+'</td><td>'+esc(profTxt(p))+'</td><td>'+esc(ago(c.lastOkAt))+'</td>'
-      +'<td>'+(c.status==='online'?'<button class="pri-b" data-a="live" data-id="'+esc(c.id)+'">Lihat</button> ':'')+'<button data-a="test" data-id="'+esc(c.id)+'">Tes</button> <button data-a="edit" data-id="'+esc(c.id)+'">Ubah</button> <button class="danger" data-a="del" data-id="'+esc(c.id)+'">Hapus</button></td></tr>'}).join('');
-  $('lst').innerHTML=rows||'';$('empty').style.display=CAMS.length?'none':'block';
-  var kbps=0,n=0;CAMS.forEach(function(c){var p=mainProf(c);if(c.status==='online'&&p&&p.bitrateKbps){kbps+=p.bitrateKbps;n++}});
-  $('est').textContent=n?('Perkiraan rekaman 7 hari untuk '+n+' kamera tersambung: maks. '+(kbps*1000/8*86400*7/1e12).toFixed(2)+' TB (dari batas bitrate yang dilaporkan kamera; angka asli biasanya lebih kecil)'):''}
-async function load(){try{var d=await api('/api/onvif/cameras');CAMS=d.cameras||[];
+  pg.set(CAMS);$('empty').style.display=CAMS.length?'none':'block';
+  var sum=0,n=0,peak=0;CAMS.forEach(function(c){var r=RATE[c.id];if(c.status==='online'&&r&&r.avgMbps!=null){sum+=r.avgMbps;peak+=(r.peakMbps||r.avgMbps);n++}});
+  $('est').textContent=n?('Beban rekaman sekarang: '+num(sum,1)+' Mbps dari '+n+' kamera (puncak gabungan sekitar '+num(peak,1)+' Mbps; port 100 Mbps nyaman sampai sekitar 70-80). Perkiraan 7 hari: '+num(sum*1e6/8*86400*7/1e12,2)+' TB.'):'Bitrate per kamera muncul setelah perekam kejadian berjalan beberapa menit.'}
+async function load(){try{var d=await api('/api/onvif/cameras');CAMS=d.cameras||[];RATE={};(d.recorder||[]).forEach(function(x){if(x.rate)RATE[x.id]=x.rate});
   var w=$('libwarn');if(!d.libOk){w.style.display='block';w.textContent=d.libMessage}else w.style.display='none';
   render();$('upd').textContent='Diperbarui '+new Date().toLocaleTimeString('id-ID')}catch(e){$('upd').textContent='Gagal memuat'}}
 $('ftest').onclick=async function(){var b=$('ftest');b.disabled=true;b.textContent='Menguji...';$('fres').style.display='none';
   try{var v=formVals();var r=await api('/api/onvif/test',v);resBox($('fres'),r)}catch(e){}b.disabled=false;b.textContent='Tes koneksi';load()};
 $('fsave').onclick=async function(){$('fmsg').textContent='Menyimpan...';
-  try{var r=await api('/api/onvif/save',formVals());if(r.ok){$('fmsg').textContent='Tersimpan. Kamera dicoba tersambung otomatis.';resetForm();load()}else $('fmsg').textContent=r.error||'Gagal menyimpan'}catch(e){$('fmsg').textContent='Gagal menyimpan'}};
+  try{var r=await api('/api/onvif/save',formVals());if(r.ok){$('fmsg').textContent='Tersimpan. Kamera dicoba tersambung otomatis.';resetForm();load();if(UI.pickTab)UI.pickTab('pB')}else $('fmsg').textContent=r.error||'Gagal menyimpan'}catch(e){$('fmsg').textContent='Gagal menyimpan'}};
 $('fcancel').onclick=function(){resetForm();$('fmsg').textContent=''};
-$('lst').onclick=async function(ev){var t=ev.target;if(!t||!t.getAttribute)return;var a=t.getAttribute('data-a'),id=t.getAttribute('data-id');if(!a)return;
+$('rx').onclick=function(){UI.hide('mRes')};
+$('lsHost').onclick=async function(ev){var t=ev.target;if(!t||!t.getAttribute)return;var a=t.getAttribute('data-a'),id=t.getAttribute('data-id');if(!a)return;
   var c=CAMS.filter(function(x){return x.id===id})[0];if(!c)return;
   if(a==='live'){lvOpen(id,c.name);return}
   if(a==='edit'){$('fid').value=c.id;$('fname').value=c.name;$('ffloor').value=c.floor||'';$('fhost').value=c.host;$('fport').value=c.port;$('fuser').value=c.username;$('fpass').value='';
-    $('fpass').placeholder='kosongkan jika tidak diganti';$('ftitle').textContent='Ubah kamera: '+c.name;$('fcancel').style.display='inline-block';$('fres').style.display='none';window.scrollTo(0,0)}
+    $('fpass').placeholder='kosongkan jika tidak diganti';$('ftitle').textContent='Ubah kamera: '+c.name;$('fcancel').style.display='inline-flex';$('fres').style.display='none';if(UI.pickTab)UI.pickTab('pA')}
   if(a==='del'){if(!confirm('Hapus kamera '+c.name+' dari daftar?'))return;var r=await api('/api/onvif/delete',{id:id});if(!r.ok)alert(r.error||'Gagal menghapus');load()}
-  if(a==='test'){t.disabled=true;var r2=await api('/api/onvif/test',{id:id});t.disabled=false;$('ftitle').scrollIntoView();resBox($('fres'),r2);$('fres').insertAdjacentHTML('afterbegin','<div class="small">Hasil tes untuk: '+esc(c.name)+'</div>');load()}};
-function box(el,ok,html){el.style.display='block';el.className='res '+(ok?'ok':'bad');el.innerHTML=html}
+  if(a==='test'){t.disabled=true;var r2=await api('/api/onvif/test',{id:id});t.disabled=false;resBox($('fres'),r2);$('fres').insertAdjacentHTML('afterbegin','<div class="small">Hasil tes untuk: '+esc(c.name)+'</div>');load()}};
+function box(el,ok,html){el.style.display='block';el.className='res '+(ok?'ok':'bad');el.innerHTML=html;var o=el.id==='fres'?$('fsres'):$('fres');o.style.display='none';UI.show('mRes')}
 var TYPES={onvif:'ONVIF (cocok!)',web:'Halaman web (bukan ONVIF)',rtsp:'RTSP (stream video)',lain:'Terbuka, jenis tidak dikenal'};
 $('fdisc').onclick=async function(){var b=$('fdisc');b.disabled=true;b.textContent='Mencari (5 detik)...';$('fsres').style.display='none';
   try{var r=await api('/api/onvif/discover',{});
@@ -128,7 +135,7 @@ $('fscan').onclick=async function(){var host=$('fhost').value.trim();if(!host){b
       h+='</tbody></table>';if(!hasOnvif)h+='<div class="small" style="margin-top:6px">Tidak ada port yang menjawab sebagai ONVIF. Kemungkinan ONVIF belum aktif di kamera, atau memakai port di luar daftar umum.</div>';
       box($('fsres'),hasOnvif,h)}}catch(e){}
   b.disabled=false;b.textContent='Cek port IP ini'};
-$('fsres').onclick=function(ev){var t=ev.target;if(!t||!t.getAttribute||!t.getAttribute('data-fill-ip'))return;$('fhost').value=t.getAttribute('data-fill-ip');$('fport').value=t.getAttribute('data-fill-port');$('fmsg').textContent='IP dan port terisi. Isi username/password lalu Tes koneksi.'};
+$('fsres').onclick=function(ev){var t=ev.target;if(!t||!t.getAttribute||!t.getAttribute('data-fill-ip'))return;$('fhost').value=t.getAttribute('data-fill-ip');$('fport').value=t.getAttribute('data-fill-port');$('fmsg').textContent='IP dan port terisi. Isi username/password lalu Tes koneksi.';UI.hide('mRes');if(UI.pickTab)UI.pickTab('pA')};
 // ----- mode real-time: fMP4 mengalir lewat HTTP ke MediaSource -----
 var RT={abort:null,sb:null,q:[],lagTimer:null,tok:0,tries:0,info:'',bytes:0,hist:[],stalls:0,audio:false,wantAudio:false,noAudioCam:false};
 function curQ(){var q=$('vq').value;if(q==='auto')return document.fullscreenElement?'main':'sub';return q}
@@ -160,8 +167,8 @@ function rtStart(tok){
       var x=await rd.read();if(x.done)break;if(myTok!==RT.tok||tok!==LV.tok)return;
       if(!ready){head=cat(head,x.value);var e=initEnd(head);if(e<0)continue;
         var codec=avcCodec(head.subarray(0,e));RT.audio=hasAudio(head.subarray(0,e));if(RT.wantAudio&&!RT.audio){RT.noAudioCam=true;RT.wantAudio=false;v.muted=true}RT.codec=codec;var mime='video/mp4; codecs="'+(codec||'avc1.42E01E')+(RT.audio?',mp4a.40.2':'')+'"';
-        if(!window.MediaSource||!MediaSource.isTypeSupported(mime))throw new Error('Browser ini tidak mendukung mode real-time. Pakai mode Stabil.');
-        var ms=new MediaSource();v.src=URL.createObjectURL(ms);
+        var MS=window.MediaSource||window.ManagedMediaSource;if(!MS||!MS.isTypeSupported(mime))throw new Error('Browser ini tidak mendukung mode real-time. Pakai mode Stabil.');
+        var ms=new MS();if(!window.MediaSource)v.disableRemotePlayback=true;v.src=URL.createObjectURL(ms);
         await new Promise(function(res){ms.addEventListener('sourceopen',res,{once:true})});
         if(myTok!==RT.tok)return;
         var sb=ms.addSourceBuffer(mime);sb.mode='sequence';RT.sb=sb;
@@ -198,7 +205,7 @@ async function lvStart(){
   if(tok!==LV.tok)return;
   if(!r.ok){lvSay('Gagal: '+(r.error||'tidak diketahui'),true);if(/tidak ditemukan/i.test(r.error||'')){LV.id=null}return}
   var v=$('vv'),src=r.url;
-  if(window.Hls&&Hls.isSupported()){
+  if(!UI.ios&&window.Hls&&Hls.isSupported()){
     var h=new Hls({liveSyncDuration:5,liveMaxLatencyDuration:15,maxBufferLength:20,lowLatencyMode:false,manifestLoadingMaxRetry:6,levelLoadingMaxRetry:6,fragLoadingMaxRetry:6});
     LV.hls=h;h.loadSource(src);h.attachMedia(v);
     h.on(Hls.Events.ERROR,function(e,d){if(!d.fatal)return;
@@ -209,11 +216,11 @@ async function lvStart(){
   else{lvSay('Browser ini tidak bisa memutar siaran.',true);return}
   v.play().catch(function(){});
   sndUi();lvSay('Live: '+(r.profile||'')+' '+(r.info||'')+' (tertunda beberapa detik dari aslinya)')}
-function lvOpen(id,name){LV.id=id;LV.name=name;RT.wantAudio=false;RT.noAudioCam=false;$('vv').muted=true;sndUi();$('vtitle').textContent='Live: '+name;$('vcard').style.display='block';$('vcard').scrollIntoView();lvStart();
+function lvOpen(id,name){LV.id=id;LV.name=name;RT.wantAudio=false;RT.noAudioCam=false;$('vv').muted=true;sndUi();$('vtitle').textContent='Live: '+name;UI.show('mLv');lvStart();
   if(!LV.timer)LV.timer=setInterval(function(){ // pemulih: video diam terlalu lama -> mulai ulang
     if(!LV.id)return;var v=$('vv');if(v.paused&&!v.ended){v.play().catch(function(){})}
     if(Math.abs(v.currentTime-LV.lastT)<0.01){LV.stuck++;if(LV.stuck>=4){LV.stuck=0;lvStart()}}else{LV.stuck=0;LV.lastT=v.currentTime}},4000)}
-function lvClose(){var id=LV.id;LV.id=null;LV.tok++;lvDestroy();$('vcard').style.display='none';if(id){api('/api/onvif/live/stop',{id:id}).catch(function(){})}}
+function lvClose(){var id=LV.id;LV.id=null;LV.tok++;lvDestroy();UI.hide('mLv');if(id){api('/api/onvif/live/stop',{id:id}).catch(function(){})}}
 $('vclose').onclick=lvClose;
 $('vdiag').onclick=async function(){if(!LV.id)return;var d=$('vdg'),b=this;d.style.display='block';d.textContent='Membaca stream kamera (sekitar 5 detik)...';b.disabled=true;
   try{var r=await api('/api/onvif/diag',{id:LV.id,quality:curQ()});var nl=String.fromCharCode(10);
@@ -229,5 +236,7 @@ document.addEventListener('fullscreenchange',function(){if(LV.id&&$('vq').value=
 $('vm').onchange=function(){if(LV.id)lvStart()};
 document.addEventListener('visibilitychange',function(){if(!document.hidden&&LV.id){$('vv').play().catch(function(){})}});
 window.addEventListener('pagehide',function(){if(LV.id){try{navigator.sendBeacon('/api/onvif/live/stop',new Blob([JSON.stringify({id:LV.id})],{type:'application/json'}))}catch(e){}}});
+if(UI.ios)$('vm').value='hls';
+UI.tabs('pB');
 load();setInterval(load,3000);
 </script></body></html>`;

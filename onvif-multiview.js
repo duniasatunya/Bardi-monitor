@@ -134,9 +134,9 @@ function mkPlayer(v,say,opt){
         if(!ready){head=cat(head,x.value);var e=initEnd(head);if(e<0)continue;
           var codec=avcCodec(head.subarray(0,e));P.audio=hasAudio(head.subarray(0,e));
           var mime='video/mp4; codecs="'+(codec||'avc1.42E01E')+(P.audio?',mp4a.40.2':'')+'"';
-          if(!window.MediaSource||!MediaSource.isTypeSupported(mime))throw new Error('Browser tidak mendukung pemutaran ini');
+          var MS=window.MediaSource||window.ManagedMediaSource;if(!MS||!MS.isTypeSupported(mime))throw new Error('Browser tidak mendukung pemutaran ini');
           v.muted=!(opt.audio&&opt.audio()&&P.audio);
-          var ms=new MediaSource();v.src=URL.createObjectURL(ms);
+          var ms=new MS();if(!window.MediaSource)v.disableRemotePlayback=true;v.src=URL.createObjectURL(ms);
           await new Promise(function(res){ms.addEventListener('sourceopen',res,{once:true})});
           if(tok!==P.tok)return;
           var sb=ms.addSourceBuffer(mime);sb.mode='sequence';P.sb=sb;
@@ -158,6 +158,8 @@ var NUM={'1':1,'4':4,'6':6,'9':9,'13':13,'16':16};
 var NAMES=['1','4','6','9','13','16','all'];
 var GAP=2;
 if(NAMES.indexOf(LAY)<0)LAY='16';
+var IOS=/iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+if(IOS&&!ls('mvlay'))LAY='4'; // iPhone: awal 4 kotak supaya tidak berat
 try{var sv=JSON.parse(ls('mvslots')||'null');if(Array.isArray(sv)){SLOTS=sv;SLOTSET=true}}catch(e){}
 try{var pp=JSON.parse(ls('mvptz')||'null');if(pp&&isFinite(pp.x)&&isFinite(pp.y))PTZPOS=pp}catch(e){}
 try{var qq=JSON.parse(ls('mvqual')||'null');if(qq&&typeof qq==='object')QUAL=qq}catch(e){}

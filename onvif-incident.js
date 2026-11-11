@@ -91,6 +91,21 @@ function createIncidentRecorder({ log, rootDir, ffmpegPath, listCams, getCamera,
     return map;
   }
 
+  // Bitrate sebenarnya dari ukuran potongan buffer: ukuran potongan / selisih waktu tulis antar potongan (potongan terbaru masih ditulis, jadi dilewati).
+  function calcRate(segs) {
+    const done = segs.slice(0, -1);
+    const pts = [];
+    for (let i = 1; i < done.length; i++) {
+      if (done[i].run !== done[i - 1].run) continue;
+      const dt = (done[i].endMs - done[i - 1].endMs) / 1000;
+      if (dt > 0.5 && dt < 30) pts.push({ bits: done[i].size * 8, dt });
+    }
+    if (!pts.length) return null;
+    const sum = (a) => { let b = 0, t = 0; for (const x of a) { b += x.bits; t += x.dt; } return t > 0 ? b / t / 1e6 : 0; };
+    let peak = 0; for (const x of pts) peak = Math.max(peak, x.bits / x.dt / 1e6);
+    return { nowMbps: sum(pts.slice(-2)), avgMbps: sum(pts.slice(-12)), peakMbps: peak, samples: pts.length };
+  }
+
   function pickProfile(profiles) {
     const list = (profiles || []).filter((p) => p && p.rtsp && (!p.codec || /264/.test(p.codec)));
     if (!list.length) return null;
@@ -262,6 +277,7 @@ function createIncidentRecorder({ log, rootDir, ffmpegPath, listCams, getCamera,
     // 1) apakah ada data baru? (ukuran berkas terbaru bertambah)
     const segs = listSegs(R.dir).filter((x) => x.size > 0); const last = segs[segs.length - 1];
     const sig = last ? `${last.name}:${last.size}` : '';
+    R.rate = segs.length > 1 ? calcRate(segs) : null;
     if (sig && sig !== R.sig && R.proc && !R.killing) { R.sig = sig; R.lastDataAt = now; if (!R.hadData) { R.hadData = true; R.state = 'ok'; log('INFO', `Rekaman kejadian ${R.name}: buffer berjalan.`); } else if (R.state === 'putus' || R.state === 'mulai') recovered(R, now); }
     else if (sig !== R.sig) R.sig = sig;
     // 2) macet atau putus?
@@ -363,7 +379,7 @@ function createIncidentRecorder({ log, rootDir, ffmpegPath, listCams, getCamera,
     return res;
   }
   function statusList() {
-    return [...cams.values()].map((R) => ({ id: R.id, name: R.name, state: R.state, lastDataAt: R.lastDataAt || null, sejak: R.inc ? R.inc.lostAt : null, error: R.state === 'ok' ? '' : (R.err || '') }))
+    return [...cams.values()].map((R) => ({ id: R.id, name: R.name, state: R.state, lastDataAt: R.lastDataAt || null, sejak: R.inc ? R.inc.lostAt : null, error: R.state === 'ok' ? '' : (R.err || ''), rate: (R.state === 'ok' && R.rate && Date.now() - (R.lastDataAt || 0) < 20000) ? R.rate : null }))
       .sort((a, b) => String(a.name).localeCompare(String(b.name), 'id', { numeric: true }));
   }
   function fileFor(id8, name) {

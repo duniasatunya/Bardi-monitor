@@ -14,6 +14,7 @@ const { createPtz } = require('./onvif-ptz');
 const { attachRealtimeWs } = require('./onvif-ws');
 const { createOnvifLive } = require('./onvif-live');
 const { createIncidentRecorder } = require('./onvif-incident');
+const UIKIT = require('./ui-kit');
 
 // ---------- password & sesi ----------
 function loadConfig(dir) {
@@ -207,96 +208,108 @@ function tick(){
 tick();
 </script></body></html>`;
 
-const MAIN_PAGE = `<!doctype html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Laporan Bardi Monitor</title><style>${BASE_CSS}
-header{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--card);border-bottom:1px solid var(--bd);position:sticky;top:0}
-h1{font-size:17px;margin:0}h2{font-size:15px;margin:0 0 10px}main{max-width:1100px;margin:0 auto;padding:12px 16px 40px}
-.card{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:14px;margin:12px 0;overflow-x:auto}
-.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.mut{color:var(--mut);font-size:13px}
-a.btn,button,select{font:inherit;padding:7px 12px;border-radius:8px;border:1px solid var(--bd);background:var(--card);color:var(--tx);cursor:pointer;text-decoration:none}
-a.btn.pri{background:var(--pri);border-color:var(--pri);color:#fff}
-table{width:100%;border-collapse:collapse;font-size:14px}th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--bd);white-space:nowrap}th{color:var(--mut);font-weight:600}
-.b{display:inline-block;padding:1px 8px;border-radius:99px;font-size:12px;font-weight:600;color:#fff}
-.PLAY{background:var(--ok)}.ERROR,.OFFLINE{background:var(--bad)}.CONNECTING,.FROZEN,.ACTED{background:var(--warn)}.INIT,.HIDE{background:var(--mut)}
-.tot{display:flex;flex-wrap:wrap;gap:16px}.tot div{min-width:90px}.tot b{display:block;font-size:22px}
-button:disabled{opacity:.5;cursor:default}.pri-b{background:var(--pri);border-color:var(--pri);color:#fff}.danger{color:#b42318;border-color:#b42318}
-tr.clk{cursor:pointer}tr.clk:hover td{background:rgba(232,89,12,.08)}tr.sel td{background:rgba(232,89,12,.16)}
+const MAIN_PAGE = `<!doctype html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Laporan Bardi Monitor</title><style>${BASE_CSS}${UIKIT.css}
+#meta{flex:none;padding:4px 14px 0;font-size:12px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:820px){#meta{display:none}}
 .lnk{color:var(--pri);cursor:pointer;text-decoration:underline;background:none;border:0;padding:0;font:inherit}
-.det{border:2px solid var(--pri);border-radius:10px;padding:12px;margin:14px 0 4px;overflow-x:auto}.det h3{margin:0 0 8px;font-size:15px}
-.det th,.det td{white-space:normal;padding:6px 5px;font-size:13px}
 </style></head><body>
-<header><h1>Laporan Bardi Monitor</h1><div class="row"><span class="mut" id="upd">memuat...</span>
-<a class="btn" href="/onvif">Kamera ONVIF</a><a class="btn" href="/multiview">Multiview</a><a class="btn" href="/kejadian">Rekaman kejadian</a><a class="btn" href="/klip">Papan klip</a><button id="upb">Pembaruan</button><button id="stopb" class="danger">Hentikan pemantauan</button><a class="btn" href="/layar" target="_blank" rel="noopener">Lihat layar PC</a><a class="btn pri" href="/report.pdf">Unduh PDF</a><a class="btn" href="/logout">Keluar</a></div></header>
-<main>
-<div class="card" id="upc" style="display:none"><div class="row" style="justify-content:space-between"><h2>Pembaruan dari GitHub</h2><button id="upx">Tutup</button></div>
-<p class="mut" id="upv"></p><p id="upm"></p>
-<div class="row"><button id="upchk">Cek pembaruan</button><button id="upgo" class="pri-b" style="display:none">Perbarui sekarang</button></div>
-<p class="mut">Saat diperbarui, Bardi Monitor menutup dan membuka ulang sendiri (sekitar 15 detik). Login Bardi, password, dan data kamera tidak berubah.</p></div>
-<div class="card"><div class="tot" id="tot"></div><p class="mut" id="meta"></p></div>
-<div class="card"><div class="row" style="justify-content:space-between"><h2>Status kamera sekarang</h2>
-<select id="filt"><option value="all">Semua</option><option value="bad">Hanya bermasalah</option></select></div>
-<table><thead><tr><th>Kamera</th><th>Lantai</th><th>Status</th><th>Kode error terakhir</th><th>Lama di status ini</th><th>Percobaan</th></tr></thead><tbody id="st"></tbody></table>
-<p class="mut">Daftar ini sama dengan kamera yang sedang tampil di layar IPC Bardi. Kamera yang ditutup di Bardi akan hilang dari daftar dalam sekitar 10-15 detik, dan muncul lagi kalau dibuka.</p></div>
-<div class="card"><div class="row" style="justify-content:space-between"><h2>Ringkasan gangguan</h2>
-<select id="per"><option value="24">24 jam terakhir</option><option value="168">7 hari terakhir</option><option value="0">Semua</option></select></div>
-<h3 style="font-size:14px;margin:8px 0">Per lantai <span class="mut">(klik baris lantai untuk melihat detail tiap kamera)</span></h3><table><thead><tr><th>Lantai</th><th>Jumlah kamera</th><th>Kamera bermasalah</th><th>Kejadian error</th><th>Kali ditandai offline</th><th></th></tr></thead><tbody id="fl"></tbody></table>
-<div id="fd"></div>
-<h3 style="font-size:14px;margin:14px 0 8px">Per kamera (paling sering bermasalah di atas)</h3>
-<table><thead><tr><th>Kamera</th><th>Lantai</th><th>Error</th><th>Kode (jumlah)</th><th>Retry</th><th>Reopen</th><th>Pulih</th><th>Offline</th></tr></thead><tbody id="cm"></tbody></table></div>
-<div class="card"><h2>Riwayat gangguan (200 terakhir)</h2>
-<table><thead><tr><th>Waktu</th><th>Kamera</th><th>Kejadian</th><th>Kode</th><th>Percobaan</th><th>Detik</th><th>Hasil</th></tr></thead><tbody id="ev"></tbody></table></div>
+${UIKIT.header('Laporan Bardi Monitor', 'report', { menu: '<button class="btn" id="upb">Pembaruan</button><a class="btn" href="/report.pdf">Unduh PDF</a><button class="btn danger" id="stopb">Hentikan pemantauan</button>' })}
+<div id="meta"></div>
+<div class="tabs"><button data-p="pA">Status</button><button data-p="pB">Ringkasan</button><button data-p="pC">Riwayat</button></div>
+<main class="shell" style="grid-template-columns:minmax(0,1.05fr) minmax(0,1.2fr) minmax(0,1fr)">
+<section class="panel" id="pA"><div class="ph"><h2>Status kamera sekarang</h2><select id="filt"><option value="all">Semua</option><option value="bad">Hanya bermasalah</option></select></div>
+<div class="kpi" id="tot" style="margin-bottom:8px"></div>
+<div class="pbody" id="stHost"></div><div class="pg" id="stCtl"></div></section>
+<section class="panel" id="pB"><div class="ph"><h2>Ringkasan gangguan</h2><select id="per"><option value="24">24 jam terakhir</option><option value="168">7 hari terakhir</option><option value="0">Semua</option></select></div>
+<div class="row" style="margin-bottom:8px"><div class="seg"><button id="sgF" class="on">Per lantai</button><button id="sgC">Per kamera</button></div><span class="mut" id="sgH">Ketuk baris lantai untuk detail kamera.</span></div>
+<div class="pbody" id="smHost"></div><div class="pg" id="smCtl"></div></section>
+<section class="panel" id="pC"><div class="ph"><h2>Riwayat gangguan</h2><span class="mut" id="evN"></span></div>
+<div class="pbody scroll" id="evHost"></div><div class="pg" id="evCtl"><button type="button" id="evMore">Tampilkan lebih banyak</button></div></section>
 </main>
+<div class="modal" id="mFl"><div class="box full">
+<div class="row" style="justify-content:space-between;margin-bottom:8px"><h2 id="flT" style="font-size:15px;margin:0"></h2><button class="btn" id="flX">Tutup</button></div>
+<div id="flV" style="flex:1;min-height:0;display:flex;flex-direction:column"><p class="mut" id="flN" style="margin:0 0 6px"></p><div class="pbody" id="flHost"></div><div class="pg" id="flCtl"></div></div>
+<div id="cmV" style="flex:1;min-height:0;display:none;flex-direction:column"><div class="row" style="margin-bottom:6px"><button class="btn sm" id="cmBack">&lsaquo; Kembali</button><b id="cmT"></b></div><div class="pbody" id="cmHost"></div><div class="pg" id="cmCtl"></div></div>
+</div></div>
+<div class="modal" id="upc"><div class="box" style="max-width:560px;max-height:90%"><div class="row" style="justify-content:space-between"><h2 style="font-size:15px;margin:0">Pembaruan dari GitHub</h2><button class="btn" id="upx">Tutup</button></div>
+<p class="mut" id="upv"></p><p id="upm"></p>
+<div class="row"><button class="btn" id="upchk">Cek pembaruan</button><button class="btn pri" id="upgo" style="display:none">Perbarui sekarang</button></div>
+<p class="mut">Saat diperbarui, Bardi Monitor menutup dan membuka ulang sendiri (sekitar 15 detik). Login Bardi, password, dan data kamera tidak berubah.</p></div></div>
+<script>${UIKIT.js}</script>
 <script>
 const $=id=>document.getElementById(id);
-const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const esc=UI.esc;
 const LBL={PLAY:'Normal',ERROR:'Error',CONNECTING:'Menyambung',FROZEN:'Beku',ACTED:'Dipulihkan...',INIT:'Baru terlihat',HIDE:'Tidak tampil'};
 async function api(u){const r=await fetch(u,{cache:'no-store'});if(r.status===401){location.href='/login';throw 0}return r.json()}
 const dur=s=>s<60?s+' dtk':s<3600?Math.floor(s/60)+' mnt':Math.floor(s/3600)+' jam '+Math.floor(s%3600/60)+' mnt';
-let ST=null,SUM=null,SELF=null,SELC=null;
-const nrm=s=>String(s==null?'':s).replace(/\s+/g,' ').trim().toLowerCase();
+const nrm=s=>String(s==null?'':s).split(' ').filter(Boolean).join(' ').toLowerCase();
 const codes=o=>Object.entries(o||{}).map(([k,v])=>k+' ('+v+')').join(', ')||'-';
+const stB=c=>'<span class="b '+esc(c.status)+'">'+esc(LBL[c.status]||c.status)+'</span>'+(c.offline?' <span class="b OFFLINE">Offline</span>':'');
+let ST=null,SUM=null,EV=[],EVN=10,VIEW='f',FLOOR=null;
+const EMPTY=t=>'<div class="mut" style="padding:8px 2px">'+t+'</div>';
+const pgSt=UI.paged($('stHost'),$('stCtl'),{mode:'tiles',tw:190,th:70,gap:8,label:'kamera',empty:EMPTY('Tidak ada data.'),
+  render:c=>'<div class="tile"><div class="tn" title="'+esc(c.name)+'">'+esc(c.name)+'</div><div>'+stB(c)+'</div><div class="tm">'+esc(c.floor)+' &middot; '+(c.code?'kode '+esc(c.code)+' &middot; ':'')+dur(c.sinceSec)+'</div></div>'});
+const HF='<tr><th>Lantai</th><th>Kamera</th><th>Bermasalah</th><th>Error</th><th>Offline</th><th></th></tr>';
+const HC='<tr><th>Kamera</th><th>Lantai</th><th>Error</th><th class="hm">Kode (jumlah)</th><th class="hm">Retry</th><th class="hm">Reopen</th><th class="hm">Pulih</th><th>Offline</th></tr>';
+const pgSm=UI.paged($('smHost'),$('smCtl'),{mode:'rows',th:34,label:'baris',head:HF,empty:EMPTY('Belum ada data pada periode ini.'),render:()=>''});
 function drawStatus(){ if(!ST)return; const bad=$('filt').value==='bad';
   const cams=ST.cams.filter(c=>!bad||['ERROR','FROZEN','CONNECTING','ACTED'].includes(c.status)||c.offline);
-  $('st').innerHTML=cams.map(c=>'<tr><td>'+esc(c.name)+'</td><td>'+esc(c.floor)+'</td><td><span class="b '+esc(c.status)+'">'+esc(LBL[c.status]||c.status)+'</span>'+(c.offline?' <span class="b OFFLINE">Offline</span>':'')+'</td><td>'+esc(c.code||'-')+'</td><td>'+dur(c.sinceSec)+'</td><td>'+c.attempts+'</td></tr>').join('')||'<tr><td colspan="6" class="mut">Tidak ada data.</td></tr>';
+  pgSt.set(cams);
   const n=s=>ST.cams.filter(c=>s.includes(c.status)).length;
-  $('tot').innerHTML='<div><b>'+ST.cams.length+'</b>Kamera dipantau</div><div><b style="color:var(--ok)">'+n(['PLAY'])+'</b>Normal</div><div><b style="color:var(--bad)">'+n(['ERROR'])+'</b>Error</div><div><b style="color:var(--warn)">'+n(['FROZEN','CONNECTING','ACTED'])+'</b>Beku / menyambung</div>';
+  $('tot').innerHTML='<span><b>'+ST.cams.length+'</b> dipantau</span><span><b style="color:var(--ok)">'+n(['PLAY'])+'</b> normal</span><span><b style="color:var(--bad)">'+n(['ERROR'])+'</b> error</span><span><b style="color:var(--warn)">'+n(['FROZEN','CONNECTING','ACTED'])+'</b> beku/menyambung</span>';
   $('meta').textContent='Mode: '+ST.meta.mode+' | Berjalan: '+dur(ST.meta.uptimeSec)+' | IP publik terdeteksi: '+(ST.meta.publicIp||'belum diketahui');
-  if(SELF)drawFloor();
+  if(FLOOR&&$('mFl').className.indexOf('show')>=0)drawFloor();
 }
+function drawSum(){
+  if(!SUM){return}
+  if(VIEW==='f'){
+    pgSm.o.head=HF;
+    pgSm.o.render=f=>'<tr class="clk" data-fl="'+esc(f.floor)+'"><td><b>'+esc(f.floor)+'</b></td><td>'+f.cameras+'</td><td>'+f.problemCams+'</td><td>'+f.error+'</td><td>'+f.offline+'</td><td><span class="lnk">Detail</span></td></tr>';
+    pgSm.set(SUM.floors);$('sgH').textContent='Ketuk baris lantai untuk detail kamera.';
+  }else{
+    pgSm.o.head=HC;
+    pgSm.o.render=c=>'<tr><td>'+esc(c.name)+'</td><td>'+esc(c.floor)+'</td><td>'+c.error+'</td><td class="hm">'+esc(codes(c.codes))+'</td><td class="hm">'+c.retry+'</td><td class="hm">'+c.reopen+'</td><td class="hm">'+c.pulih+'</td><td>'+c.offline+'</td></tr>';
+    pgSm.set(SUM.cams);$('sgH').textContent='Paling sering bermasalah di atas.';
+  }
+}
+$('sgF').onclick=()=>{VIEW='f';$('sgF').className='on';$('sgC').className='';pgSm.page=0;drawSum()};
+$('sgC').onclick=()=>{VIEW='c';$('sgC').className='on';$('sgF').className='';pgSm.page=0;drawSum()};
+// ---- riwayat gangguan: 10 teratas, sisanya lewat tombol ----
+const EVH='<tr><th>Waktu</th><th>Kamera</th><th>Kejadian</th><th>Kode</th></tr>';
+function drawEv(){
+  const rows=EV.slice(0,EVN).map(e=>'<tr><td>'+esc(String(e.waktu).slice(5))+'</td><td title="'+esc(e.kamera)+'">'+esc(e.kamera)+'</td><td>'+esc(e.kejadian)+'</td><td>'+esc(e.kode_error||'-')+'</td></tr>').join('');
+  $('evHost').innerHTML=EV.length?'<table class="t fx" style="--rh:30px"><colgroup><col style="width:104px"><col><col style="width:76px"><col style="width:56px"></colgroup><thead>'+EVH+'</thead><tbody>'+rows+'</tbody></table>':EMPTY('Belum ada kejadian.');
+  $('evN').textContent=EV.length?('menampilkan '+Math.min(EVN,EV.length)+' dari '+EV.length+' terakhir'):'';
+  const more=EVN<EV.length;$('evCtl').style.display=more?'flex':'none';$('evMore').textContent='Tampilkan lebih banyak ('+Math.min(EVN,EV.length)+' dari '+EV.length+')';
+}
+$('evMore').onclick=()=>{EVN+=20;drawEv()};
+// ---- detail lantai (jendela) ----
+const HFL='<tr><th>Kamera</th><th>Status</th><th>Error</th><th class="hm">Kode (jumlah)</th><th class="hm">Pulih</th><th>Offline</th><th class="hm">Total bermasalah</th><th class="hm">Terlama</th><th class="hm">Error terakhir</th><th></th></tr>';
+const pgFl=UI.paged($('flHost'),$('flCtl'),{mode:'rows',th:34,label:'kamera',head:HFL,empty:EMPTY('Tidak ada kamera.'),render:()=>''});
 function drawFloor(){
-  if(!SUM||!SELF){$('fd').innerHTML='';return}
-  const list=(SUM.floorCams||{})[SELF];
-  if(!list){$('fd').innerHTML='';SELF=null;return}
+  const list=(SUM&&SUM.floorCams||{})[FLOOR]||[];
   const live={};(ST?ST.cams:[]).forEach(c=>{live[nrm(c.name)]=c});
-  const per=$('per').options[$('per').selectedIndex].text;
-  const rows=list.map(c=>{const l=live[nrm(c.name)];
-    const st=l?'<span class="b '+esc(l.status)+'">'+esc(LBL[l.status]||l.status)+'</span>'+(l.offline?' <span class="b OFFLINE">Offline</span>':''):'<span class="mut">Tidak tampil</span>';
-    return '<tr><td><b>'+esc(c.name)+'</b></td><td>'+st+'</td><td>'+c.error+'</td><td>'+esc(codes(c.codes))+'</td><td>'+c.retry+'</td><td>'+c.reopen+'</td><td>'+c.pulih+'</td><td>'+c.offline+'</td><td>'+(c.downSec?dur(c.downSec):'-')+'</td><td>'+(c.maxDown?dur(c.maxDown):'-')+'</td><td>'+esc(c.lastTime||'-')+'</td><td><button class="lnk" data-cam="'+esc(c.name)+'">Riwayat</button></td></tr>'}).join('');
+  pgFl.o.render=c=>{const l=live[nrm(c.name)];
+    return '<tr><td title="'+esc(c.name)+'"><b>'+esc(c.name)+'</b></td><td>'+(l?stB(l):'<span class="mut">Tidak tampil</span>')+'</td><td>'+c.error+'</td><td class="hm">'+esc(codes(c.codes))+'</td><td class="hm">'+c.pulih+'</td><td>'+c.offline+'</td><td class="hm">'+(c.downSec?dur(c.downSec):'-')+'</td><td class="hm">'+(c.maxDown?dur(c.maxDown):'-')+'</td><td class="hm">'+esc(c.lastTime||'-')+'</td><td><button class="lnk" data-cam="'+esc(c.name)+'">Riwayat</button></td></tr>'};
   const bad=list.filter(c=>c.error>0||c.offline>0).length;
-  $('fd').innerHTML='<div class="det"><div class="row" style="justify-content:space-between"><h3>Detail '+esc(SELF)+' ('+esc(per)+')</h3><button id="fdx">Tutup</button></div>'
-   +'<p class="mut">'+list.length+' kamera, '+bad+' pernah bermasalah pada periode ini. Urut: paling sering error di atas. "Total bermasalah" = jumlah lama kamera bermasalah sebelum pulih; "Terlama" = satu gangguan terlama yang sudah pulih.</p>'
-   +'<table><thead><tr><th>Kamera</th><th>Status sekarang</th><th>Error</th><th>Kode (jumlah)</th><th>Retry</th><th>Reopen</th><th>Pulih</th><th>Offline</th><th>Total bermasalah</th><th>Terlama</th><th>Error terakhir</th><th></th></tr></thead><tbody>'+rows+'</tbody></table><div id="fcam"></div></div>';
-  $('fdx').onclick=()=>{SELF=null;SELC=null;$('fd').innerHTML='';drawSumFloors()};
-  document.querySelectorAll('#fd button[data-cam]').forEach(b=>{b.onclick=()=>{SELC=b.getAttribute('data-cam');loadCam()}});
-  if(SELC)loadCam();
+  $('flN').textContent=list.length+' kamera, '+bad+' pernah bermasalah ('+$('per').options[$('per').selectedIndex].text+'). Paling sering error di atas.';
+  pgFl.set(list);
 }
-async function loadCam(){
-  if(!SELC)return;
-  const d=await api('/api/events?limit=200&hours='+$('per').value+'&camera='+encodeURIComponent(SELC));
-  const el=$('fcam');if(!el)return;
-  el.innerHTML='<h3 style="margin:12px 0 6px">Riwayat '+esc(SELC)+' <span class="mut">(maks. 200 terbaru pada periode ini)</span></h3><table><thead><tr><th>Waktu</th><th>Kejadian</th><th>Kode</th><th>Percobaan</th><th>Detik</th><th>Hasil</th></tr></thead><tbody>'
-   +(d.events.map(e=>'<tr><td>'+esc(e.waktu)+'</td><td>'+esc(e.kejadian)+'</td><td>'+esc(e.kode_error||'-')+'</td><td>'+esc(e.percobaan)+'</td><td>'+esc(e.durasi_detik)+'</td><td>'+esc(e.hasil)+'</td></tr>').join('')||'<tr><td colspan="6" class="mut">Tidak ada kejadian pada periode ini.</td></tr>')+'</tbody></table>';
-}
-function drawSumFloors(){
-  if(!SUM)return;
-  $('fl').innerHTML=SUM.floors.map(f=>'<tr class="clk'+(f.floor===SELF?' sel':'')+'" data-fl="'+esc(f.floor)+'"><td><b>'+esc(f.floor)+'</b></td><td>'+f.cameras+'</td><td>'+f.problemCams+'</td><td>'+f.error+'</td><td>'+f.offline+'</td><td><span class="lnk">Lihat detail</span></td></tr>').join('')||'<tr><td colspan="6" class="mut">Belum ada data lantai. Isi kamera-lantai.json.</td></tr>';
-  document.querySelectorAll('#fl tr[data-fl]').forEach(r=>{r.onclick=()=>{SELF=r.getAttribute('data-fl');SELC=null;drawSumFloors();drawFloor();$('fd').scrollIntoView({behavior:'smooth',block:'nearest'})}});
-}
+function openFloor(name){FLOOR=name;$('flT').textContent='Detail '+name;$('flV').style.display='flex';$('cmV').style.display='none';UI.show('mFl');pgFl.page=0;drawFloor();setTimeout(()=>pgFl.draw(),50)}
+$('flX').onclick=()=>{UI.hide('mFl');FLOOR=null};
+$('smHost').onclick=e=>{let t=e.target;while(t&&t!==$('smHost')&&!(t.getAttribute&&t.getAttribute('data-fl')!=null))t=t.parentNode;
+  if(t&&t.getAttribute&&t.getAttribute('data-fl')!=null)openFloor(t.getAttribute('data-fl'))};
+const HCM='<tr><th>Waktu</th><th>Kejadian</th><th>Kode</th><th class="hm">Percobaan</th><th class="hm">Detik</th><th>Hasil</th></tr>';
+const pgCm=UI.paged($('cmHost'),$('cmCtl'),{mode:'rows',th:32,label:'kejadian',head:HCM,empty:EMPTY('Tidak ada kejadian pada periode ini.'),
+  render:e=>'<tr><td>'+esc(e.waktu)+'</td><td>'+esc(e.kejadian)+'</td><td>'+esc(e.kode_error||'-')+'</td><td class="hm">'+esc(e.percobaan)+'</td><td class="hm">'+esc(e.durasi_detik)+'</td><td>'+esc(e.hasil)+'</td></tr>'});
+$('flHost').onclick=async e=>{const t=e.target;if(!t||!t.getAttribute||!t.getAttribute('data-cam'))return;const name=t.getAttribute('data-cam');
+  $('cmT').textContent='Riwayat '+name+' (maks. 200 pada periode ini)';$('flV').style.display='none';$('cmV').style.display='flex';pgCm.page=0;pgCm.set([]);
+  try{const d=await api('/api/events?limit=200&hours='+$('per').value+'&camera='+encodeURIComponent(name));pgCm.set(d.events||[])}catch(x){}
+  setTimeout(()=>pgCm.draw(),50)};
+$('cmBack').onclick=()=>{$('cmV').style.display='none';$('flV').style.display='flex';setTimeout(()=>pgFl.draw(),50)};
 async function loadStatus(){try{ST=await api('/api/status');drawStatus();$('upd').textContent='Diperbarui '+new Date().toLocaleTimeString('id-ID')}catch(e){$('upd').textContent='Gagal memuat status'}}
-async function loadSummary(){const d=await api('/api/summary?hours='+$('per').value);
-  SUM=d;drawSumFloors();if(SELF)drawFloor();
-  $('cm').innerHTML=d.cams.map(c=>'<tr><td>'+esc(c.name)+'</td><td>'+esc(c.floor)+'</td><td>'+c.error+'</td><td>'+esc(Object.entries(c.codes).map(([k,v])=>k+' ('+v+')').join(', ')||'-')+'</td><td>'+c.retry+'</td><td>'+c.reopen+'</td><td>'+c.pulih+'</td><td>'+c.offline+'</td></tr>').join('')||'<tr><td colspan="8" class="mut">Belum ada kejadian pada periode ini.</td></tr>';}
-async function loadEvents(){const d=await api('/api/events?limit=200');
-  $('ev').innerHTML=d.events.map(e=>'<tr><td>'+esc(e.waktu)+'</td><td>'+esc(e.kamera)+'</td><td>'+esc(e.kejadian)+'</td><td>'+esc(e.kode_error||'-')+'</td><td>'+esc(e.percobaan)+'</td><td>'+esc(e.durasi_detik)+'</td><td>'+esc(e.hasil)+'</td></tr>').join('')||'<tr><td colspan="7" class="mut">Belum ada kejadian.</td></tr>';}
+async function loadSummary(){const d=await api('/api/summary?hours='+$('per').value);SUM=d;drawSum();if(FLOOR&&$('flV').style.display!=='none')drawFloor()}
+async function loadEvents(){const d=await api('/api/events?limit=200');EV=d.events||[];drawEv()}
 const post=async u=>{const r=await fetch(u,{method:'POST',cache:'no-store'});if(r.status===401){location.href='/login';throw 0}return r.json()};
 function drawUp(d){
   $('upb').textContent='Pembaruan'+(d.current?' ('+d.current.short+')':'');
@@ -316,15 +329,16 @@ function waitBack(){let down=false;const t0=Date.now();const iv=setInterval(asyn
   if(Date.now()-t0>120000){clearInterval(iv);$('upm').textContent='Belum kembali setelah 2 menit. Buka Bardi Monitor dari shortcut di Desktop.'}},1500)}
 async function upPoll(){try{const d=await api('/api/update/status');drawUp(d);
   if(['checking','downloading','installing'].includes(d.state))setTimeout(upPoll,1000);else if(d.state==='restarting')waitBack()}catch(e){}}
-$('upb').onclick=()=>{$('upc').style.display='';upStatus()};
-$('upx').onclick=()=>{$('upc').style.display='none'};
-$('stopb').onclick=async()=>{if(!confirm('Hentikan pemantauan? Program di PC akan MATI dan tidak menyala lagi sampai Anda menjalankannya manual (atau PC dihidupkan ulang).'))return;
+$('upb').onclick=()=>{$('menu').open=false;UI.show('upc');upStatus()};
+$('upx').onclick=()=>{UI.hide('upc')};
+$('stopb').onclick=async()=>{$('menu').open=false;if(!confirm('Hentikan pemantauan? Program di PC akan MATI dan tidak menyala lagi sampai Anda menjalankannya manual (atau PC dihidupkan ulang).'))return;
   try{const r=await post('/api/stop');alert(r.ok?'Pemantauan dihentikan. Untuk menyalakan lagi, buka shortcut Bardi Monitor di PC.':(r.error||'Gagal menghentikan'))}catch(e){}};
 $('upchk').onclick=async()=>{$('upm').textContent='Memeriksa GitHub...';try{drawUp(await post('/api/update/check'))}catch(e){}};
 $('upgo').onclick=async()=>{if(!confirm('Perbarui sekarang? Bardi Monitor akan menutup dan membuka ulang sendiri (sekitar 15 detik).'))return;
   const r=await post('/api/update/apply');if(r.ok)upPoll();else $('upm').textContent=r.error||'Gagal memulai pembaruan'};
 upStatus();
-$('filt').onchange=drawStatus;$('per').onchange=loadSummary;
+$('filt').onchange=()=>{pgSt.page=0;drawStatus()};$('per').onchange=()=>{pgSm.page=0;loadSummary()};
+UI.tabs('pA');
 loadStatus();loadSummary();loadEvents();
 setInterval(loadStatus,2000);setInterval(()=>{loadSummary();loadEvents()},10000);
 </script></body></html>`;
@@ -538,7 +552,7 @@ function startReportServer(opts) {
         if (p === '/api/klip/add') return json(res, clip.add(body.text));
         if (p === '/api/klip/get') return json(res, clip.get(body.id));
         if (p === '/api/klip/delete') return json(res, clip.remove(body.id));
-        return json(res, clip.list({ q: body.q, offset: body.offset }));
+        return json(res, clip.list({ q: body.q, offset: body.offset, limit: body.limit }));
       }
       if (p === '/kejadian') return send(res, 200, 'text/html; charset=utf-8', INCIDENT_PAGE);
       if (p === '/api/kejadian') return json(res, { ok: true, dir: incident.dir, recorder: incident.statusList(), days: incident.retentionDays, incidents: incident.incidents() });
@@ -553,7 +567,7 @@ function startReportServer(opts) {
           if (!(start <= end && start < f.size)) { res.writeHead(416, { 'Content-Range': 'bytes */' + f.size }); return res.end(); }
           code = 206;
         }
-        const h = { 'Content-Type': 'video/mp4', 'Accept-Ranges': 'bytes', 'Content-Length': end - start + 1, 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' };
+        const h = { 'Content-Type': 'video/mp4', 'Accept-Ranges': 'bytes', 'Content-Length': end - start + 1, 'Cache-Control': 'private, no-cache', 'X-Content-Type-Options': 'nosniff' }; // iPhone (Safari) bisa menolak memutar video yang berlabel no-store
         if (code === 206) h['Content-Range'] = `bytes ${start}-${end}/${f.size}`;
         res.writeHead(code, h);
         const st = fs.createReadStream(f.path, { start, end });
@@ -568,7 +582,7 @@ function startReportServer(opts) {
         if (!f) return send(res, 404, 'text/plain; charset=utf-8', 'Tidak ada');
         return send(res, 200, f.type, f.body);
       }
-      if (p === '/api/onvif/cameras') return json(res, { libOk: onvif.libOk(), libMessage: onvif.libMessage(), cameras: onvif.list() });
+      if (p === '/api/onvif/cameras') return json(res, { libOk: onvif.libOk(), libMessage: onvif.libMessage(), cameras: onvif.list(), recorder: incident.statusList().map((r) => ({ id: r.id, rate: r.rate })) });
       if (p === '/api/onvif/save' || p === '/api/onvif/delete' || p === '/api/onvif/test' || p === '/api/onvif/scan' || p === '/api/onvif/sweep' || p === '/api/onvif/discover' || p === '/api/onvif/live/start' || p === '/api/onvif/live/stop' || p === '/api/onvif/diag' || p === '/api/onvif/ptz') {
         if (req.method !== 'POST') return send(res, 405, 'text/plain; charset=utf-8', 'Gunakan POST');
         const origin = req.headers.origin;
