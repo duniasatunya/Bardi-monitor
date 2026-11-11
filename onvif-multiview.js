@@ -2,7 +2,7 @@
 // Stream tiap kamera dibuat sekali dan dipakai terus: pindah grid / layar penuh hanya menata ulang, tidak memuat ulang.
 // Catatan: isi halaman ada di dalam template literal; jangan pakai backtick atau ${ } atau backslash di skrip browser.
 'use strict';
-module.exports = (BASE_CSS) => `<!doctype html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Multiview - Bardi Monitor</title><style>${BASE_CSS}
+module.exports = (BASE_CSS) => `<!doctype html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Multiview - Bardi Monitor</title><style>${BASE_CSS}
 html,body{margin:0;height:100%}
 body{background:#eef0f4;color:#222;overflow:hidden;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
 #app{display:flex;flex-direction:row;height:100vh;padding:10px;box-sizing:border-box;position:relative}
@@ -57,7 +57,7 @@ body{background:#eef0f4;color:#222;overflow:hidden;font-family:system-ui,-apple-
 .lo .ic div{border:1px solid #9aa0a6;box-sizing:border-box}
 .lo.on{color:#f26a1b}.lo.on .ic,.lo.on .ic div{border-color:#f26a1b}
 #pop label{display:flex;gap:8px;align-items:center;margin-top:12px;font-size:12px;color:#555;border-top:1px solid #eee;padding-top:10px;max-width:290px}
-#empty{position:absolute;left:0;right:0;top:42%;text-align:center;color:#ddd;display:none;font-size:14px}
+#empty{display:none!important}
 #lw{flex:none;width:300px;background:#fff;border-radius:12px;display:flex;flex-direction:column;overflow:hidden}
 #lh{display:flex;align-items:center;padding:12px 14px;background:#f6f7f9;border-bottom:1px solid #e6e8ec;user-select:none}
 #lh b{flex:1;font-size:16px;color:#e8590c}
@@ -71,17 +71,114 @@ body{background:#eef0f4;color:#222;overflow:hidden;font-family:system-ui,-apple-
 .dot.bad{border-color:#e5484d}.dot.bad:after{background:#e5484d}
 #lf{padding:8px 14px;font-size:12px;color:#777;border-top:1px solid #eee;display:flex;gap:10px}
 #lf a{color:#555}
+
+/* ---- tampilan HP (potret): mengikuti referensi, hanya CSS + elemen tambahan; desktop tidak berubah ---- */
+#main{position:relative}
+#phh,#phChip,#phb,#phScrim,#phMenu,#phFsX{display:none}
+@media all{
+  body{background:#000;color:#fff}
+  #app{flex-direction:column;height:100vh;height:100dvh;padding:0;background:#000}
+  #main{gap:0;flex:1;min-height:0}
+  #sp,#tool{display:none!important}
+  #phh{display:flex;align-items:center;justify-content:space-between;padding:calc(10px + env(safe-area-inset-top)) 16px 6px;flex:none}
+  #phT{display:flex;align-items:center;gap:8px;min-height:48px;padding:0 4px;border:0;background:none;color:#fff;font-family:inherit;font-weight:700;font-size:22px;line-height:1.1;cursor:pointer}
+  #phT svg{width:18px;height:18px}
+  #phR{display:flex;align-items:center;height:48px;border-radius:999px;background:#1a1b1e;border:1px solid #2a2c31}
+  #phR>*{width:56px;height:48px;display:flex;align-items:center;justify-content:center;border:0;background:none;color:#fff;cursor:pointer;text-decoration:none;padding:0}
+  #phR b{width:1px;height:20px;background:#3a3d44}
+  #phR svg{width:22px;height:22px}
+  #phChip{display:flex;align-items:center;gap:8px;align-self:flex-start;margin:6px 16px;max-width:calc(100% - 32px);min-height:36px;padding:0 14px;border-radius:999px;background:#1a1b1e;color:#e8eaed;font-size:15px;flex:none}
+  #phChip i{width:10px;height:10px;border-radius:50%;background:#7a828c;flex:none}
+  #phChip i.on{background:#2fbf71}#phChip i.bad{background:#e5484d}
+  #phChip span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  #wrap{flex:1;min-height:0;border-radius:0;background:#000;align-items:flex-end;padding-bottom:8px;box-sizing:border-box}
+  #g{background:#2a2d33}
+  .t{background:#15171b}.t.hole{background:#15171b}
+  .t.hole:after{content:'+';position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);text-align:center;color:#5b6068;font-size:26px;font-weight:300}
+  .t.sel:after{border-color:#2b7bff}
+  .t.hole.sel:after{content:'+';border:2px solid #2b7bff;inset:0;transform:none;top:0;display:flex;align-items:center;justify-content:center}
+  .pill{left:4px;right:auto;top:4px;font-size:10px;padding:1px 7px;max-width:92%}
+  .st{font-size:10px;padding-top:24px;line-height:1.25}
+  .ptz{display:none!important}
+  .t:not(:fullscreen) .tb{display:none!important}
+  .t:fullscreen .tb{display:flex}
+  #phb{display:block;flex:none;padding:0 0 0}
+  #phPadW{position:relative;display:flex;justify-content:center;padding:10px 0 14px}
+  #phPad{position:relative;width:176px;height:176px;border-radius:50%;background:#0c0d0f;border:1px solid #1d1f24;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+  #phPad i{position:absolute;width:6px;height:6px;border-radius:50%;background:#4a56ff}
+  #phPad .a1{top:12px;left:calc(50% - 3px)}#phPad .a2{bottom:12px;left:calc(50% - 3px)}#phPad .a3{left:12px;top:calc(50% - 3px)}#phPad .a4{right:12px;top:calc(50% - 3px)}
+  #phKn{position:absolute;left:calc(50% - var(--kn,60px)/2);top:calc(50% - var(--kn,60px)/2);width:var(--kn,60px);height:var(--kn,60px);border-radius:50%;background:#15171b;border:1px solid #2a2d33;pointer-events:none;transition:transform .12s}
+  #phPad.on #phKn{transition:none;background:#1e2228}
+  #phPad.dis{opacity:.35}
+  #phZm{position:absolute;right:20px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:10px}
+  #phZm button{width:48px;height:48px;border-radius:50%;border:1px solid #2a2d33;background:#15171b;color:#fff;font-size:22px;line-height:1;padding:0;touch-action:none;user-select:none;-webkit-user-select:none}
+  #phZm.dis{opacity:.35}
+  #phRow{display:flex;align-items:center;gap:12px;padding:0 14px 12px}
+  #phSeg{flex:1;display:flex;height:56px;border-radius:999px;background:#1a1b1e;padding:4px;gap:2px}
+  #phSeg button{flex:1;border:0;border-radius:999px;background:none;color:#e8eaed;font-family:inherit;font-weight:500;font-size:16px;line-height:1;cursor:pointer}
+  #phSeg button.on{background:#2a2d33;color:#4aa3ff}
+  #phFs{width:56px;height:56px;border-radius:50%;border:0;background:#1a1b1e;color:#fff;display:flex;align-items:center;justify-content:center;padding:0;cursor:pointer}
+  #phFs svg{width:24px;height:24px}
+  #phAct{display:flex;background:#16171a;padding:8px 4px calc(8px + env(safe-area-inset-bottom))}
+  #phAct button{flex:1;min-height:56px;border:0;background:none;color:#e8eaed;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:11px;cursor:pointer;padding:0}
+  #phAct button svg{width:26px;height:26px}
+  #phAct button b{font-size:15px;font-weight:700;height:26px;line-height:26px}
+  #phAct button.on{color:#4aa3ff}
+  #phb.nosel #phAct .need{opacity:.35}
+  #phScrim{position:fixed;left:0;top:0;right:0;bottom:0;background:rgba(0,0,0,.6);z-index:60}
+  #lw,#pop{max-width:560px;margin:0 auto}
+  #phRow,#phPadW{max-width:640px;margin-left:auto;margin-right:auto;width:100%;box-sizing:border-box}
+  #lw{position:fixed;left:0;right:0;bottom:0;top:auto;width:auto!important;max-height:72vh;max-height:72dvh;display:flex!important;border-radius:20px 20px 0 0;background:#1a1b1e;color:#e8eaed;z-index:70;transform:translateY(105%);transition:transform .25s ease;padding-bottom:env(safe-area-inset-bottom)}
+  #lw.open{transform:none}
+  #lh{background:#1a1b1e;border-bottom:1px solid #2a2d33;padding:16px}
+  #lh b{color:#fff;font-size:18px}
+  .li{color:#e8eaed;min-height:52px}.li:hover{background:#22252a}.li.sel{background:#1d3558}
+  #lf{border-top:1px solid #2a2d33;color:#9aa0a6}#lf a{color:#9aa0a6}
+  #pop{position:fixed;left:0;right:0;bottom:0;top:auto;border-radius:20px 20px 0 0;background:#1a1b1e;color:#e8eaed;z-index:70;padding:18px 16px calc(18px + env(safe-area-inset-bottom));box-shadow:none}
+  #pop .gr{grid-template-columns:repeat(4,1fr)}
+  .lo{color:#9aa0a6}.lo .ic{background:#1a1b1e;border-color:#6b7280}.lo .ic div{border-color:#6b7280}
+  .lo.on{color:#4aa3ff}.lo.on .ic,.lo.on .ic div{border-color:#4aa3ff}
+  #pop label{color:#c4c9d0;border-top-color:#2a2d33;max-width:none}
+  #phMenu{display:none;position:fixed;right:16px;top:calc(70px + env(safe-area-inset-top));min-width:220px;background:#1a1b1e;border:1px solid #2a2d33;border-radius:16px;padding:6px;z-index:70}
+  #phMenu.open{display:block}
+  #phMenu a{display:flex;align-items:center;min-height:48px;padding:0 14px;color:#e8eaed;text-decoration:none;border-radius:10px;font-size:16px}
+  #phMenu a:active{background:#22252a}
+  #phFsX{position:absolute;right:12px;top:calc(12px + env(safe-area-inset-top));width:44px;height:44px;border-radius:50%;border:0;background:rgba(0,0,0,.6);color:#fff;z-index:9;align-items:center;justify-content:center;padding:0}
+  .fsx #phFsX,#wrap:fullscreen #phFsX{display:flex}
+  .fsx #wrap{position:fixed;left:0;top:0;right:0;bottom:0;z-index:90;align-items:center;padding:0}
+  #wrap:fullscreen{align-items:center;padding:0}
+}
+@media (orientation:landscape) and (max-height:520px){
+  #main{display:grid;grid-template-columns:minmax(0,1fr) 300px;grid-template-rows:auto auto minmax(0,1fr)}
+  #phh,#phChip{grid-column:1/3}#phChip{margin-top:0;margin-bottom:4px;min-height:30px}
+  #phh{padding-top:calc(4px + env(safe-area-inset-top))}#phT{min-height:40px;font-size:18px}#phR,#phR>*{height:40px}
+  #wrap{grid-column:1;grid-row:3;padding-bottom:0}
+  #phb{grid-column:2;grid-row:3;display:flex;flex-direction:column;justify-content:flex-end;overflow:hidden}
+  #phPad{width:112px;height:112px;--kn:40px}#phPadW{padding:0 0 6px}#phZm{right:10px;flex-direction:row;top:auto;bottom:6px;transform:none}#phZm button{width:40px;height:40px}
+  #phSeg,#phFs{height:44px}#phFs{width:44px}#phRow{padding:0 10px 6px}#phSeg button{font-size:13px}
+  #phAct{padding-bottom:calc(4px + env(safe-area-inset-bottom))}#phAct button{min-height:44px;font-size:10px}
+}
+@media (max-height:700px){#phPad{width:132px;height:132px;--kn:46px}#phPadW{padding:6px 0 8px}#phZm button{width:42px;height:42px}#phSeg,#phFs{height:48px}#phFs{width:48px}#phAct button{min-height:48px}#phh{padding-top:calc(4px + env(safe-area-inset-top))}}
 </style></head><body>
 <div id="app">
 <div id="lw"><div id="lh"><b>Kamera</b></div><div id="list"></div><div id="lf"><a href="/onvif">Kelola kamera</a><a href="/displaycostum.html">Laporan</a></div></div><div id="sp" title="Tarik untuk mengubah lebar daftar"></div>
 <div id="main">
-<div id="wrap"><div id="g"></div><div id="empty">Belum ada kamera. Tambahkan dulu di halaman Kelola kamera.</div></div>
+<div id="phh"><button id="phT" type="button" aria-label="Pilih kamera"><span>Semua Kamera</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button><div id="phR"><button id="phMore" type="button" aria-label="Menu lainnya"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="5" cy="12" r="1.4" fill="currentColor"/><circle cx="12" cy="12" r="1.4" fill="currentColor"/><circle cx="19" cy="12" r="1.4" fill="currentColor"/></svg></button><b></b><a id="phX" href="/displaycostum.html" aria-label="Tutup, kembali ke Beranda"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></a></div></div>
+<div id="phChip"><i></i><span></span></div>
+<div id="wrap"><div id="g"></div><div id="empty">Belum ada kamera. Tambahkan dulu di halaman Kelola kamera.</div><button id="phFsX" type="button" aria-label="Keluar dari layar penuh"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
 <div id="tool"><button id="live" title="Siaran langsung">LIVE</button>
 <button class="ib" id="lsh" title="Tampilkan / sembunyikan daftar kamera"><svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M4 6h14M4 11h14M4 16h14"/></svg></button>
 <div id="hint"></div>
-<div id="pop"><div class="gr" id="popg"></div><label><input type="checkbox" id="small"> Hemat CPU: perkecil kotak ke 360p (untuk kamera yang hanya punya stream besar)</label></div>
+
 <button class="ib" id="lbtn" title="Pilih tampilan"><svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="2" width="18" height="18" rx="2"/><line x1="11" y1="2" x2="11" y2="20"/><line x1="2" y1="11" x2="20" y2="11"/></svg></button>
 <button class="ib" id="fs" title="Layar penuh seluruh grid"><svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 8V3h5M14 3h5v5M19 14v5h-5M8 19H3v-5"/></svg></button></div>
+
+<div id="phb" class="nosel"><div id="phPadW"><div id="phPad" role="group" aria-label="Kontrol arah kamera"><i class="a1"></i><i class="a2"></i><i class="a3"></i><i class="a4"></i><b id="phKn"></b></div><div id="phZm"><button id="phZi" type="button" aria-label="Zoom masuk">+</button><button id="phZo" type="button" aria-label="Zoom keluar">&minus;</button></div></div>
+<div id="phRow"><div id="phSeg"><button type="button" data-l="4">4 kanal</button><button type="button" data-l="9">9 kanal</button><button type="button" data-l="16">16 kanal</button></div><button id="phFs" type="button" aria-label="Layar penuh seluruh tampilan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg></button></div>
+<div id="phAct"><button id="phSpk" type="button" class="need" aria-label="Suara hidup atau mati"></button><button id="phSnap" type="button" class="need" aria-label="Ambil foto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l1.5-2h7L17 8h3v11H4z"/><circle cx="12" cy="13.5" r="3.5"/></svg><span>Foto</span></button><button id="phQ" type="button" class="need" aria-label="Kualitas gambar SD atau HD"><b>SD</b><span>Kualitas</span></button><button id="phTf" type="button" class="need" aria-label="Layar penuh kamera ini"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="6" width="16" height="12" rx="2"/><path d="M9 3H5v3M15 3h4v3M9 21H5v-3M15 21h4v-3"/></svg><span>Kamera ini</span></button><button id="phSet" type="button" aria-label="Pengaturan tampilan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.9l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.9-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.9.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.9 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.9l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.9.3h0a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.9-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.9v0a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg><span>Atur</span></button></div></div>
+<div id="pop"><div class="gr" id="popg"></div><label><input type="checkbox" id="small"> Hemat CPU: perkecil kotak ke 360p (untuk kamera yang hanya punya stream besar)</label></div>
+<div id="phMenu" role="menu"><a href="/displaycostum.html">Beranda</a><a href="/kejadian">Kejadian</a><a href="/onvif">Kelola kamera</a><a href="/klip">Papan klip</a><a href="/layar">Layar PC</a></div>
+<div id="phScrim"></div>
 
 </div>
 </div>
@@ -156,7 +253,8 @@ var TILES={},HOLES=[],QUAL={},AUD={},PTZON={},NOPTZ={},PTZPOS={x:50,y:62},SIG=nu
 var DIMS={'1':[1,1],'4':[2,2],'6':[3,2],'9':[3,3],'13':[4,4],'16':[4,4]};
 var NUM={'1':1,'4':4,'6':6,'9':9,'13':13,'16':16};
 var NAMES=['1','4','6','9','13','16','all'];
-var GAP=2;
+var GAP=2,SELID=null;
+function PH(){return true}
 if(NAMES.indexOf(LAY)<0)LAY='16';
 var IOS=/iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
 if(IOS&&!ls('mvlay'))LAY='4'; // iPhone: awal 4 kotak supaya tidak berat
@@ -191,7 +289,7 @@ function restart(T){if(!T.cam||T.cam.status!=='online')return;T.p.stop();T.on=tr
 // ---- satu tile per kamera, dibuat sekali ----
 function slotOf(id){return SLOTS.indexOf(id)}
 function paintBtns(T){T.bSpk.innerHTML=AUD[T.id]?I_SPK_ON:I_SPK_OFF;T.bSpk.className=AUD[T.id]?'on':'';
-  T.bQ.textContent=QUAL[T.id]==='main'?'HD':'SD';T.bPtz.className=PTZON[T.id]?'on':'';T.el.classList.toggle('pz',!!PTZON[T.id]&&!NOPTZ[T.id])}
+  T.bQ.textContent=QUAL[T.id]==='main'?'HD':'SD';T.bPtz.className=PTZON[T.id]?'on':'';T.el.classList.toggle('pz',!!PTZON[T.id]&&!NOPTZ[T.id]);if(window.phPaint)phPaint()}
 function mkTile(cam){var id=cam.id;var d=document.createElement('div');d.className='t';d.setAttribute('data-id',id);
   var v=document.createElement('video');v.muted=true;v.autoplay=true;v.playsInline=true;
   var pill=document.createElement('div');pill.className='pill';pill.textContent=label(cam);
@@ -209,7 +307,7 @@ function mkTile(cam){var id=cam.id;var d=document.createElement('div');d.classNa
   T.p=mkPlayer(v,function(t,bad){say(T,t,bad)},{url:function(){return streamUrl(T)},audio:function(){return !!AUD[id]},
     onInit:function(hasA){if(AUD[id]&&!hasA){AUD[id]=false;paintBtns(T);toast(T,'Kamera ini tidak mengirim suara')}}});
   v.addEventListener('playing',function(){st.style.display='none'});
-  d.onclick=function(){var i=slotOf(id);if(LAY!=='all'&&i>=0)select(i)};
+  d.onclick=function(){var i=slotOf(id);if(LAY!=='all'&&i>=0)select(i);else if(LAY==='all'&&PH()){SELID=id;sync()}};
   d.ondblclick=function(){fsTile(T)};
   paintBtns(T);var s=stText(cam);if(s)say(T,s,cam.status==='auth');else say(T,'Menyambung...');
   return T}
@@ -270,16 +368,18 @@ function sync(){ // tata ulang: tile dibuat/dibuang sesuai kamera yang dipilih; 
   var g=$('g');
   for(var id2 in want){if(!TILES[id2]){var T=mkTile(camById(id2));TILES[id2]=T;g.appendChild(T.el);if(T.cam.status==='online')enqueue(T)}}
   if(SEL>=dm.n||LAY==='all')SEL=-1;
-  for(var j=0;j<16;j++){if(!HOLES[j]){var h=document.createElement('div');h.className='t hole';(function(jj){h.onclick=function(){select(jj)}})(j);HOLES[j]=h;g.appendChild(h)}}
+  if(PH()&&LAY!=='all'&&SEL<0)SEL=0;
+  if(SELID&&!TILES[SELID])SELID=null;
+  for(var j=0;j<16;j++){if(!HOLES[j]){var h=document.createElement('div');h.className='t hole';(function(jj){h.onclick=function(){select(jj);if(PH())listOpen(true)}})(j);HOLES[j]=h;g.appendChild(h)}}
   var order=0;
   CAMS.forEach(function(c,ci){var T=TILES[c.id];if(!T)return;var vis,ord;
     if(LAY==='all'){vis=true;ord=ci}else{var s=slotOf(c.id);vis=s>=0&&s<dm.n;ord=s}
-    T.el.style.display=vis?'':'none';T.el.style.order=ord;T.el.classList.toggle('sel',LAY!=='all'&&slotOf(c.id)===SEL)});
+    T.el.style.display=vis?'':'none';T.el.style.order=ord;T.el.classList.toggle('sel',LAY==='all'?(PH()&&c.id===SELID):slotOf(c.id)===SEL)});
   for(var j2=0;j2<16;j2++){var hh=HOLES[j2];var show=LAY!=='all'&&j2<dm.n&&!(SLOTS[j2]&&camById(SLOTS[j2]));
     hh.style.display=show?'':'none';hh.style.order=j2;hh.classList.toggle('sel',show&&j2===SEL)}
   $('empty').style.display=CAMS.length?'none':'block';
   applyPtzPos();fitGrid();paintList()}
-function select(i){if(LAY==='all')return;var dm=cellInfo();if(i>=dm.n)return;SEL=(SEL===i)?-1:i;sync()}
+function select(i){if(LAY==='all')return;var dm=cellInfo();if(i>=dm.n)return;SEL=(SEL===i&&!PH())?-1:i;sync()}
 function assign(camId){
   if(LAY==='all')return;if(SEL<0){hintFlash('Klik dulu satu kotak di layar, baru klik nama kamera ini');return}
   var i=SEL,old=SLOTS[i]||null;var j=SLOTS.indexOf(camId);
@@ -292,19 +392,20 @@ function paintList(){
   var h=$('list');h.textContent='';
   CAMS.forEach(function(c){var r=document.createElement('div');r.className='li'+(shown[c.id]?' sel':'');
     var dt=document.createElement('span');dt.className='dot '+dotCls(c);var n=document.createElement('span');n.className='n';n.textContent=label(c);
-    r.appendChild(dt);r.appendChild(n);r.title=c.name;r.onclick=function(){assign(c.id)};h.appendChild(r)});
+    r.appendChild(dt);r.appendChild(n);r.title=c.name;r.onclick=function(){assign(c.id);if(PH())listOpen(false)};h.appendChild(r)});
   var on=CAMS.filter(function(c){return c.status==='online'}).length;
   var hint=on+' dari '+CAMS.length+' kamera tersambung';
   if(LAY!=='all'){hint+=SEL>=0?' - Kotak '+(SEL+1)+' dipilih: klik kamera di daftar untuk menaruhnya di sini':' - Klik satu kotak, lalu klik kamera di daftar untuk menaruhnya'}
   if(!HF)$('hint').textContent=hint;
-  Array.prototype.forEach.call($('popg').children,function(b){b.className='lo'+(b.getAttribute('data-l')===LAY?' on':'')})}
+  Array.prototype.forEach.call($('popg').children,function(b){b.className='lo'+(b.getAttribute('data-l')===LAY?' on':'')});if(window.phPaint)phPaint()}
 // ---- pilihan tampilan ----
 function mkPop(){var g=$('popg');NAMES.forEach(function(n){var b=document.createElement('div');b.setAttribute('data-l',n);b.className='lo';
   var ib=document.createElement('div');ib.className='ic';var c,r,cnt;if(n==='all'){c=3;r=3;cnt=9}else{c=DIMS[n][0];r=DIMS[n][1];cnt=NUM[n]}
   ib.style.gridTemplateColumns='repeat('+c+',1fr)';ib.style.gridTemplateRows='repeat('+r+',1fr)';
   for(var i=0;i<c*r;i++){var cell=document.createElement('div');if(i>=cnt)cell.style.visibility='hidden';ib.appendChild(cell)}
   var lb=document.createElement('div');lb.textContent=n==='all'?'Semua':n;b.appendChild(ib);b.appendChild(lb);
-  b.onclick=function(){LAY=n;ls('mvlay',n);SEL=-1;$('pop').style.display='none';sync()};g.appendChild(b)})}
+  b.onclick=function(){setLay(n);$('pop').style.display='none';phScr()};g.appendChild(b)})}
+function setLay(n){LAY=n;ls('mvlay',n);SEL=-1;SELID=null;sync()}
 $('lbtn').onclick=function(ev){ev.stopPropagation();var p=$('pop');p.style.display=p.style.display==='block'?'none':'block'};
 document.addEventListener('click',function(ev){var p=$('pop');if(p.style.display==='block'&&!p.contains(ev.target))p.style.display='none'});
 $('small').checked=SMALL;$('small').onchange=function(){SMALL=$('small').checked;ls('mvsmall',SMALL?'1':'0');for(var id in TILES)restart(TILES[id])};
@@ -332,5 +433,60 @@ async function load(){try{var d=await api('/api/onvif/cameras');var list=d.camer
     if(c.status==='online'){if(!T.on)enqueue(T)}
     else{if(T.on){T.on=false;T.p.stop()}say(T,stText(c),c.status==='auth')}}
   paintList()}catch(e){if(!HF)$('hint').textContent='Gagal memuat daftar kamera'}}
+
+// ---- tampilan HP (potret) ----
+function selTile(){var id=null;if(LAY==='all')id=SELID;else if(SEL>=0)id=SLOTS[SEL];return id&&TILES[id]?TILES[id]:null}
+function phScr(){var on=$('lw').classList.contains('open')||$('pop').style.display==='block'||$('phMenu').classList.contains('open');$('phScrim').style.display=(on&&PH())?'block':'none'}
+function listOpen(o){$('lw').classList.toggle('open',!!o);phScr()}
+function phCloseAll(){$('lw').classList.remove('open');$('pop').style.display='none';$('phMenu').classList.remove('open');phScr()}
+function phPaint(){if(!$('phb'))return;var T=selTile(),chip=$('phChip');
+  var txt=T?label(T.cam):(LAY!=='all'&&SEL>=0?'Kotak '+(SEL+1)+' kosong - pilih kamera':'Ketuk satu kotak video');
+  chip.querySelector('span').textContent=txt;chip.querySelector('i').className=T?dotCls(T.cam):'';
+  var b=$('phb');b.classList.toggle('nosel',!T);
+  var id=T?T.id:null;
+  $('phSpk').innerHTML=(id&&AUD[id]?I_SPK_ON:I_SPK_OFF)+'<span>'+(id&&AUD[id]?'Suara hidup':'Suara mati')+'</span>';
+  $('phSpk').className='need'+(id&&AUD[id]?' on':'');
+  $('phQ').querySelector('b').textContent=id&&QUAL[id]==='main'?'HD':'SD';
+  var nop=!T||!!NOPTZ[id];$('phPad').classList.toggle('dis',nop);$('phZm').classList.toggle('dis',nop);
+  Array.prototype.forEach.call($('phSeg').children,function(x){x.className=x.getAttribute('data-l')===LAY?'on':''})}
+function phPtzReset(){var kn=$('phKn');if(kn)kn.style.transform='';var pd=$('phPad');if(pd)pd.classList.remove('on')}
+(function(){
+  var pad=$('phPad'),kn=$('phKn'),cur='',act=false;
+  function dirOf(e){var r=pad.getBoundingClientRect(),R=r.width/2,dx=e.clientX-(r.left+R),dy=e.clientY-(r.top+R),d=Math.sqrt(dx*dx+dy*dy),m=R-kn.offsetWidth/2,k=d>m&&d>0?m/d:1;
+    kn.style.transform='translate('+(dx*k)+'px,'+(dy*k)+'px)';
+    if(d<R*0.22)return '';return Math.abs(dx)>Math.abs(dy)?(dx>0?'r':'l'):(dy>0?'d':'u')}
+  function upd(e){var T=selTile();if(!T||!act)return;var nd=dirOf(e);if(nd===cur)return;cur=nd;
+    if(!nd){ptzEnd();return}
+    var S=0.6;ptzBegin(T,nd==='r'?S:nd==='l'?-S:0,nd==='u'?S:nd==='d'?-S:0,0)}
+  function stop(){act=false;cur='';ptzEnd();phPtzReset()}
+  pad.addEventListener('pointerdown',function(e){e.preventDefault();var T=selTile();if(!T)return;if(NOPTZ[T.id]){toast(T,'Kamera ini tidak punya PTZ');return}
+    try{pad.setPointerCapture(e.pointerId)}catch(x){}act=true;pad.classList.add('on');upd(e)});
+  pad.addEventListener('pointermove',function(e){if(act)upd(e)});
+  pad.addEventListener('pointerup',stop);pad.addEventListener('pointercancel',stop);pad.addEventListener('lostpointercapture',stop);
+  pad.addEventListener('contextmenu',function(e){e.preventDefault()});
+  document.addEventListener('visibilitychange',function(){if(document.hidden)stop()});
+  window.addEventListener('pagehide',stop);window.addEventListener('blur',stop);
+  function zoom(btn,z){btn.addEventListener('pointerdown',function(e){e.preventDefault();var T=selTile();if(!T)return;if(NOPTZ[T.id]){toast(T,'Kamera ini tidak punya PTZ');return}ptzBegin(T,0,0,z*0.6)});
+    btn.addEventListener('contextmenu',function(e){e.preventDefault()})}
+  zoom($('phZi'),1);zoom($('phZo'),-1);
+  document.addEventListener('touchcancel',function(){ptzEnd();phPtzReset()});
+})();
+$('phT').onclick=function(ev){ev.stopPropagation();listOpen(!$('lw').classList.contains('open'))};
+$('phMore').onclick=function(ev){ev.stopPropagation();var m=$('phMenu');m.classList.toggle('open');phScr()};
+$('phSet').onclick=function(ev){ev.stopPropagation();var p=$('pop');p.style.display=p.style.display==='block'?'none':'block';phScr()};
+$('phScrim').onclick=function(ev){ev.stopPropagation();phCloseAll()};
+Array.prototype.forEach.call($('phSeg').children,function(b){b.onclick=function(){setLay(b.getAttribute('data-l'))}});
+$('phSpk').onclick=function(){var T=selTile();if(T)T.bSpk.click()};
+$('phSnap').onclick=function(){var T=selTile();if(T)T.bSnap.click()};
+$('phQ').onclick=function(){var T=selTile();if(T)T.bQ.click()};
+$('phTf').onclick=function(){var T=selTile();if(T)fsTile(T)};
+function fsAny(){return document.fullscreenElement||document.webkitFullscreenElement}
+function gridFs(){var w=$('wrap');
+  if(document.body.classList.contains('fsx')){document.body.classList.remove('fsx');return}
+  if(fsAny()){try{document.exitFullscreen()}catch(e){}return}
+  if(w.requestFullscreen){w.requestFullscreen().catch(function(){document.body.classList.add('fsx')})}else{document.body.classList.add('fsx')}}
+$('phFs').onclick=gridFs;$('phFsX').onclick=gridFs;
+document.addEventListener('keydown',function(e){if(e.key==='Escape')phCloseAll()});
+try{var mqp=matchMedia('(max-width:899px) and (orientation:portrait)');var mqf=function(){sync();phScr()};if(mqp.addEventListener)mqp.addEventListener('change',mqf);else if(mqp.addListener)mqp.addListener(mqf)}catch(e){}
 mkPop();load();setInterval(load,4000);
 </script></body></html>`;

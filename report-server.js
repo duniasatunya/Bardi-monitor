@@ -208,140 +208,8 @@ function tick(){
 tick();
 </script></body></html>`;
 
-const MAIN_PAGE = `<!doctype html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Laporan Bardi Monitor</title><style>${BASE_CSS}${UIKIT.css}
-#meta{flex:none;padding:4px 14px 0;font-size:12px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-@media (max-width:820px){#meta{display:none}}
-.lnk{color:var(--pri);cursor:pointer;text-decoration:underline;background:none;border:0;padding:0;font:inherit}
-</style></head><body>
-${UIKIT.header('Laporan Bardi Monitor', 'report', { menu: '<button class="btn" id="upb">Pembaruan</button><a class="btn" href="/report.pdf">Unduh PDF</a><button class="btn danger" id="stopb">Hentikan pemantauan</button>' })}
-<div id="meta"></div>
-<div class="tabs"><button data-p="pA">Status</button><button data-p="pB">Ringkasan</button><button data-p="pC">Riwayat</button></div>
-<main class="shell" style="grid-template-columns:minmax(0,1.05fr) minmax(0,1.2fr) minmax(0,1fr)">
-<section class="panel" id="pA"><div class="ph"><h2>Status kamera sekarang</h2><select id="filt"><option value="all">Semua</option><option value="bad">Hanya bermasalah</option></select></div>
-<div class="kpi" id="tot" style="margin-bottom:8px"></div>
-<div class="pbody" id="stHost"></div><div class="pg" id="stCtl"></div></section>
-<section class="panel" id="pB"><div class="ph"><h2>Ringkasan gangguan</h2><select id="per"><option value="24">24 jam terakhir</option><option value="168">7 hari terakhir</option><option value="0">Semua</option></select></div>
-<div class="row" style="margin-bottom:8px"><div class="seg"><button id="sgF" class="on">Per lantai</button><button id="sgC">Per kamera</button></div><span class="mut" id="sgH">Ketuk baris lantai untuk detail kamera.</span></div>
-<div class="pbody" id="smHost"></div><div class="pg" id="smCtl"></div></section>
-<section class="panel" id="pC"><div class="ph"><h2>Riwayat gangguan</h2><span class="mut" id="evN"></span></div>
-<div class="pbody scroll" id="evHost"></div><div class="pg" id="evCtl"><button type="button" id="evMore">Tampilkan lebih banyak</button></div></section>
-</main>
-<div class="modal" id="mFl"><div class="box full">
-<div class="row" style="justify-content:space-between;margin-bottom:8px"><h2 id="flT" style="font-size:15px;margin:0"></h2><button class="btn" id="flX">Tutup</button></div>
-<div id="flV" style="flex:1;min-height:0;display:flex;flex-direction:column"><p class="mut" id="flN" style="margin:0 0 6px"></p><div class="pbody" id="flHost"></div><div class="pg" id="flCtl"></div></div>
-<div id="cmV" style="flex:1;min-height:0;display:none;flex-direction:column"><div class="row" style="margin-bottom:6px"><button class="btn sm" id="cmBack">&lsaquo; Kembali</button><b id="cmT"></b></div><div class="pbody" id="cmHost"></div><div class="pg" id="cmCtl"></div></div>
-</div></div>
-<div class="modal" id="upc"><div class="box" style="max-width:560px;max-height:90%"><div class="row" style="justify-content:space-between"><h2 style="font-size:15px;margin:0">Pembaruan dari GitHub</h2><button class="btn" id="upx">Tutup</button></div>
-<p class="mut" id="upv"></p><p id="upm"></p>
-<div class="row"><button class="btn" id="upchk">Cek pembaruan</button><button class="btn pri" id="upgo" style="display:none">Perbarui sekarang</button></div>
-<p class="mut">Saat diperbarui, Bardi Monitor menutup dan membuka ulang sendiri (sekitar 15 detik). Login Bardi, password, dan data kamera tidak berubah.</p></div></div>
-<script>${UIKIT.js}</script>
-<script>
-const $=id=>document.getElementById(id);
-const esc=UI.esc;
-const LBL={PLAY:'Normal',ERROR:'Error',CONNECTING:'Menyambung',FROZEN:'Beku',ACTED:'Dipulihkan...',INIT:'Baru terlihat',HIDE:'Tidak tampil'};
-async function api(u){const r=await fetch(u,{cache:'no-store'});if(r.status===401){location.href='/login';throw 0}return r.json()}
-const dur=s=>s<60?s+' dtk':s<3600?Math.floor(s/60)+' mnt':Math.floor(s/3600)+' jam '+Math.floor(s%3600/60)+' mnt';
-const nrm=s=>String(s==null?'':s).split(' ').filter(Boolean).join(' ').toLowerCase();
-const codes=o=>Object.entries(o||{}).map(([k,v])=>k+' ('+v+')').join(', ')||'-';
-const stB=c=>'<span class="b '+esc(c.status)+'">'+esc(LBL[c.status]||c.status)+'</span>'+(c.offline?' <span class="b OFFLINE">Offline</span>':'');
-let ST=null,SUM=null,EV=[],EVN=10,VIEW='f',FLOOR=null;
-const EMPTY=t=>'<div class="mut" style="padding:8px 2px">'+t+'</div>';
-const pgSt=UI.paged($('stHost'),$('stCtl'),{mode:'tiles',tw:190,th:70,gap:8,label:'kamera',empty:EMPTY('Tidak ada data.'),
-  render:c=>'<div class="tile"><div class="tn" title="'+esc(c.name)+'">'+esc(c.name)+'</div><div>'+stB(c)+'</div><div class="tm">'+esc(c.floor)+' &middot; '+(c.code?'kode '+esc(c.code)+' &middot; ':'')+dur(c.sinceSec)+'</div></div>'});
-const HF='<tr><th>Lantai</th><th>Kamera</th><th>Bermasalah</th><th>Error</th><th>Offline</th><th></th></tr>';
-const HC='<tr><th>Kamera</th><th>Lantai</th><th>Error</th><th class="hm">Kode (jumlah)</th><th class="hm">Retry</th><th class="hm">Reopen</th><th class="hm">Pulih</th><th>Offline</th></tr>';
-const pgSm=UI.paged($('smHost'),$('smCtl'),{mode:'rows',th:34,label:'baris',head:HF,empty:EMPTY('Belum ada data pada periode ini.'),render:()=>''});
-function drawStatus(){ if(!ST)return; const bad=$('filt').value==='bad';
-  const cams=ST.cams.filter(c=>!bad||['ERROR','FROZEN','CONNECTING','ACTED'].includes(c.status)||c.offline);
-  pgSt.set(cams);
-  const n=s=>ST.cams.filter(c=>s.includes(c.status)).length;
-  $('tot').innerHTML='<span><b>'+ST.cams.length+'</b> dipantau</span><span><b style="color:var(--ok)">'+n(['PLAY'])+'</b> normal</span><span><b style="color:var(--bad)">'+n(['ERROR'])+'</b> error</span><span><b style="color:var(--warn)">'+n(['FROZEN','CONNECTING','ACTED'])+'</b> beku/menyambung</span>';
-  $('meta').textContent='Mode: '+ST.meta.mode+' | Berjalan: '+dur(ST.meta.uptimeSec)+' | IP publik terdeteksi: '+(ST.meta.publicIp||'belum diketahui');
-  if(FLOOR&&$('mFl').className.indexOf('show')>=0)drawFloor();
-}
-function drawSum(){
-  if(!SUM){return}
-  if(VIEW==='f'){
-    pgSm.o.head=HF;
-    pgSm.o.render=f=>'<tr class="clk" data-fl="'+esc(f.floor)+'"><td><b>'+esc(f.floor)+'</b></td><td>'+f.cameras+'</td><td>'+f.problemCams+'</td><td>'+f.error+'</td><td>'+f.offline+'</td><td><span class="lnk">Detail</span></td></tr>';
-    pgSm.set(SUM.floors);$('sgH').textContent='Ketuk baris lantai untuk detail kamera.';
-  }else{
-    pgSm.o.head=HC;
-    pgSm.o.render=c=>'<tr><td>'+esc(c.name)+'</td><td>'+esc(c.floor)+'</td><td>'+c.error+'</td><td class="hm">'+esc(codes(c.codes))+'</td><td class="hm">'+c.retry+'</td><td class="hm">'+c.reopen+'</td><td class="hm">'+c.pulih+'</td><td>'+c.offline+'</td></tr>';
-    pgSm.set(SUM.cams);$('sgH').textContent='Paling sering bermasalah di atas.';
-  }
-}
-$('sgF').onclick=()=>{VIEW='f';$('sgF').className='on';$('sgC').className='';pgSm.page=0;drawSum()};
-$('sgC').onclick=()=>{VIEW='c';$('sgC').className='on';$('sgF').className='';pgSm.page=0;drawSum()};
-// ---- riwayat gangguan: 10 teratas, sisanya lewat tombol ----
-const EVH='<tr><th>Waktu</th><th>Kamera</th><th>Kejadian</th><th>Kode</th></tr>';
-function drawEv(){
-  const rows=EV.slice(0,EVN).map(e=>'<tr><td>'+esc(String(e.waktu).slice(5))+'</td><td title="'+esc(e.kamera)+'">'+esc(e.kamera)+'</td><td>'+esc(e.kejadian)+'</td><td>'+esc(e.kode_error||'-')+'</td></tr>').join('');
-  $('evHost').innerHTML=EV.length?'<table class="t fx" style="--rh:30px"><colgroup><col style="width:104px"><col><col style="width:76px"><col style="width:56px"></colgroup><thead>'+EVH+'</thead><tbody>'+rows+'</tbody></table>':EMPTY('Belum ada kejadian.');
-  $('evN').textContent=EV.length?('menampilkan '+Math.min(EVN,EV.length)+' dari '+EV.length+' terakhir'):'';
-  const more=EVN<EV.length;$('evCtl').style.display=more?'flex':'none';$('evMore').textContent='Tampilkan lebih banyak ('+Math.min(EVN,EV.length)+' dari '+EV.length+')';
-}
-$('evMore').onclick=()=>{EVN+=20;drawEv()};
-// ---- detail lantai (jendela) ----
-const HFL='<tr><th>Kamera</th><th>Status</th><th>Error</th><th class="hm">Kode (jumlah)</th><th class="hm">Pulih</th><th>Offline</th><th class="hm">Total bermasalah</th><th class="hm">Terlama</th><th class="hm">Error terakhir</th><th></th></tr>';
-const pgFl=UI.paged($('flHost'),$('flCtl'),{mode:'rows',th:34,label:'kamera',head:HFL,empty:EMPTY('Tidak ada kamera.'),render:()=>''});
-function drawFloor(){
-  const list=(SUM&&SUM.floorCams||{})[FLOOR]||[];
-  const live={};(ST?ST.cams:[]).forEach(c=>{live[nrm(c.name)]=c});
-  pgFl.o.render=c=>{const l=live[nrm(c.name)];
-    return '<tr><td title="'+esc(c.name)+'"><b>'+esc(c.name)+'</b></td><td>'+(l?stB(l):'<span class="mut">Tidak tampil</span>')+'</td><td>'+c.error+'</td><td class="hm">'+esc(codes(c.codes))+'</td><td class="hm">'+c.pulih+'</td><td>'+c.offline+'</td><td class="hm">'+(c.downSec?dur(c.downSec):'-')+'</td><td class="hm">'+(c.maxDown?dur(c.maxDown):'-')+'</td><td class="hm">'+esc(c.lastTime||'-')+'</td><td><button class="lnk" data-cam="'+esc(c.name)+'">Riwayat</button></td></tr>'};
-  const bad=list.filter(c=>c.error>0||c.offline>0).length;
-  $('flN').textContent=list.length+' kamera, '+bad+' pernah bermasalah ('+$('per').options[$('per').selectedIndex].text+'). Paling sering error di atas.';
-  pgFl.set(list);
-}
-function openFloor(name){FLOOR=name;$('flT').textContent='Detail '+name;$('flV').style.display='flex';$('cmV').style.display='none';UI.show('mFl');pgFl.page=0;drawFloor();setTimeout(()=>pgFl.draw(),50)}
-$('flX').onclick=()=>{UI.hide('mFl');FLOOR=null};
-$('smHost').onclick=e=>{let t=e.target;while(t&&t!==$('smHost')&&!(t.getAttribute&&t.getAttribute('data-fl')!=null))t=t.parentNode;
-  if(t&&t.getAttribute&&t.getAttribute('data-fl')!=null)openFloor(t.getAttribute('data-fl'))};
-const HCM='<tr><th>Waktu</th><th>Kejadian</th><th>Kode</th><th class="hm">Percobaan</th><th class="hm">Detik</th><th>Hasil</th></tr>';
-const pgCm=UI.paged($('cmHost'),$('cmCtl'),{mode:'rows',th:32,label:'kejadian',head:HCM,empty:EMPTY('Tidak ada kejadian pada periode ini.'),
-  render:e=>'<tr><td>'+esc(e.waktu)+'</td><td>'+esc(e.kejadian)+'</td><td>'+esc(e.kode_error||'-')+'</td><td class="hm">'+esc(e.percobaan)+'</td><td class="hm">'+esc(e.durasi_detik)+'</td><td>'+esc(e.hasil)+'</td></tr>'});
-$('flHost').onclick=async e=>{const t=e.target;if(!t||!t.getAttribute||!t.getAttribute('data-cam'))return;const name=t.getAttribute('data-cam');
-  $('cmT').textContent='Riwayat '+name+' (maks. 200 pada periode ini)';$('flV').style.display='none';$('cmV').style.display='flex';pgCm.page=0;pgCm.set([]);
-  try{const d=await api('/api/events?limit=200&hours='+$('per').value+'&camera='+encodeURIComponent(name));pgCm.set(d.events||[])}catch(x){}
-  setTimeout(()=>pgCm.draw(),50)};
-$('cmBack').onclick=()=>{$('cmV').style.display='none';$('flV').style.display='flex';setTimeout(()=>pgFl.draw(),50)};
-async function loadStatus(){try{ST=await api('/api/status');drawStatus();$('upd').textContent='Diperbarui '+new Date().toLocaleTimeString('id-ID')}catch(e){$('upd').textContent='Gagal memuat status'}}
-async function loadSummary(){const d=await api('/api/summary?hours='+$('per').value);SUM=d;drawSum();if(FLOOR&&$('flV').style.display!=='none')drawFloor()}
-async function loadEvents(){const d=await api('/api/events?limit=200');EV=d.events||[];drawEv()}
-const post=async u=>{const r=await fetch(u,{method:'POST',cache:'no-store'});if(r.status===401){location.href='/login';throw 0}return r.json()};
-function drawUp(d){
-  $('upb').textContent='Pembaruan'+(d.current?' ('+d.current.short+')':'');
-  $('upv').textContent=(d.current?'Terpasang: '+d.current.short+(d.current.message?' - '+d.current.message:''):'Terpasang: belum tercatat (pemasangan manual)')+' | Repo: '+d.repo+(d.hasToken?'':' | Token belum dipasang (perlu untuk repo privat: PASANG-TOKEN-UPDATE.bat)');
-  const busy=['checking','downloading','installing','restarting'].includes(d.state);
-  let m='Klik "Cek pembaruan".';
-  if(d.state==='error')m='Gagal: '+d.error;
-  else if(busy||d.state==='done')m=d.message;
-  else if(d.latest)m=d.upToDate?'Sudah versi terbaru ('+d.latest.short+').':'Ada versi baru: '+d.latest.short+(d.latest.message?' - '+d.latest.message:'');
-  $('upm').textContent=m;
-  $('upchk').disabled=busy;
-  $('upgo').style.display=(d.latest&&!d.upToDate&&!busy&&d.state!=='done')?'':'none';
-}
-async function upStatus(){try{drawUp(await api('/api/update/status'))}catch(e){}}
-function waitBack(){let down=false;const t0=Date.now();const iv=setInterval(async()=>{
-  try{const r=await fetch('/api/status',{cache:'no-store'});if(r.ok&&down){clearInterval(iv);location.reload()}}catch(e){down=true}
-  if(Date.now()-t0>120000){clearInterval(iv);$('upm').textContent='Belum kembali setelah 2 menit. Buka Bardi Monitor dari shortcut di Desktop.'}},1500)}
-async function upPoll(){try{const d=await api('/api/update/status');drawUp(d);
-  if(['checking','downloading','installing'].includes(d.state))setTimeout(upPoll,1000);else if(d.state==='restarting')waitBack()}catch(e){}}
-$('upb').onclick=()=>{$('menu').open=false;UI.show('upc');upStatus()};
-$('upx').onclick=()=>{UI.hide('upc')};
-$('stopb').onclick=async()=>{$('menu').open=false;if(!confirm('Hentikan pemantauan? Program di PC akan MATI dan tidak menyala lagi sampai Anda menjalankannya manual (atau PC dihidupkan ulang).'))return;
-  try{const r=await post('/api/stop');alert(r.ok?'Pemantauan dihentikan. Untuk menyalakan lagi, buka shortcut Bardi Monitor di PC.':(r.error||'Gagal menghentikan'))}catch(e){}};
-$('upchk').onclick=async()=>{$('upm').textContent='Memeriksa GitHub...';try{drawUp(await post('/api/update/check'))}catch(e){}};
-$('upgo').onclick=async()=>{if(!confirm('Perbarui sekarang? Bardi Monitor akan menutup dan membuka ulang sendiri (sekitar 15 detik).'))return;
-  const r=await post('/api/update/apply');if(r.ok)upPoll();else $('upm').textContent=r.error||'Gagal memulai pembaruan'};
-upStatus();
-$('filt').onchange=()=>{pgSt.page=0;drawStatus()};$('per').onchange=()=>{pgSm.page=0;loadSummary()};
-UI.tabs('pA');
-loadStatus();loadSummary();loadEvents();
-setInterval(loadStatus,2000);setInterval(()=>{loadSummary();loadEvents()},10000);
-</script></body></html>`;
+// Halaman Beranda (dulu Laporan). Tampilan baru ada di beranda-page.js; versi lama tersimpan di report-server.js.bak-ui.
+const MAIN_PAGE = require('./beranda-page')();
 
 function printPage(data) {
   const { status, summary, events, now } = data;
@@ -456,6 +324,11 @@ function startReportServer(opts) {
       const url = new URL(req.url, 'http://x');
       const p = url.pathname;
       const authed = checkToken(cfg.secret, getCookie(req, 'bm_session'));
+      // Berkas tetap untuk tampilan baru (font dan logo). Sebelum cek login supaya halaman login juga bisa memakainya.
+      if (p === '/assets/fonts/PlusJakartaSans-latin.woff2' || p === '/assets/Logo.png') {
+        try { return send(res, 200, p.endsWith('.woff2') ? 'font/woff2' : 'image/jpeg', fs.readFileSync(path.join(__dirname, p.slice(1))), { 'Cache-Control': 'public, max-age=604800' }); }
+        catch (_) { return send(res, 404, 'text/plain; charset=utf-8', 'Tidak ditemukan'); }
+      }
 
       if (p === '/login' && req.method === 'POST') {
         const f = fails.get(ip) || { n: 0, until: 0 };

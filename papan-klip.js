@@ -68,97 +68,187 @@ function createClipStore({ dir, log, file }) {
   };
 }
 
-const UIKIT = require('./ui-kit');
+const { ds } = require('./ui-kit');
+const I = ds.icon;
 
-const page = (BASE_CSS) => `<!doctype html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Papan Klip - Bardi Monitor</title><style>${BASE_CSS}${UIKIT.css}
-textarea{width:100%;resize:none;flex:1;min-height:60px}
-.cp{flex:1;min-height:0;margin:0;padding:5px 7px;border-radius:6px;background:rgba(127,127,127,.12);white-space:pre-wrap;word-break:break-word;overflow:hidden;font-size:12px;font-family:ui-monospace,Consolas,monospace}
-#msg{font-size:12px;min-height:16px}#msg.ok{color:var(--ok)}#msg.bad{color:var(--bad)}
-#bigt{margin:0;white-space:pre-wrap;word-break:break-word;font-size:13px;font-family:ui-monospace,Consolas,monospace}
-</style></head><body>
-${UIKIT.header('Papan Klip', 'klip')}
-<div class="tabs"><button data-p="pA">Titip teks</button><button data-p="pB">Catatan</button></div>
-<main class="shell" style="grid-template-columns:minmax(260px,340px) minmax(0,1fr)">
-<section class="panel" id="pA"><div class="ph"><h2>Titip teks</h2></div>
-<div class="mut" style="margin-bottom:6px">Tempel dengan Ctrl+V (atau tahan lalu Tempel di HP) di mana saja di halaman ini. Setiap tempelan langsung tersimpan jadi satu catatan. Tidak ada batas jumlah catatan.</div>
-<textarea id="box" placeholder="Tempel di sini. Atau ketik, lalu tekan Simpan."></textarea>
-<div class="row" style="margin-top:6px"><button class="btn pri" id="save">Simpan ketikan</button><span id="msg"></span></div></section>
-<section class="panel" id="pB"><div class="ph"><input id="q" placeholder="Cari di semua catatan..." style="flex:1;min-width:120px"><span class="mut" id="cnt"></span></div>
-<div class="pbody" id="lsHost"></div><div class="pg" id="lsCtl"></div></section>
-</main>
-<div class="modal" id="mBig"><div class="box full"><div class="row" style="justify-content:space-between;margin-bottom:8px"><b id="bigh">Catatan</b><div class="row"><button class="btn pri" id="bigc">Salin</button><button class="btn" id="bigx">Tutup</button></div></div><div class="mb"><pre id="bigt"></pre></div></div></div>
-<script>${UIKIT.js}</script>
-<script>
-var $=function(i){return document.getElementById(i)};
-var esc=UI.esc;
-function clk(s){return new Date(s).toLocaleString('id-ID',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit',second:'2-digit'})}
-var ITEMS=[],TOTAL=0,ALL=0,Q='',PAGE=0,SIZE=6,timer=null,FULL={},BIG='';
-function say(t,ok){var m=$('msg');m.textContent=t;m.className=ok?'ok':'bad';clearTimeout(say.t);say.t=setTimeout(function(){m.textContent=''},4000)}
-function api(p,b){return fetch(p,{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify(b||{})}).then(function(r){return r.json()})}
-function draw(){
-  $('cnt').textContent=(Q?TOTAL+' cocok dari ':'')+ALL+' catatan';
-  var pages=Math.max(1,Math.ceil(TOTAL/SIZE));
-  var f=UI.fit($('lsHost'),{tw:290,th:150,gap:8});
-  $('lsHost').innerHTML=ITEMS.length?'<div class="tiles" style="--cols:'+f.cols+';--th:150px;--g:8px">'+ITEMS.map(function(x){
-    return '<div class="tile" data-id="'+esc(x.id)+'"><div class="mut">'+esc(clk(x.at))+' &middot; '+x.len+' karakter</div><pre class="cp">'+esc(x.text)+(x.cut?'...':'')+'</pre><div class="ta"><button class="btn sm pri" data-a="copy">Salin</button><button class="btn sm" data-a="open">Lihat</button><button class="btn sm danger" data-a="del">Hapus</button></div></div>'}).join('')+'</div>'
-    :'<div class="mut" style="padding:8px 2px">'+(Q?'Tidak ada catatan yang cocok.':'Belum ada catatan. Tempel sesuatu dengan Ctrl+V.')+'</div>';
-  UI.ctl($('lsCtl'),PAGE,pages,TOTAL,'catatan',function(d){PAGE+=d;load()});
+const css = `
+.kl{display:flex;flex-direction:column;gap:16px;padding-bottom:16px}
+.qpill{display:flex;align-items:center;gap:10px;height:52px;padding:0 18px;border-radius:999px;background:var(--surface);box-shadow:var(--sh1)}
+.qpill input{flex:1;min-width:0;height:100%;border:0;background:transparent;font-size:16px;outline:0}
+.qpill .cap{white-space:nowrap}
+.qpill:focus-within{box-shadow:0 0 0 3px var(--brand-ink)}
+.klist{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:var(--gap);align-items:start}
+.nw{position:relative;border-radius:var(--r-card)}
+.nw.sw{background:var(--bad-ink)}
+.nw::after{content:'Hapus';position:absolute;right:22px;top:50%;transform:translateY(-50%);color:#fff;font-weight:700;opacity:0;transition:opacity .15s}
+.nw.sw::after{opacity:1}
+.nw::after{z-index:0}.note{z-index:1}
+.note{position:relative;background:var(--surface);border-radius:var(--r-card);padding:18px 20px 12px;box-shadow:var(--sh1),var(--sh2);touch-action:pan-y;display:flex;flex-direction:column;gap:10px;min-width:0}
+.note,.note *{touch-action:pan-y}
+.note.moving{transition:none}
+.note:not(.moving){transition:transform .25s var(--e)}
+.note .nh{display:flex;align-items:center;gap:8px;color:var(--mut);font-size:12px}
+.ntext{display:block;width:100%;text-align:left;border:0;background:var(--surface-2);border-radius:16px;padding:12px 14px;cursor:pointer;color:var(--tx)}
+.ntext pre{margin:0;white-space:pre-wrap;word-break:break-word;font:14px/1.5 ui-monospace,Consolas,monospace;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.note.open .ntext pre{display:block;max-height:60vh;overflow:auto;-webkit-line-clamp:unset}
+.ntext:active{transform:scale(.99)}
+.nf{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.nf .grow{flex:1}
+.nf .btn{min-height:40px;padding:0 14px;font-size:14px}
+.nf .ib{width:40px;height:40px;box-shadow:none;background:transparent}
+.nf .ib.bad{color:var(--bad-ink)}
+.comp{position:sticky;bottom:16px;z-index:20;display:flex;gap:10px;align-items:flex-end;padding:12px;border-radius:28px;background:var(--glass);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);box-shadow:var(--sh2),0 12px 32px rgba(19,32,42,.08)}
+.comp textarea{flex:1;min-height:48px;max-height:168px;background:var(--surface)}
+.comp .btn{height:48px;flex:none}
+.chint{margin:0 0 4px 4px}
+@media (max-width:899px){.klist{grid-template-columns:minmax(0,1fr)}.comp{bottom:calc(76px + env(safe-area-inset-bottom));border-radius:24px;padding:10px}.comp .btn span{display:none}.comp .btn{width:48px;padding:0}}
+`;
+
+const body = `
+<section class="kl" aria-label="Catatan">
+<div class="qpill">${I('search', 's')}<label class="sr" for="q">Cari di semua catatan</label><input id="q" type="search" autocomplete="off" placeholder="Cari di semua catatan"><span class="cap" id="cnt"></span></div>
+<div class="klist" id="list" aria-live="polite"></div>
+<button class="btn" type="button" id="more" hidden>Tampilkan lebih banyak</button>
+<div><p class="cap chint">Tempel dengan Ctrl+V (atau tahan lalu Tempel di HP) di mana saja di halaman ini: setiap tempelan langsung tersimpan jadi satu catatan. Ketuk catatan untuk menyalinnya. Di HP, geser catatan ke kiri untuk menghapus.</p>
+<div class="comp"><label class="sr" for="box">Tulis atau tempel catatan</label><textarea class="inp" id="box" rows="1" placeholder="Tempel di sini, atau ketik lalu tekan Simpan"></textarea><button class="btn pri" type="button" id="save" aria-label="Simpan ketikan">${I('check')}<span>Simpan</span></button></div></div>
+</section>`;
+
+function klipApp() {
+  var $ = function (i) { return document.getElementById(i); };
+  var esc = DS.esc, icon = DS.icon;
+  var S = { items: [], total: 0, all: 0, q: '', loading: false, full: {}, pend: {}, pageSize: 30, got: false };
+  function clk(s) { return new Date(s).toLocaleString('id-ID', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit', second: '2-digit' }); }
+  function api(p, b, keep) {
+    return fetch(p, { method: 'POST', credentials: 'same-origin', keepalive: !!keep, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(b || {}) })
+      .then(function (r) { if (r.status === 401) { location.href = '/login'; throw new Error('login'); } return r.json(); });
+  }
+  function visible() { return S.items.filter(function (x) { return !S.pend[x.id]; }); }
+  function card(x, i, fresh) {
+    return '<div class="nw" data-id="' + esc(x.id) + '"><article class="note' + (fresh ? ' rise' : '') + '" data-id="' + esc(x.id) + '" style="' + (fresh ? 'animation-delay:' + Math.min(i, 10) * 30 + 'ms' : '') + '">'
+      + '<div class="nh">' + icon('clock', 's') + '<span>' + esc(clk(x.at)) + ' · ' + x.len.toLocaleString('id-ID') + ' karakter</span></div>'
+      + '<button class="ntext" type="button" data-a="copy" aria-label="Salin catatan ini"><pre>' + esc(x.text) + (x.cut ? '...' : '') + '</pre></button>'
+      + '<div class="nf"><button class="btn" type="button" data-a="more" hidden>Selengkapnya</button><span class="grow"></span>'
+      + '<button class="btn pri" type="button" data-a="copy">' + icon('copy', 's') + 'Salin</button>'
+      + '<button class="ib bad" type="button" data-a="del" aria-label="Hapus catatan">' + icon('trash') + '</button></div></article></div>';
+  }
+  function measure() {
+    var ns = $('list').querySelectorAll('.note:not(.sk)');
+    for (var i = 0; i < ns.length; i++) { var n = ns[i], pre = n.querySelector('pre'), b = n.querySelector('[data-a=more]'), id = n.getAttribute('data-id'), x = null;
+      S.items.forEach(function (y) { if (y.id === id) x = y; });
+      if (n.className.indexOf(' open') >= 0) { b.hidden = false; b.textContent = 'Lebih sedikit'; continue; }
+      b.hidden = !(x && x.cut) && !(pre.scrollHeight > pre.clientHeight + 1); b.textContent = 'Selengkapnya'; }
+  }
+  var lastH = '';
+  function draw(fresh) {
+    var L = visible();
+    $('cnt').textContent = (S.q ? S.total + ' cocok dari ' : '') + S.all + ' catatan';
+    var h;
+    if (!S.got) h = [1, 2, 3].map(function () { return '<div class="note sk" style="height:150px"></div>'; }).join('');
+    else if (!L.length) h = '<div class="empty" style="grid-column:1/-1">' + (S.q ? 'Tidak ada catatan yang cocok.' : 'Belum ada catatan. Tempel sesuatu dengan Ctrl+V.') + '</div>';
+    else h = L.map(function (x, i) { return card(x, i, fresh); }).join('');
+    var key = h.replace(/ rise"/g, '"').replace(/ style="animation-delay:[0-9]+ms"/g, ' style=""');
+    if (key !== lastH) { lastH = key; var open = {}; var ns = $('list').querySelectorAll('.note.open'); for (var k = 0; k < ns.length; k++) open[ns[k].getAttribute('data-id')] = 1;
+      $('list').innerHTML = h; for (var id in open) { var el = $('list').querySelector('.note[data-id="' + id + '"]'); if (el) { el.className += ' open'; var pr = el.querySelector('pre'); if (S.full[id] != null) pr.textContent = S.full[id]; } } measure(); }
+    $('more').hidden = !(S.got && S.items.length < S.total);
+  }
+  function save(first) { try { DS.store.set('klip:first', { q: S.q, items: S.items.slice(0, 30), total: S.total, all: S.all }); } catch (e) {} }
+  function load(reset) {
+    if (S.loading) return Promise.resolve(); S.loading = true;
+    var off = reset ? 0 : S.items.length, lim = reset ? Math.max(S.pageSize, S.items.length) : S.pageSize; if (lim > 100) lim = 100;
+    return api('/api/klip/list', { q: S.q, offset: off, limit: lim }).then(function (r) {
+      S.loading = false; if (!r || !r.ok) return;
+      if (reset) S.items = r.items; else { var have = {}; S.items.forEach(function (x) { have[x.id] = 1; }); r.items.forEach(function (x) { if (!have[x.id]) S.items.push(x); }); }
+      S.total = r.total; S.all = r.all; S.got = true; if (!S.q && reset) save(); draw(false);
+    }).catch(function () { S.loading = false; if (!S.got) { draw(); } DS.toast('Tidak bisa memuat catatan. Periksa koneksi, lalu tarik ke bawah.', { bad: true }); });
+  }
+  // ---- simpan ----
+  var queue = Promise.resolve();
+  function saveText(t) {
+    if (!t || !t.trim()) { DS.toast('Teksnya kosong.', { bad: true }); return; }
+    var b = $('save'); b.className = 'btn pri busy';
+    queue = queue.then(function () { return api('/api/klip/add', { text: t }); }).then(function (r) {
+      b.className = 'btn pri';
+      if (r && r.ok) { DS.toast(r.duplicate ? 'Sama dengan catatan terakhir, tidak disimpan dua kali.' : 'Tersimpan.'); $('box').value = ''; grow(); S.fresh = true; return load(true); }
+      DS.toast((r && r.error) || 'Gagal menyimpan.', { bad: true });
+    }).catch(function () { b.className = 'btn pri'; DS.toast('Gagal menyimpan (koneksi terputus?).', { bad: true }); });
+  }
+  function grow() { var t = $('box'); t.style.height = 'auto'; t.style.height = Math.min(168, t.scrollHeight) + 'px'; }
+  $('box').addEventListener('input', grow);
+  $('save').onclick = function () { saveText($('box').value); };
+  document.addEventListener('paste', function (e) {
+    var t = e.target; if (t && t.id === 'q') return;
+    var txt = e.clipboardData && e.clipboardData.getData('text'); if (txt == null) return;
+    e.preventDefault(); saveText(txt);
+  });
+  var timer = null;
+  $('q').addEventListener('input', function () { clearTimeout(timer); timer = setTimeout(function () { S.q = $('q').value.trim(); S.fresh = true; load(true); }, 250); });
+  $('more').onclick = function () { load(false); };
+  if (window.IntersectionObserver) { new IntersectionObserver(function (es) { if (es[0].isIntersecting && !$('more').hidden && !S.loading) load(false); }, { rootMargin: '200px' }).observe($('more')); }
+  // ---- salin: teks yang sudah ada disalin langsung saat disentuh (syarat iPhone) ----
+  function find(id) { var x = null; S.items.forEach(function (y) { if (y.id === id) x = y; }); return x; }
+  function expand(el, x) {
+    el.className += ' open'; var pre = el.querySelector('pre'); if (S.full[x.id] != null) pre.textContent = S.full[x.id]; measure();
+  }
+  function doCopy(el, x) {
+    var done = function (ok) { DS.toast(ok ? 'Disalin' : 'Gagal menyalin. Buka "Selengkapnya", lalu tekan Salin lagi.', ok ? {} : { bad: true }); };
+    if (!x.cut) { DS.copy(x.text, done); return; }
+    if (S.full[x.id] != null) { DS.copy(S.full[x.id], done); return; }
+    api('/api/klip/get', { id: x.id }).then(function (r) {
+      if (!r.ok) { DS.toast(r.error || 'Gagal.', { bad: true }); return; }
+      S.full[x.id] = r.text;
+      DS.copy(r.text, function (ok) { if (ok) DS.toast('Disalin'); else { expand(el, x); DS.toast('Teks panjang dibuka. Tekan Salin sekali lagi.'); } });
+    }).catch(function () { DS.toast('Gagal mengambil teks.', { bad: true }); });
+  }
+  // ---- hapus dengan Urungkan 5 detik (dihapus di server setelah 5 detik; Urungkan membatalkan) ----
+  function commit(id) { var p = S.pend[id]; if (!p) return; clearTimeout(p.t); delete S.pend[id];
+    api('/api/klip/delete', { id: id }).then(function (r) { if (r && r.ok) { S.items = S.items.filter(function (y) { return y.id !== id; }); S.total = Math.max(0, S.total - 1); S.all = Math.max(0, S.all - 1); draw(false); } else { DS.toast((r && r.error) || 'Gagal menghapus.', { bad: true }); draw(false); } }).catch(function () { DS.toast('Gagal menghapus (koneksi terputus?).', { bad: true }); draw(false); });
+  }
+  function del(id) {
+    if (S.pend[id]) return; S.pend[id] = { t: setTimeout(function () { commit(id); }, 5200) }; draw(false);
+    DS.toast('Catatan dihapus', { action: 'Urungkan', onAction: function () { var p = S.pend[id]; if (p) { clearTimeout(p.t); delete S.pend[id]; draw(false); } } });
+  }
+  function flush() { for (var id in S.pend) { var p = S.pend[id]; clearTimeout(p.t); delete S.pend[id]; try { api('/api/klip/delete', { id: id }, true); } catch (e) {} } }
+  window.addEventListener('pagehide', flush);
+  document.addEventListener('visibilitychange', function () { if (document.hidden) flush(); else load(true); });
+  $('list').addEventListener('click', function (e) {
+    var b = e.target.closest ? e.target.closest('[data-a]') : null; if (!b) return;
+    var el = b.closest('.note'); if (!el) return; var x = find(el.getAttribute('data-id')); if (!x) return; var a = b.getAttribute('data-a');
+    if (a === 'copy') { doCopy(el, x); return; }
+    if (a === 'del') { del(x.id); return; }
+    if (a === 'more') {
+      if (el.className.indexOf(' open') >= 0) { el.className = el.className.replace(' open', ''); var pr = el.querySelector('pre'); pr.textContent = x.text + (x.cut ? '...' : ''); measure(); return; }
+      if (!x.cut || S.full[x.id] != null) { expand(el, x); return; }
+      b.className = 'btn busy';
+      api('/api/klip/get', { id: x.id }).then(function (r) { b.className = 'btn'; if (!r.ok) { DS.toast(r.error || 'Gagal.', { bad: true }); return; } S.full[x.id] = r.text; expand(el, x); }).catch(function () { b.className = 'btn'; DS.toast('Gagal mengambil teks.', { bad: true }); });
+    }
+  });
+  // ---- geser kartu ke kiri = hapus (sentuhan) ----
+  var sw = null;
+  $('list').addEventListener('touchstart', function (e) {
+    var n = e.target.closest ? e.target.closest('.note') : null; if (!n || e.touches.length !== 1) { sw = null; return; }
+    sw = { n: n, x0: e.touches[0].clientX, y0: e.touches[0].clientY, dx: 0, on: false };
+  }, { passive: true });
+  $('list').addEventListener('touchmove', function (e) {
+    if (!sw) return; var dx = e.touches[0].clientX - sw.x0, dy = e.touches[0].clientY - sw.y0;
+    if (!sw.on) { if (Math.abs(dx) > 12 && Math.abs(dx) > Math.abs(dy) * 1.5) { sw.on = true; sw.n.className += ' moving'; } else { if (Math.abs(dy) > 12) sw = null; return; } }
+    if (e.cancelable) e.preventDefault();
+    sw.dx = Math.min(0, dx); sw.n.style.transform = 'translateX(' + sw.dx + 'px)'; sw.n.parentNode.className = 'nw' + (sw.dx < -8 ? ' sw' : '');
+  }, { passive: false });
+  function swEnd() { if (!sw) return; var n = sw.n, dx = sw.dx, on = sw.on; sw = null; if (!on) return;
+    n.className = n.className.replace(' moving', ''); n.style.transform = ''; n.parentNode.className = 'nw';
+    if (dx < -90) { del(n.getAttribute('data-id')); } }
+  $('list').addEventListener('touchend', swEnd); $('list').addEventListener('touchcancel', function () { if (sw) { var n = sw.n; sw = null; n.className = n.className.replace(' moving', ''); n.style.transform = ''; n.parentNode.className = 'nw'; } });
+  window.addEventListener('resize', measure);
+  DS.pullRefresh(function () { S.fresh = true; return load(true); });
+  DS.initShell({});
+  // data terakhir dari browser langsung tampil, lalu diperbarui
+  var c = DS.store.get('klip:first'); if (c && c.items && !c.q) { S.items = c.items; S.total = c.total; S.all = c.all; S.got = true; }
+  S.fresh = true; draw(true); load(true); grow();
 }
-function load(){
-  var f=UI.fit($('lsHost'),{tw:290,th:150,gap:8});SIZE=Math.max(1,Math.min(100,f.size));
-  var maxPage=Math.max(0,Math.ceil(TOTAL/SIZE)-1);if(PAGE>maxPage&&TOTAL>0)PAGE=maxPage;
-  return api('/api/klip/list',{q:Q,offset:PAGE*SIZE,limit:SIZE}).then(function(r){
-    if(!r||!r.ok)return;
-    ITEMS=r.items;TOTAL=r.total;ALL=r.all;
-    if(!ITEMS.length&&TOTAL>0&&PAGE>0){PAGE=Math.max(0,Math.ceil(TOTAL/SIZE)-1);return load()}
-    draw()
-  }).catch(function(){})
-}
-var queue=Promise.resolve();
-function saveText(t){
-  if(!t||!t.trim()){say('Teksnya kosong.',false);return}
-  queue=queue.then(function(){return api('/api/klip/add',{text:t})}).then(function(r){
-    if(r&&r.ok){say(r.duplicate?'Sama dengan catatan terakhir, tidak disimpan dua kali.':'Tersimpan.',true);$('box').value='';PAGE=0;return load()}
-    say((r&&r.error)||'Gagal menyimpan.',false)
-  }).catch(function(){say('Gagal menyimpan (koneksi terputus?).',false)})
-}
-document.addEventListener('paste',function(e){
-  var t=e.target;
-  if(t&&t.id==='q')return;
-  var txt=e.clipboardData&&e.clipboardData.getData('text');
-  if(txt==null)return;
-  e.preventDefault();saveText(txt)
+
+const page = () => ds.page({
+  title: 'Papan klip', cur: 'more', h1: 'Papan klip', sub: 'Titip teks dan catatan',
+  css, body, script: '(' + klipApp.toString() + ')();',
 });
-$('save').onclick=function(){saveText($('box').value)};
-$('q').oninput=function(){clearTimeout(timer);timer=setTimeout(function(){Q=$('q').value.trim();PAGE=0;load()},250)};
-function bigOpen(text,head){BIG=text;$('bigt').textContent=text;$('bigh').textContent=head||'Catatan';UI.show('mBig')}
-$('bigc').onclick=function(){UI.copy(BIG,function(ok){$('bigc').textContent=ok?'Tersalin':'Gagal, tahan teks lalu salin';setTimeout(function(){$('bigc').textContent='Salin'},2200)})};
-$('bigx').onclick=function(){UI.hide('mBig')};
-$('lsHost').onclick=function(e){
-  var b=e.target;if(!b||!b.getAttribute)return;var a=b.getAttribute('data-a');if(!a)return;
-  var card=b.parentNode;while(card&&!(card.getAttribute&&card.getAttribute('data-id')))card=card.parentNode;if(!card)return;
-  var id=card.getAttribute('data-id'),x=null;for(var i=0;i<ITEMS.length;i++){if(ITEMS[i].id===id)x=ITEMS[i]}
-  if(!x)return;
-  if(a==='copy'){
-    // Teks utuh yang sudah ada disalin langsung saat disentuh (syarat iPhone). Teks panjang: ambil dulu, kalau gagal tampil di jendela dengan tombol Salin.
-    var done=function(ok){say(ok?'Tersalin ke clipboard.':'Gagal menyalin.',ok)};
-    if(!x.cut){UI.copy(x.text,done);return}
-    if(FULL[id]!=null){UI.copy(FULL[id],done);return}
-    api('/api/klip/get',{id:id}).then(function(r){
-      if(!r.ok){say(r.error||'Gagal.',false);return}
-      FULL[id]=r.text;
-      UI.copy(r.text,function(ok){if(ok)say('Tersalin ke clipboard.',true);else bigOpen(r.text,'Catatan panjang: tekan Salin')})
-    }).catch(function(){say('Gagal mengambil teks.',false)});
-    return}
-  if(a==='del'){if(!confirm('Hapus catatan ini? Tidak bisa dikembalikan.'))return;api('/api/klip/delete',{id:id}).then(function(r){if(r.ok){say('Dihapus.',true);load()}else say(r.error||'Gagal menghapus.',false)});return}
-  if(a==='open'){if(!x.cut){bigOpen(x.text,clk(x.at));return}
-    if(FULL[id]!=null){bigOpen(FULL[id],clk(x.at));return}
-    api('/api/klip/get',{id:id}).then(function(r){if(!r.ok)return;FULL[id]=r.text;bigOpen(r.text,clk(x.at))})}
-};
-var rt=null;function rs(){clearTimeout(rt);rt=setTimeout(load,80)}
-if(window.ResizeObserver){try{new ResizeObserver(rs).observe($('lsHost'))}catch(e){window.addEventListener('resize',rs)}}else window.addEventListener('resize',rs);
-UI.tabs('pB');
-load();
-</script></body></html>`;
 
 module.exports = { createClipStore, page, MAX_ITEM_CHARS };
