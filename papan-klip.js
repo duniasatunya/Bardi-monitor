@@ -110,7 +110,7 @@ const body = `
 <div class="klist" id="list" aria-live="polite"></div>
 <button class="btn" type="button" id="more" hidden>Tampilkan lebih banyak</button>
 <div><p class="cap chint">Tempel dengan Ctrl+V (atau tahan lalu Tempel di HP) di mana saja di halaman ini: setiap tempelan langsung tersimpan jadi satu catatan. Ketuk catatan untuk menyalinnya. Di HP, geser catatan ke kiri untuk menghapus.</p>
-<div class="comp"><label class="sr" for="box">Tulis atau tempel catatan</label><textarea class="inp" id="box" rows="1" placeholder="Tempel di sini, atau ketik lalu tekan Simpan"></textarea><button class="btn pri" type="button" id="save" aria-label="Simpan ketikan">${I('check')}<span>Simpan</span></button></div></div>
+<div class="comp"><label class="sr" for="box">Tulis atau tempel catatan</label><textarea class="inp" id="box" rows="1" placeholder="Tempel di sini, atau ketik lalu tekan Simpan"></textarea><button class="btn" type="button" id="pastb" aria-label="Tempel dari salinan terakhir">${I('copy')}<span>Tempel</span></button><button class="btn pri" type="button" id="save" aria-label="Simpan ketikan">${I('check')}<span>Simpan</span></button></div></div>
 </section>`;
 
 function klipApp() {
@@ -175,8 +175,16 @@ function klipApp() {
   function grow() { var t = $('box'); t.style.height = 'auto'; t.style.height = Math.min(168, t.scrollHeight) + 'px'; }
   $('box').addEventListener('input', grow);
   $('save').onclick = function () { saveText($('box').value); };
+  // Tempel: iPhone menanyakan izin lewat gelembung "Tempel" bawaan; bila tidak bisa, kolom tulis difokuskan supaya bisa tekan lama lalu Tempel
+  $('pastb').onclick = function () {
+    var box = $('box');
+    function fallback() { box.focus(); DS.toast('Tekan lama di kolom tulis, lalu pilih Tempel.'); }
+    if (navigator.clipboard && navigator.clipboard.readText && window.isSecureContext) {
+      navigator.clipboard.readText().then(function (t) { if (t) { box.value = (box.value ? box.value + '\n' : '') + t; grow(); box.focus(); } else fallback(); }, fallback);
+    } else fallback();
+  };
   document.addEventListener('paste', function (e) {
-    var t = e.target; if (t && t.id === 'q') return;
+    var t = e.target; if (t && (t.id === 'q' || t.id === 'box')) return;
     var txt = e.clipboardData && e.clipboardData.getData('text'); if (txt == null) return;
     e.preventDefault(); saveText(txt);
   });
@@ -190,7 +198,12 @@ function klipApp() {
     el.className += ' open'; var pre = el.querySelector('pre'); if (S.full[x.id] != null) pre.textContent = S.full[x.id]; measure();
   }
   function doCopy(el, x) {
-    var done = function (ok) { DS.toast(ok ? 'Disalin' : 'Gagal menyalin. Buka "Selengkapnya", lalu tekan Salin lagi.', ok ? {} : { bad: true }); };
+    function pick() { // cadangan: kolom teks biasa; tekan lama di dalamnya lalu pilih "Salin" (selalu memunculkan gelembung di iPhone)
+      var show = function (full) { $('cpbox').value = full; DS.openSheet('shCp'); setTimeout(function () { var b = $('cpbox'); b.focus(); b.setSelectionRange(0, b.value.length); }, 350); };
+      if (!x.cut || S.full[x.id] != null) { show(S.full[x.id] != null ? S.full[x.id] : x.text); return; }
+      api('/api/klip/get', { id: x.id }).then(function (r) { if (r && r.ok) { S.full[x.id] = r.text; show(r.text); } else DS.toast('Gagal mengambil teks.', { bad: true }); }).catch(function () { DS.toast('Gagal mengambil teks.', { bad: true }); });
+    }
+    var done = function (ok) { if (ok) DS.toast('Disalin', DS.ios ? { action: 'Tidak bisa ditempel?', onAction: pick, ms: 6000 } : {}); else DS.toast('Gagal menyalin. Buka "Selengkapnya", lalu tekan Salin lagi.', { bad: true }); };
     if (!x.cut) { DS.copy(x.text, done); return; }
     if (S.full[x.id] != null) { DS.copy(S.full[x.id], done); return; }
     api('/api/klip/get', { id: x.id }).then(function (r) {
@@ -246,9 +259,13 @@ function klipApp() {
   S.fresh = true; draw(true); load(true); grow();
 }
 
+const sheets = `<div class="sheet" id="shCp" role="dialog" aria-modal="true" aria-labelledby="cpT" style="--w:480px"><div class="scrim" data-close></div><div class="panel" tabindex="-1"><div class="grab"></div>
+<div class="sh-h"><h2 id="cpT">Salin manual</h2><button class="ib flat" type="button" data-close aria-label="Tutup">${I('x')}</button></div>
+<div class="sh-b"><p class="fhelp" style="margin:0 0 10px">Tekan lama di dalam kotak ini, pilih <b>Pilih Semua</b>, lalu <b>Salin</b>. Setelah itu tempel di WA seperti biasa.</p><textarea class="inp" id="cpbox" rows="8" style="width:100%"></textarea></div></div></div>`;
+
 const page = () => ds.page({
   title: 'Papan klip', cur: 'more', h1: 'Papan klip', sub: 'Titip teks dan catatan',
-  css, body, script: '(' + klipApp.toString() + ')();',
+  css, body, sheets, script: '(' + klipApp.toString() + ')();',
 });
 
 module.exports = { createClipStore, page, MAX_ITEM_CHARS };

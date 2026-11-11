@@ -197,7 +197,7 @@ function kameraApp() {
     } else {
       h = '<h3>Nama dan lantai</h3><div class="fld"><label for="wn">Nama kamera</label><input class="inp" id="wn" maxlength="60" placeholder="mis. Kamar Jakarta 1 (Anak baru)" value="' + esc(W.name) + '"></div>'
         + '<div class="fld"><label for="wf">Lantai (opsional)</label><input class="inp" id="wf" maxlength="30" list="floorsDl" placeholder="mis. Lantai 2" value="' + esc(W.floor) + '"><datalist id="floorsDl">' + floorsList().map(function (f) { return '<option value="' + esc(f) + '">'; }).join('') + '</datalist></div>'
-        + '<p class="fmsg" id="wmsg" role="status"></p><div class="wnav"><button class="btn" type="button" id="wBack">Kembali</button><button class="btn pri" type="button" id="wSave">' + icon('check', 's') + 'Simpan</button></div>';
+        + '<button class="btn full" type="button" id="wPrev">' + icon('eye', 's') + 'Lihat kamera dulu (gambar kecil)</button><p class="fhelp">Supaya yakin ini kamera di ruangan yang benar sebelum diberi nama. Kamera disimpan dulu, namanya bisa diubah di sini.</p><p class="fmsg" id="wmsg" role="status"></p><div class="wnav"><button class="btn" type="button" id="wBack">Kembali</button><button class="btn pri" type="button" id="wSave">' + icon('check', 's') + 'Simpan</button></div>';
     }
     $('wz').innerHTML = h;
     if (W.step === 0) { var sg = DS.seg($('wseg'), W.mode, function (v) { W.mode = v; findDraw(); }); findDraw(); }
@@ -253,6 +253,17 @@ function kameraApp() {
     if (t.id === 'wNext') { readStep(); if (W.step === 1 && !W.host) { DS.toast('Isi IP kamera dulu.', { bad: true }); return; } W.step++; if (W.step === 3 && !W.name && W.edit) { var cc = camOf(W.edit); W.name = cc ? cc.name : W.name; } wizDraw(); return; }
     if (t.id === 'wBack') { readStep(); if (W.edit && W.step === 1) { DS.closeSheet('shCam'); return; } W.step = Math.max(0, W.step - 1); wizDraw(); return; }
     if (t.id === 'wTest') { readStep(); t.className = 'btn busy'; try { W.res = await api('/api/onvif/test', vals()); } catch (er) { W.res = { ok: false, error: 'Koneksi ke PC pemantauan terputus.' }; } wizDraw(); P.now(); return; }
+    if (t.id === 'wPrev') { readStep(); var nm = W.name.trim() || ('Kamera ' + W.host); t.className = 'btn full busy'; $('wmsg').className = 'fmsg'; $('wmsg').textContent = 'Menyimpan dan menyambungkan kamera...';
+      try {
+        var sv = await api('/api/onvif/save', { id: W.edit || undefined, name: nm, floor: W.floor, host: W.host, port: W.port, username: W.user, password: W.pass });
+        if (!sv.ok) { t.className = 'btn full'; $('wmsg').className = 'fmsg bad'; $('wmsg').textContent = sv.error || 'Gagal menyimpan'; return; }
+        W.edit = sv.camera.id; var okc = false;
+        for (var k = 0; k < 12 && !okc; k++) { var d = await api('/api/onvif/cameras'); var cc = (d.cameras || []).filter(function (x) { return x.id === W.edit; })[0]; if (cc && cc.status === 'online') okc = true; else if (cc && cc.status === 'auth') break; else await new Promise(function (r) { setTimeout(r, 1000); }); }
+        t.className = 'btn full';
+        if (!okc) { $('wmsg').className = 'fmsg bad'; $('wmsg').textContent = 'Kamera belum tersambung. Kembali ke langkah Tes untuk memeriksa IP, port, dan akun.'; P.now(); return; }
+        $('wmsg').textContent = ''; $('vq').value = 'sub'; P.now(); lvOpen(W.edit, nm);
+      } catch (er) { t.className = 'btn full'; $('wmsg').className = 'fmsg bad'; $('wmsg').textContent = 'Gagal (koneksi terputus?).'; }
+      return; }
     if (t.id === 'wSave') { readStep(); if (!W.name.trim()) { $('wmsg').className = 'fmsg bad'; $('wmsg').textContent = 'Isi nama kamera dulu.'; return; }
       t.className = 'btn pri busy'; $('wmsg').className = 'fmsg'; $('wmsg').textContent = 'Menyimpan...';
       try { var r = await api('/api/onvif/save', vals()); if (r.ok) { DS.closeSheet('shCam'); DS.toast('Tersimpan. Kamera dicoba tersambung otomatis.'); P.now(); } else { t.className = 'btn pri'; $('wmsg').className = 'fmsg bad'; $('wmsg').textContent = r.error || 'Gagal menyimpan'; } }

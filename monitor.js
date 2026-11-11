@@ -328,6 +328,23 @@ async function monitor(page) {
   }, LIGHT_CSS);
   await page.addStyleTag({ content: LIGHT_CSS }).catch(() => {});
 
+  // Tampilan kustom halaman Bardi (logo/tulisan header + kustom.css). Gagal = diabaikan, pemantauan tetap jalan.
+  try {
+    const kustom = require('./kustom-header').build(__dirname);
+    if (kustom.css) {
+      await ctx.addInitScript((css) => {
+        const add = () => { const st = document.createElement('style'); st.textContent = css; (document.head || document.documentElement).appendChild(st); };
+        if (document.documentElement) add(); else document.addEventListener('DOMContentLoaded', add);
+      }, kustom.css);
+      await page.addStyleTag({ content: kustom.css }).catch(() => {});
+    }
+    if (kustom.init) {
+      await ctx.addInitScript(kustom.init, kustom.arg);
+      await page.evaluate(kustom.init, kustom.arg).catch(() => {});
+      page.on('console', (m) => { const t = m.text(); if (t.startsWith('[kustom]')) log('INFO', t.slice(0, 300)); });
+    }
+  } catch (e) { log('WARN', `tampilan kustom tidak aktif: ${e.message}`); }
+
   // pulihkan otomatis kalau tab crash
   page.on('crash', async () => {
     log('ALERT', 'Halaman crash. Mencoba reload...');

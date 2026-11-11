@@ -637,8 +637,15 @@ function dsKit() {
     var t = document.createElement('div'); t.className = 'toast' + (o.bad ? ' bad' : ''); t.setAttribute('role', 'status');
     t.innerHTML = '<span></span>'; t.firstChild.textContent = msg;
     var done = false;
-    function close() { if (done) return; done = true; t.className = t.className.replace(' in', ''); setTimeout(function () { if (t.parentNode) t.parentNode.removeChild(t); }, 260); }
+    function close() { if (done) return; done = true; t.className = t.className.replace(' in', '') + ' out'; setTimeout(function () { if (t.parentNode) t.parentNode.removeChild(t); }, 260); }
     if (o.action) { var b = document.createElement('button'); b.className = 'btn'; b.type = 'button'; b.textContent = o.action; b.onclick = function () { if (o.onAction) o.onAction(); close(); }; t.appendChild(b); }
+    t.__close = close;
+    // maksimal 3 pemberitahuan: yang paling atas (paling lama) ditutup dengan animasi; yang punya tombol Urungkan dipertahankan selama masih ada yang lain
+    for (var guard = 0; guard < 10; guard++) {
+      var act = [].slice.call(box.querySelectorAll('.toast:not(.out)')); if (act.length < 3) break;
+      var v = null; for (var k = 0; k < act.length; k++) { if (!act[k].querySelector('.btn')) { v = act[k]; break; } } v = v || act[0];
+      if (v.__close) v.__close(); else break;
+    }
     box.appendChild(t); requestAnimationFrame(function () { t.className += ' in'; });
     setTimeout(close, o.ms || (o.action ? 5000 : 2600));
     return close;
@@ -873,15 +880,19 @@ function dsKit() {
   var UI = window.UI = window.UI || {};
   UI.ios = DS.ios; UI.esc = DS.esc;
   UI.copy = function (t, cb) {
-    var ok = false;
+    var ok = false, a = null;
     try {
-      var a = document.createElement('textarea'); a.value = t; a.setAttribute('readonly', '');
-      a.style.cssText = 'position:fixed;left:0;top:0;width:2em;height:2em;padding:0;border:0;opacity:0;font-size:16px';
+      a = document.createElement('textarea'); a.value = t; a.setAttribute('inputmode', 'none'); a.setAttribute('aria-hidden', 'true'); a.setAttribute('tabindex', '-1');
+      a.style.cssText = 'position:fixed;left:0;top:0;width:2em;height:2em;padding:0;border:0;opacity:0;font-size:16px;-webkit-user-select:text;user-select:text';
       document.body.appendChild(a);
-      if (UI.ios) { var r = document.createRange(); r.selectNodeContents(a); var s = window.getSelection(); s.removeAllRanges(); s.addRange(r); a.setSelectionRange(0, t.length); } else { a.select(); }
-      ok = document.execCommand('copy');
-      document.body.removeChild(a);
+      if (UI.ios) { a.contentEditable = 'true'; a.readOnly = false; var r = document.createRange(); r.selectNodeContents(a); var s = window.getSelection(); s.removeAllRanges(); s.addRange(r); a.setSelectionRange(0, 999999); } else { a.select(); }
+      // cadangan: isi salinan ditulis langsung lewat peristiwa 'copy' (jalan juga bila pemilihan teks gagal di iPhone)
+      var onCopy = function (ev) { try { ev.clipboardData.setData('text/plain', t); ev.preventDefault(); } catch (e2) {} };
+      document.addEventListener('copy', onCopy);
+      try { ok = document.execCommand('copy'); } finally { document.removeEventListener('copy', onCopy); }
     } catch (e) { ok = false; }
+    try { if (a && a.parentNode) a.parentNode.removeChild(a); } catch (e) {}
+    try { var sel = window.getSelection && window.getSelection(); if (sel && UI.ios) sel.removeAllRanges(); } catch (e) {}
     if (ok) { if (cb) cb(true); return; }
     if (navigator.clipboard && window.isSecureContext) { navigator.clipboard.writeText(t).then(function () { if (cb) cb(true); }, function () { if (cb) cb(false); }); return; }
     if (cb) cb(false);

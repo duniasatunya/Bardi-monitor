@@ -1,0 +1,8 @@
+/* CSS kustom untuk halaman web IPC Bardi (mirip kolom CSS di vMix).
+   Tulis aturan di bawah, simpan, lalu jalankan ulang program.
+   Contoh (hapus tanda komentar untuk mencoba):
+
+   header { background: #0b3d2e !important; }                 -> ganti warna header
+   [class*="home_roomTitle"] { font-size: 20px !important; }  -> besarkan judul ruangan
+   [class*="SomeClass"] { display: none !important; }         -> sembunyikan bagian tertentu
+*/
