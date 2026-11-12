@@ -132,20 +132,47 @@ function rtspProbe(host, port, ms) {
     s.on('error', () => f(false)); s.on('close', () => f(/^RTSP\/1\./.test(buf)));
   });
 }
-function httpProbe(host, port, ms) {
+// Satu permintaan HTTP kecil. Hasil: { status, body, headers } kalau ada balasan, 'timeout' kalau diam, 'error' kalau sambungan diputus/ditolak.
+function httpReq(host, port, method, p, headers, body, ms) {
   return new Promise((resolve) => {
     let done = false; const fin = (v) => { if (done) return; done = true; resolve(v); };
     try {
-      const req = http.request({ host, port, method: 'POST', path: '/onvif/device_service', timeout: ms, headers: { 'Content-Type': 'application/soap+xml; charset=utf-8', 'Content-Length': Buffer.byteLength(SOAP_TIME) } }, (res) => {
+      const h = Object.assign({ Connection: 'close', 'User-Agent': 'Bardi-Monitor' }, headers || {});
+      if (body) h['Content-Length'] = Buffer.byteLength(body);
+      const req = http.request({ host, port, method, path: p, timeout: ms, headers: h }, (res) => {
         let b = ''; res.on('data', (d) => { if (b.length < 4096) b += d.toString('latin1'); });
-        res.on('end', () => fin(/onvif\.org|SystemDateAndTime|soap-envelope/i.test(b) ? 'onvif' : 'web'));
-        res.on('error', () => fin('web'));
+        res.on('end', () => fin({ status: res.statusCode, body: b, headers: res.headers || {} }));
+        res.on('error', () => fin({ status: res.statusCode, body: b, headers: res.headers || {} }));
       });
-      req.on('timeout', () => { req.destroy(); fin(null); });
-      req.on('error', () => fin(null));
-      req.end(SOAP_TIME);
-    } catch (_) { fin(null); }
+      req.on('timeout', () => { req.destroy(); fin('timeout'); });
+      req.on('error', () => fin('error'));
+      req.end(body || undefined);
+    } catch (_) { fin('error'); }
   });
+}
+const ONVIF_BODY = /onvif\.org|SystemDateAndTime|soap-envelope|soap\+xml|<(s|soap|env|SOAP-ENV):Envelope/i;
+const isOnvifReply = (r) => !!r && typeof r === 'object' && (ONVIF_BODY.test(r.body || '') || /soap/i.test(String((r.headers && r.headers['content-type']) || '')));
+// Kamera berjenis "camapp" (Bardion) sering menutup sambungan atau membalas lain kalau permintaannya tidak persis,
+// jadi kalau cara pertama gagal kita coba cara-cara lain yang masih aman (hanya membaca waktu kamera / membaca alamat).
+async function httpProbe(host, port, ms) {
+  const first = await httpReq(host, port, 'POST', '/onvif/device_service',
+    { 'Content-Type': 'application/soap+xml; charset=utf-8' }, SOAP_TIME, ms);
+  if (first === 'timeout') return null;                 // diam total: tidak perlu coba cara lain
+  if (isOnvifReply(first)) return 'onvif';
+  // Cara 2: sertakan "action" di Content-Type (sebagian kamera mewajibkan).
+  const second = await httpReq(host, port, 'POST', '/onvif/device_service',
+    { 'Content-Type': 'application/soap+xml; charset=utf-8; action="http://www.onvif.org/ver10/device/wsdl/GetSystemDateAndTime"' }, SOAP_TIME, ms);
+  if (isOnvifReply(second)) return 'onvif';
+  // Cara 3: baca alamat layanan ONVIF dengan GET. Balasan 400/401/405 di alamat ini (tapi bukan di halaman depan) khas perangkat ONVIF.
+  const third = await httpReq(host, port, 'GET', '/onvif/device_service', null, null, ms);
+  if (isOnvifReply(third)) return 'onvif';
+  if (third && typeof third === 'object' && [400, 401, 405, 415].includes(third.status)) {
+    const root = await httpReq(host, port, 'GET', '/', null, null, ms);
+    if (!(root && typeof root === 'object' && root.status === third.status)) return 'onvif';
+  }
+  // Tidak ada tanda ONVIF: kalau ada balasan HTTP apa pun, itu halaman web; kalau tidak, jenisnya tidak dikenal.
+  const any = [first, second, third].some((r) => r && typeof r === 'object');
+  return any ? 'web' : null;
 }
 async function classifyPort(host, port, ms) {
   if (await rtspProbe(host, port, ms)) return 'rtsp';
