@@ -155,12 +155,13 @@ function kameraApp() {
   function whyFail(e) {
     var t = String(e || '').toLowerCase();
     if (/login|auth|password|sandi|unauthor|not authorized|401|403|credential/.test(t)) return { step: 1, text: 'Kamera terjangkau, tetapi username atau password ditolak. Periksa lagi username dan password ONVIF di pengaturan kamera.' };
+    if (/cannot read|undefined|is not a function|parse|xml|unexpected|malformed/.test(t)) return { step: 2, text: 'Kamera menjawab, tetapi balasan ONVIF-nya tidak lengkap atau tidak standar. Biasanya akun ONVIF belum dibuat atau ditolak, ONVIF di kamera belum aktif penuh (coba matikan, nyalakan lagi, lalu restart kamera), atau jam kamera berbeda jauh dari jam PC.' };
     if (/timeout|timed out|unreachable|ehost|enet|refused|menjawab|no route|tidak terjangkau|tidak bisa/.test(t)) return { step: 0, text: 'Kamera tidak menjawab di alamat dan port ini. Periksa IP, port, kabel atau Wi-Fi kamera, dan pastikan ONVIF sudah aktif di kamera.' };
     return { step: 0, text: 'Kamera belum bisa dihubungi. Periksa IP, port, username, dan password.' };
   }
   function stepLi(state, label) { return '<li><span class="st ' + state + '">' + icon(state === 'ok' ? 'check' : state === 'no' ? 'x' : 'clock') + '</span>' + label + '</li>'; }
   function resHtml(r) {
-    if (!r.ok) { var w = whyFail((r.error || '') + ' ' + (r.detail || '')), s0 = w.step === 0 ? 'no' : 'ok', s1 = w.step === 1 ? 'no' : (w.step === 0 ? '' : 'ok');
+    if (!r.ok) { var w = whyFail((r.error || '') + ' ' + (r.detail || '')), s0 = w.step === 0 ? 'no' : 'ok', s1 = w.step === 1 ? 'no' : (w.step === 0 ? '' : (w.step === 2 ? '' : 'ok'));
       return '<div class="wz"><p style="margin:0">' + DS.pill('bad', 'Gagal tersambung') + '</p><ul class="chk">' + stepLi(s0, 'Alamat kamera terjangkau') + stepLi(s1, 'Login ke kamera') + stepLi('', 'Membaca profil video') + '</ul>'
         + '<p style="margin:0"><b>' + esc(w.text) + '</b></p><p class="tech">Pesan dari kamera: ' + esc(r.error || '-') + (r.detail ? '<br>Detail teknis: ' + esc(r.detail) : '') + '</p></div>'; }
     var i = r.info || {}, d = [i.manufacturer, i.model, i.firmware ? ('fw ' + i.firmware) : ''].filter(Boolean).join(' · ');
