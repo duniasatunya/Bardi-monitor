@@ -106,8 +106,12 @@ function createIncidentRecorder({ log, rootDir, ffmpegPath, listCams, getCamera,
     return { nowMbps: sum(pts.slice(-2)), avgMbps: sum(pts.slice(-12)), peakMbps: peak, samples: pts.length };
   }
 
+  // H.264 (atau yang tidak menyebut kodek) diutamakan. Kamera yang hanya punya profil H.265 tetap direkam apa adanya
+  // (video disalin tanpa diolah); salinan H.264 untuk ditonton dibuat setelah kejadian (lihat makeWeb).
   function pickProfile(profiles) {
-    const list = (profiles || []).filter((p) => p && p.rtsp && (!p.codec || /264/.test(p.codec)));
+    const all = (profiles || []).filter((p) => p && p.rtsp);
+    let list = all.filter((p) => !p.codec || /264/.test(p.codec));
+    if (!list.length) list = all.filter((p) => /265|hevc/i.test(p.codec || ''));
     if (!list.length) return null;
     const px = (p) => (p.width || 0) * (p.height || 0);
     return list.slice().sort((a, b) => px(b) - px(a))[0]; // kualitas tertinggi

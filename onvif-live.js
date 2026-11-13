@@ -23,8 +23,12 @@ function createOnvifLive({ log, rootDir, ffmpegPath, getCamera, maxSessions = 4,
   const scrub = (txt, secrets) => { let t = String(txt || ''); for (const x of secrets) if (x) { t = t.split(x).join('***'); t = t.split(encodeURIComponent(x)).join('***'); } return t; };
 
   // Pilih profil: 'sub' = resolusi terkecil (hemat), 'main' = terbesar.
+  // Profil H.264 (atau yang tidak menyebut kodek) diutamakan karena bisa disalin tanpa diolah. Kalau kamera hanya punya
+  // profil H.265, profil itu tetap dipakai dan videonya diubah ke H.264 di PC (lihat needTc).
   function pickProfile(cam, quality) {
-    const list = (cam.profiles || []).filter((p) => p.rtsp && (!p.codec || /264/.test(p.codec)));
+    const all = (cam.profiles || []).filter((p) => p.rtsp);
+    let list = all.filter((p) => !p.codec || /264/.test(p.codec));
+    if (!list.length) list = all.filter((p) => /265|hevc/i.test(p.codec || ''));
     if (!list.length) return null;
     const px = (p) => (p.width || 0) * (p.height || 0);
     const sorted = list.slice().sort((a, b) => px(a) - px(b));
@@ -41,7 +45,7 @@ function createOnvifLive({ log, rootDir, ffmpegPath, getCamera, maxSessions = 4,
   // Kodek sebenarnya dibaca dari stream (ffmpeg), disimpan sementara; kalau H.265, video diubah ke H.264 (butuh CPU).
   const codecCache = new Map(); // "id|rtsp" -> { tc, t }
   const ckey = (id, prof) => `${id}|${prof.rtsp}`;
-  const needTc = (id, prof) => { if (forceTc) return true; const c = codecCache.get(ckey(id, prof)); return !!(c && c.tc && Date.now() - c.t < 600000); };
+  const needTc = (id, prof) => { if (forceTc) return true; if (prof && /265|hevc/i.test(prof.codec || '')) return true; const c = codecCache.get(ckey(id, prof)); return !!(c && c.tc && Date.now() - c.t < 600000); };
   function ensureCodec(id, quality) {
     return new Promise((resolve) => {
       const cam = getCamera(id);
@@ -76,7 +80,7 @@ function createOnvifLive({ log, rootDir, ffmpegPath, getCamera, maxSessions = 4,
     fs.mkdirSync(s.dir, { recursive: true });
     const cam = getCamera(s.id);
     const prof = cam && pickProfile(cam, s.quality);
-    if (!cam || !prof || cam.password === null) { s.lastErr = !cam ? 'Kamera tidak ditemukan' : (cam.password === null ? 'Password tersimpan tidak terbaca' : (!(cam.profiles || []).length ? 'Kamera belum tersambung ONVIF (lihat statusnya di daftar)' : 'Kamera tidak punya profil video H.264')); return false; }
+    if (!cam || !prof || cam.password === null) { s.lastErr = !cam ? 'Kamera tidak ditemukan' : (cam.password === null ? 'Password tersimpan tidak terbaca' : (!(cam.profiles || []).length ? 'Kamera belum tersambung ONVIF (lihat statusnya di daftar)' : 'Kamera tidak punya profil video yang bisa dipakai (H.264 atau H.265)')); return false; }
     s.profName = prof.name; s.profInfo = `${prof.width || '?'}x${prof.height || '?'}`;
     const args = ['-hide_banner', '-loglevel', 'error', '-nostdin',
       '-rtsp_transport', rtspTransport, '-fflags', '+genpts+discardcorrupt', '-use_wallclock_as_timestamps', '1',
@@ -168,7 +172,7 @@ function createOnvifLive({ log, rootDir, ffmpegPath, getCamera, maxSessions = 4,
     if (rtActive >= maxRealtime) return rtFail(res, 429, `Batas ${maxRealtime} siaran real-time sekaligus tercapai.`);
     const cam = getCamera(id);
     const prof = cam && pickProfile(cam, quality === 'main' ? 'main' : 'sub');
-    if (!cam || !prof || cam.password === null) return rtFail(res, 503, !cam ? 'Kamera tidak ditemukan' : (cam.password === null ? 'Password tersimpan tidak terbaca' : (!(cam.profiles || []).length ? 'Kamera belum tersambung ONVIF (lihat statusnya di daftar)' : 'Kamera tidak punya profil video H.264')));
+    if (!cam || !prof || cam.password === null) return rtFail(res, 503, !cam ? 'Kamera tidak ditemukan' : (cam.password === null ? 'Password tersimpan tidak terbaca' : (!(cam.profiles || []).length ? 'Kamera belum tersambung ONVIF (lihat statusnya di daftar)' : 'Kamera tidak punya profil video yang bisa dipakai (H.264 atau H.265)')));
     const secrets = [cam.password, cam.username];
     // fMP4 dipecah per 100 ms supaya tidak menunggu satu GOP penuh. Frame non-keyframe di awal otomatis dibuang ffmpeg (stream copy).
     const args = ['-hide_banner', '-loglevel', 'error', '-nostdin',
