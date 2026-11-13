@@ -138,9 +138,9 @@ function httpReq(host, port, method, p, headers, body, ms, trace) {
     let done = false; const fin = (v) => { if (done) return; done = true; resolve(v); };
     const note = (t) => { if (trace) trace.push(method + ' ' + p + ' -> ' + t); };
     try {
-      const h = Object.assign({ Connection: 'close', 'User-Agent': 'Bardi-Monitor' }, headers || {});
+      const h = Object.assign({}, headers || {});   // sengaja tanpa User-Agent/Connection tambahan: sebagian kamera memutus sambungan kalau ada header yang tidak biasa
       if (body) h['Content-Length'] = Buffer.byteLength(body);
-      const req = http.request({ host, port, method, path: p, timeout: ms, headers: h }, (res) => {
+      const req = http.request({ host, port, method, path: p, timeout: ms, headers: h, agent: false }, (res) => {
         let b = ''; res.on('data', (d) => { if (b.length < 4096) b += d.toString('latin1'); });
         res.on('end', () => { note(res.statusCode + ' ' + JSON.stringify({ ct: res.headers['content-type'], www: res.headers['www-authenticate'], server: res.headers.server }) + ' ' + JSON.stringify(b.slice(0, 300))); fin({ status: res.statusCode, body: b, headers: res.headers || {} }); });
         res.on('error', (e) => { note('balasan terputus ' + (e && e.code)); fin({ status: res.statusCode, body: b, headers: res.headers || {} }); });
@@ -158,13 +158,14 @@ const isOnvifReply = (r) => !!r && typeof r === 'object' && (ONVIF_BODY.test(r.b
 async function httpProbe(host, port, ms, traceOut) {
   const trace = traceOut || [];
   const out = (v) => v;
+  // Cara 1 meniru persis permintaan pustaka ONVIF yang terbukti berhasil ke kamera camapp (Content-Type dengan action + header charset).
   const first = await httpReq(host, port, 'POST', '/onvif/device_service',
-    { 'Content-Type': 'application/soap+xml; charset=utf-8' }, SOAP_TIME, ms, trace);
+    { 'Content-Type': 'application/soap+xml;charset=utf-8;action="http://www.onvif.org/ver10/device/wsdl/GetSystemDateAndTime"', charset: 'utf-8' }, SOAP_TIME, ms, trace);
   if (first === 'timeout') return out(null);            // diam total: tidak perlu coba cara lain
   if (isOnvifReply(first)) return 'onvif';
-  // Cara 2: sertakan "action" di Content-Type (sebagian kamera mewajibkan).
+  // Cara 2: tanpa "action" (sebagian kamera tidak suka header itu).
   const second = await httpReq(host, port, 'POST', '/onvif/device_service',
-    { 'Content-Type': 'application/soap+xml; charset=utf-8; action="http://www.onvif.org/ver10/device/wsdl/GetSystemDateAndTime"' }, SOAP_TIME, ms, trace);
+    { 'Content-Type': 'application/soap+xml; charset=utf-8' }, SOAP_TIME, ms, trace);
   if (isOnvifReply(second)) return 'onvif';
   // Cara 3: baca alamat layanan ONVIF dengan GET. Balasan 400/401/405 di alamat ini (tapi bukan di halaman depan) khas perangkat ONVIF.
   const third = await httpReq(host, port, 'GET', '/onvif/device_service', null, null, ms, trace);
