@@ -176,18 +176,26 @@ function createOnvifLive({ log, rootDir, ffmpegPath, getCamera, maxSessions = 4,
     const secrets = [cam.password, cam.username];
     // fMP4 dipecah per 100 ms supaya tidak menunggu satu GOP penuh. Frame non-keyframe di awal otomatis dibuang ffmpeg (stream copy).
     const args = ['-hide_banner', '-loglevel', 'error', '-nostdin',
-      '-rtsp_transport', rtspTransport, '-fflags', 'nobuffer+genpts+discardcorrupt', '-flags', 'low_delay', '-use_wallclock_as_timestamps', '1',
-      '-i', rtspUrl(cam, prof), '-map', '0:v:0', ...videoArgs(needTc(id, prof) || (small && quality !== 'main' && (prof.width || 0) > 800), quality === 'main' ? 'main' : 'sub'), ...(audio ? ['-map', '0:a:0?', '-c:a', 'aac', '-b:a', '48k', '-ac', '1', '-ar', '16000'] : ['-an']),
+      '-rtsp_transport', rtspTransport, '-fflags', 'nobuffer+genpts+discardcorrupt', '-flags', 'low_delay', '-analyzeduration', '1000000', '-probesize', '500000', '-use_wallclock_as_timestamps', '1',
+      '-i', rtspUrl(cam, prof), '-map', '0:v:0', ...videoArgs(needTc(id, prof), quality === 'main' ? 'main' : 'sub'), ...(audio ? ['-map', '0:a:0?', '-c:a', 'aac', '-b:a', '48k', '-ac', '1', '-ar', '16000'] : ['-an']),
       '-f', 'mp4', '-movflags', 'empty_moov+default_base_moof', '-frag_duration', '100000', '-flush_packets', '1', 'pipe:1'];
     const p = spawn(findFfmpeg(), args, { windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'] });
     rtActive++;
-    let err = '', sent = false, closed = false, firstTimer = null;
-    const finish = () => { if (closed) return; closed = true; rtActive--; if (firstTimer) clearTimeout(firstTimer); try { p.kill(); } catch (_) {} };
+    let err = '', sent = false, closed = false, firstTimer = null, lastData = Date.now(), watchTimer = null;
+    const finish = () => { if (closed) return; closed = true; rtActive--; if (firstTimer) clearTimeout(firstTimer); if (watchTimer) clearInterval(watchTimer); try { p.kill(); } catch (_) {} };
     firstTimer = setTimeout(() => { if (!sent) { const e = scrub(err.trim(), secrets) || 'Tidak ada video dari kamera dalam 25 detik'; finish(); rtFail(res, 504, e); } }, 25000);
     p.stderr.on('data', (d) => { err = (err + d).slice(-600); });
     p.on('error', (e) => { err = e.code === 'ENOENT' ? 'ffmpeg tidak ditemukan' : e.message; finish(); rtFail(res, 500, err); });
+    // Pengawas: kalau sudah jalan tapi tidak ada data baru dari kamera >8 detik, putus sekarang supaya
+    // pemutar langsung menyambung ulang (bukan menggantung beku sampai sambungan TCP menyerah).
+    watchTimer = setInterval(() => {
+      if (closed || !sent) return;
+      if (Date.now() - lastData > 8000) { log('WARN', `Live real-time ${id}: tidak ada data dari kamera 8 detik, menyambung ulang`); finish(); try { res.end(); } catch (_) {} }
+    }, 2000);
+    watchTimer.unref();
     p.stdout.on('data', (chunk) => {
       if (closed) return;
+      lastData = Date.now();
       if (!sent) { sent = true; clearTimeout(firstTimer); res.writeHead(200, { 'Content-Type': 'video/mp4', 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' }); log('INFO', `Live real-time ${id} dimulai (${prof.name} ${prof.width || '?'}x${prof.height || '?'})`); }
       if (res.writableLength > 4 * 1024 * 1024) { log('WARN', `Live real-time ${id}: penonton terlalu lambat, diputus`); finish(); try { res.destroy(); } catch (_) {} return; }
       res.write(chunk);

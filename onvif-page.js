@@ -366,7 +366,7 @@ function rtStart(tok){
     throw new Error('Siaran berakhir');
   })().catch(function(e){
     if(myTok!==RT.tok||tok!==LV.tok||(e&&e.name==='AbortError'))return;
-    var life=Date.now()-(RT.t0||0);RT.quick=(life<4000)?(RT.quick||0)+1:0;var ve=$('vv').error;RT.tries++;var wait=Math.min(1500*RT.tries,10000);
+    var life=Date.now()-(RT.t0||0);RT.quick=(life<4000)?(RT.quick||0)+1:0;var ve=$('vv').error;RT.tries++;var wait=RT.tries===1?500:Math.min(1500*(RT.tries-1),8000);
     var em=String(e&&e.message?e.message:'galat').split(String.fromCharCode(10)).filter(function(x){return x.trim()}).pop()||'galat';if(em.length>90)em=em.slice(0,90)+'...';
     if(/Kamera tidak ditemukan/.test(em)){LV.id=null;rtStop();lvSay('Kamera ini sudah dihapus. Tutup panel ini.',true);return}
     var dg=' [codec '+(RT.codec||'?')+(ve?', video error '+ve.code+(ve.message?': '+ve.message:''):'')+']';
