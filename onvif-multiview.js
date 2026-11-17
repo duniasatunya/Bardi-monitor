@@ -193,6 +193,7 @@ body{background:#eef0f4;color:#222;overflow:hidden;font-family:system-ui,-apple-
 
 </div>
 </div>
+<script src="/vendor/wc-player.js"></script>
 <script>
 var $=function(i){return document.getElementById(i)};
 function ls(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){return null}}
@@ -260,6 +261,24 @@ function mkPlayer(v,say,opt){
   P.stop=function(){P.on=false;clean()};
   return P}
 
+// ---- pemilih pemutar: di aplikasi pemantau (Bardi Viewer) pakai pemutar langsung WebCodecs; kodek tidak didukung komputer ini -> pemutar lama ----
+var WCBAD=false;
+function wcOn(){return !!(window.WCP&&WCP.hasApi()&&!WCBAD&&(/BardiViewer/.test(navigator.userAgent)||ls('mvwc')==='1'))}
+function mkAuto(v,say,opt){
+  var A={on:false,cur:null,ms:null,wc:null};
+  function stopCur(){if(A.cur){A.cur.stop();A.cur=null}try{if(v.srcObject)v.srcObject=null}catch(e){}}
+  function go(){stopCur();
+    if(wcOn()){
+      if(!A.wc)A.wc=WCP.mkPlayer(v,function(t,bad){
+        if(A.wc&&A.wc.noSupport){WCBAD=true;setTimeout(function(){if(A.on)go()},0);return}
+        say(t,bad)},{url:function(){return opt.url().replace('rt.ws','ts.ws')},audio:opt.audio,onInit:opt.onInit});
+      A.cur=A.wc}
+    else{if(!A.ms)A.ms=mkPlayer(v,say,opt);A.cur=A.ms}
+    A.cur.start()}
+  A.start=function(){A.on=true;go()};
+  A.stop=function(){A.on=false;stopCur()};
+  A.applyMute=function(){if(A.cur)A.cur.applyMute()};
+  return A}
 // ---- multiview ----
 var CAMS=[],LAY=ls('mvlay')||'16',SMALL=ls('mvsmall')==='1',SEL=-1,SLOTS=[],SLOTSET=false;
 var TILES={},HOLES=[],QUAL={},AUD={},NOAUD={},GM=ls('mvmute')==='1',PTZON={},NOPTZ={},PTZPOS={x:50,y:62},SIG=null;
@@ -318,7 +337,7 @@ function mkTile(cam){var id=cam.id;var d=document.createElement('div');d.classNa
   T.bFs=btn(I_FS,'Layar penuh kamera ini',function(){fsTile(T)});
   T.bX=btn(I_X,'Kosongkan kotak ini (di layar penuh: keluar)',function(){xTile(T)},'xb');
   d.appendChild(v);d.appendChild(st);d.appendChild(pill);d.appendChild(tb);d.appendChild(mkPtz(T));
-  T.p=mkPlayer(v,function(t,bad){say(T,t,bad)},{url:function(){return streamUrl(T)},audio:function(){return aud(id)},
+  T.p=mkAuto(v,function(t,bad){say(T,t,bad)},{url:function(){return streamUrl(T)},audio:function(){return aud(id)},
     onInit:function(hasA){if(!hasA){NOAUD[id]=true;paintBtns(T)}}});
   v.addEventListener('playing',function(){st.style.display='none'});
   d.onclick=function(){var i=slotOf(id);if(LAY!=='all'&&i>=0)select(i);else if(LAY==='all'&&PH()){SELID=id;sync()}};

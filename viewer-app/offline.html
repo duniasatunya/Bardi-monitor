@@ -1,0 +1,14 @@
+<!doctype html><html lang="id"><head><meta charset="utf-8"><title>Bardi Viewer</title>
+<style>body{margin:0;background:#0b0d10;color:#e8edf2;font:16px/1.5 system-ui,Segoe UI,sans-serif;display:flex;align-items:center;justify-content:center;height:100vh}
+.b{width:min(520px,90vw)}h1{font-size:22px;margin:0 0 8px}p{color:#9aa7b4;margin:0 0 8px}
+button{margin:10px 10px 0 0;padding:11px 18px;border:0;border-radius:10px;background:#2f7df6;color:#fff;font-size:15px;cursor:pointer}button.g{background:#26303b}</style></head><body><div class="b">
+<h1>Tidak bisa tersambung ke server</h1>
+<p>Pastikan PC program menyala, program Bardi Monitor berjalan, dan Tailscale aktif di komputer ini.</p>
+<p id="w" style="font-size:13px"></p><p id="t" style="font-size:13px"></p>
+<button id="r">Coba lagi sekarang</button><button class="g" id="c">Ganti alamat server</button></div>
+<script>
+var p=new URLSearchParams(location.search),addr=p.get('addr'),why=p.get('why');
+document.getElementById('w').textContent='Alamat: '+(addr||'(belum diisi)')+(why?'  ('+why+')':'');
+document.getElementById('r').onclick=function(){bv.retry()};document.getElementById('c').onclick=function(){bv.change()};
+var n=5;setInterval(function(){n--;document.getElementById('t').textContent='Mencoba lagi dalam '+n+' detik...';if(n<=0){n=5;bv.retry()}},1000);
+</script></body></html>

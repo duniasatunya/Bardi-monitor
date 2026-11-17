@@ -1,0 +1,17 @@
+{
+  "name": "bardi-viewer",
+  "version": "1.0.0",
+  "description": "Aplikasi pemantau untuk Bardi Monitor (membuka server lewat Tailscale)",
+  "main": "main.js",
+  "author": "Bardi Monitor",
+  "license": "UNLICENSED",
+  "scripts": { "start": "electron .", "dist": "electron-builder --win --publish never" },
+  "devDependencies": { "electron": "33.2.0", "electron-builder": "25.1.8" },
+  "build": {
+    "appId": "id.bardi.viewer",
+    "productName": "Bardi Viewer",
+    "files": ["main.js", "preload.js", "setup.html", "offline.html", "package.json"],
+    "win": { "target": [{ "target": "nsis", "arch": ["x64"] }] },
+    "nsis": { "oneClick": true, "perMachine": false, "deleteAppDataOnUninstall": false, "artifactName": "Bardi-Viewer-Setup.exe" }
+  }
+}

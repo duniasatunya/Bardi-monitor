@@ -170,3 +170,10 @@ Cadangan sebelum revisi: `*.bak-r3`. Belum diuji di iPhone asli dan dengan kamer
 - Alamat baru `/onvif-live/<id8>/live.ts?q=sub|main&a=0|1` (wajib login, cookie sama). Keluarannya MPEG-TS tanpa olah ulang (`-c copy`, H.265 tetap H.265).
 - Satu ffmpeg per kamera+kualitas, dibagi ke semua penonton; berhenti 10 dtk setelah penonton terakhir pergi; putus otomatis kalau kamera diam 8 dtk.
 - Tidak mengubah halaman/pemutar yang sudah ada. Berkas: `onvif-live.js` (relay), `report-server.js` (1 baris rute).
+
+## Aplikasi pemantau Bardi Viewer (tahap 2)
+- Folder baru `viewer-app/`: aplikasi Windows (Electron) yang membuka server lewat alamat Tailscale. Program di PC program tidak berubah. Alamat server diisi sekali (Ctrl+Shift+S untuk mengganti). Kalau server mati, tampil halaman "tidak bisa tersambung" dan mencoba lagi tiap 5 detik. Muat ulang otomatis setelah komputer bangun dari tidur.
+- `build-viewer.yml`: salinan ke `.github/workflows/build-viewer.yml` di GitHub supaya .exe dibangun otomatis.
+- `wc-player.js` (baru, dilayani di `/vendor/wc-player.js`): pemutar langsung (bongkar MPEG-TS + WebCodecs), tanpa MediaSource, tanpa buffer menumpuk. Mengikuti video dan suara AAC dari relay.
+- `onvif-multiview.js`: di aplikasi (dikenali dari "BardiViewer" pada user-agent) tiap kotak memakai pemutar langsung lewat relay `ts.ws`. Kalau kodek tidak didukung komputer itu, otomatis kembali ke pemutar lama. Di browser biasa tidak ada perubahan (uji manual: isi `localStorage.mvwc = '1'`).
+- `onvif-ws.js`: menerima `/onvif-live/<id>/ts.ws` (relay lewat WebSocket, tidak kena batas 6 sambungan browser).

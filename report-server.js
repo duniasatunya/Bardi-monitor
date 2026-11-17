@@ -376,6 +376,10 @@ function startReportServer(opts) {
       if (p === '/displaycostum.html') return send(res, 200, 'text/html; charset=utf-8', MAIN_PAGE);
       if (p === '/layar') return send(res, 200, 'text/html; charset=utf-8', LIVE_PAGE);
       if (p === '/layar-foto') return send(res, 200, 'text/html; charset=utf-8', PHOTO_PAGE);
+      if (p === '/vendor/wc-player.js') {
+        try { return send(res, 200, 'application/javascript; charset=utf-8', fs.readFileSync(path.join(__dirname, 'wc-player.js')), { 'Cache-Control': 'no-cache' }); }
+        catch (_) { return send(res, 404, 'text/plain; charset=utf-8', 'wc-player.js tidak ada'); }
+      }
       if (p === '/vendor/hls.min.js') {
         try { return send(res, 200, 'application/javascript; charset=utf-8', fs.readFileSync(path.join(__dirname, 'vendor', 'hls.min.js')), { 'Cache-Control': 'public, max-age=86400' }); }
         catch (_) { return send(res, 404, 'text/plain; charset=utf-8', 'hls.min.js tidak ada'); }

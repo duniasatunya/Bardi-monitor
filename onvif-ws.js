@@ -6,7 +6,7 @@ const crypto = require('crypto');
 const { EventEmitter } = require('events');
 
 const GUID = '258EAFA5-E914-47DA-95CA-C5AB0DC85B11';
-const PATH_RE = /^\/onvif-live\/([0-9a-f]{8})\/rt\.ws$/;
+const PATH_RE = /^\/onvif-live\/([0-9a-f]{8})\/(rt|ts)\.ws$/;
 
 function frame(op, payload) {
   const n = payload.length;
@@ -73,6 +73,11 @@ function attachRealtimeWs(server, { authed, onvifLive, log }) {
         if (op === 0x9) send(0xA, payload);
       }
     });
+    if (m[2] === 'ts') { // relay bersama (MPEG-TS tanpa olah ulang) untuk aplikasi pemantau
+      try { onvifLive.relay(m[1], url.searchParams.get('q'), rq, rs, url.searchParams.get('a') === '1'); }
+      catch (e) { if (log) log('WARN', 'WS relay galat: ' + (e && e.message)); rs.writeHead(500); rs.end('Galat di server'); }
+      return;
+    }
     Promise.resolve(onvifLive.realtime(m[1], url.searchParams.get('q'), rq, rs, url.searchParams.get('a') !== '0', url.searchParams.get('s') === '1'))
       .catch((e) => { if (log) log('WARN', 'WS real-time galat: ' + (e && e.message)); rs.writeHead(500); rs.end('Galat di server'); });
   });

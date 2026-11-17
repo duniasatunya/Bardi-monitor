@@ -1,0 +1,14 @@
+<!doctype html><html lang="id"><head><meta charset="utf-8"><title>Bardi Viewer</title>
+<style>body{margin:0;background:#0b0d10;color:#e8edf2;font:16px/1.5 system-ui,Segoe UI,sans-serif;display:flex;align-items:center;justify-content:center;height:100vh}
+.b{width:min(460px,90vw)}h1{font-size:22px;margin:0 0 6px}p{color:#9aa7b4;margin:0 0 18px}
+input{width:100%;box-sizing:border-box;padding:12px 14px;border-radius:10px;border:1px solid #2b3540;background:#141a21;color:#fff;font-size:16px}
+button{margin-top:14px;padding:12px 20px;border:0;border-radius:10px;background:#2f7df6;color:#fff;font-size:16px;cursor:pointer}
+.e{color:#ff7b7b;margin-top:10px;min-height:22px}</style></head><body><div class="b">
+<h1>Bardi Viewer</h1><p>Masukkan alamat server Bardi Monitor (alamat Tailscale PC program dan nomor port).</p>
+<input id="a" placeholder="contoh: 100.96.132.96:3000" autofocus><div class="e" id="e"></div><button id="s">Sambungkan</button></div>
+<script>
+var a=document.getElementById('a'),e=document.getElementById('e');
+var q=new URLSearchParams(location.search).get('addr');if(q)a.value=q;
+async function go(){e.textContent='';var r=await bv.save(a.value);if(!r.ok)e.textContent=r.error}
+document.getElementById('s').onclick=go;a.onkeydown=function(ev){if(ev.key==='Enter')go()};
+</script></body></html>
