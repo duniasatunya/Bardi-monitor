@@ -501,6 +501,15 @@ function startReportServer(opts) {
           return json(res, await onvif.test(body));
         } finally { onvifTests--; }
       }
+      if (p === '/api/restart') { // tombol "Mulai ulang program": tutup program lalu jalankan lagi otomatis (mekanisme sama dengan setelah pembaruan)
+        if (req.method !== 'POST') return send(res, 405, 'text/plain; charset=utf-8', 'Gunakan POST');
+        const origin = req.headers.origin;
+        if (origin) { let okOrigin = false; try { okOrigin = new URL(origin).host === req.headers.host; } catch (_) {} if (!okOrigin) return send(res, 403, 'text/plain; charset=utf-8', 'Forbidden'); }
+        if (!opts.restart) return json(res, { ok: false, error: 'Fitur mulai ulang tidak tersedia' });
+        log('INFO', `Mulai ulang program diminta dari ${ip}`);
+        setTimeout(() => opts.restart(), 800);
+        return json(res, { ok: true });
+      }
       if (p === '/api/stop') {
         if (req.method !== 'POST') return send(res, 405, 'text/plain; charset=utf-8', 'Gunakan POST');
         const origin = req.headers.origin;

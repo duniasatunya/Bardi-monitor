@@ -30,7 +30,7 @@ const css = `
 .vbox{position:relative;aspect-ratio:16/9;background:#000;overflow:hidden}
 .vbox video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000}
 .vbox .ph0{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;color:#b4c0c9;padding:0 24px;pointer-events:none;font-size:15px;line-height:1.5}
-.vbox .clk{position:absolute;left:10px;top:10px;padding:4px 10px;border-radius:8px;background:rgba(0,0,0,.55);color:#fff;font-size:13px;font-weight:700;font-variant-numeric:tabular-nums;pointer-events:none}
+.vbox .clk{display:none!important;position:absolute;left:10px;top:10px;padding:4px 10px;border-radius:8px;background:rgba(0,0,0,.55);color:#fff;font-size:13px;font-weight:700;font-variant-numeric:tabular-nums;pointer-events:none}
 .pinfo{padding:14px 16px 18px;display:flex;flex-direction:column;gap:12px}
 .rk-ctl{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .rk-ctl .btn{min-height:40px;font-size:14px;padding:0 14px}
@@ -98,6 +98,34 @@ const css = `
   .rk .side-c{position:static}
   .rk-bar .psel{flex-basis:100%}
 }
+
+/* HP miring (landscape): video penuh layar, kontrol + garis waktu melayang di bawahnya */
+@media (orientation:landscape) and (max-height:540px) and (hover:none){
+  .pcard{position:fixed;left:0;top:0;right:0;bottom:0;margin:0;z-index:70;background:#000;display:block}
+  .pcard .vbox{position:absolute;inset:0;aspect-ratio:auto;height:100%;order:0}
+  .pinfo{display:flex;flex-direction:column;position:absolute;left:0;right:0;bottom:0;padding:0 max(8px,env(safe-area-inset-right)) 4px max(8px,env(safe-area-inset-left));background:linear-gradient(transparent,rgba(0,0,0,.62) 38%);color:#fff}
+  .pinfo .dnav{display:flex;position:fixed;top:6px;left:50%;transform:translateX(-50%);padding:0;z-index:2}
+  .dpill{padding:3px;background:rgba(255,255,255,.18)}
+  .dpill b{min-width:84px;font-size:14px;color:#fff}
+  .dpill button{width:30px;height:30px;background:rgba(255,255,255,.9)}
+  #ctl{order:1;padding:0;gap:6px;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
+  #ctl .btn{flex:none;min-height:30px;font-size:13px;padding:0 12px;background:rgba(255,255,255,.2);color:#fff;border:0}
+  #ctl .btn.pri,#ctl .spd button[aria-pressed=true]{background:var(--brand-ink)}
+  #ctl .grow{flex:1}
+  .tlw{order:2;background:rgba(40,48,54,.55);margin-top:6px;padding-top:6px;border-radius:12px;overflow:hidden}
+  .tlh{color:#fff;height:18px;font-size:12px;margin-bottom:2px}
+  .tl{height:42px;background:transparent}
+  .tl .sg{top:6px;bottom:6px}
+  .tl .tk{background:#fff;opacity:.6}
+  .tl .pos{background:#fff;box-shadow:0 0 0 1px rgba(0,0,0,.5)}
+  #zoom{order:3;padding:4px 0 0;background:transparent;gap:6px}
+  #zoom .btn{min-height:28px;font-size:12px;padding:0 10px;background:rgba(255,255,255,.2);color:#fff;border:0}
+  #zoom .btn[aria-pressed=true]{background:var(--brand-ink)}
+  .tlg{display:none}
+  .pinfo .cn{position:absolute;left:12px;bottom:calc(100% + 6px);padding:0;color:#fff;text-shadow:0 1px 3px #000;font-size:12px}
+  .pinfo .cn:not(#note){display:none}
+  #note{bottom:calc(100% + 6px)}
+}
 `;
 
 const body = `
@@ -128,7 +156,7 @@ const body = `
 <div class="tlw"><div class="tl" id="tl" role="slider" aria-label="Garis waktu"></div><div class="tlh" id="tlh"></div></div>
 <div class="rk-ctl" id="zoom"><span class="cn" id="zinfo">Tampilan: Seluruh hari</span><button class="btn" type="button" id="zoomOut" aria-label="Perkecil" title="Perkecil">-</button><button class="btn" type="button" id="zoomIn" aria-label="Perbesar" title="Perbesar">+</button><button class="btn" type="button" data-m="1440" aria-pressed="true">24 jam</button><button class="btn" type="button" data-m="360">6 jam</button><button class="btn" type="button" data-m="60">1 jam</button><button class="btn" type="button" data-m="30">30 mnt</button><button class="btn" type="button" data-m="10">10 mnt</button><button class="btn" type="button" data-m="5">5 mnt</button><button class="btn" type="button" data-m="1">1 mnt</button></div>
 <div class="tlg"><span><i style="background:var(--ok)"></i>Ada rekaman</span><span><i style="background:var(--brand)"></i>Sedang direkam</span><span><i style="background:var(--bad)"></i>Kamera mati (klik = ke saat kamera mati)</span><span><i style="background:var(--line)"></i>Tidak ada rekaman</span></div>
-<p class="cn">Geser garis waktu untuk mencari. Ctrl + putar roda mouse = perbesar/perkecil; saat diperbesar, putar roda = geser kiri/kanan.</p><p class="cn" id="note"></p>
+<p class="cn">Tarik garis hitam untuk mencari posisi. Tarik bagian lain garis waktu untuk menggeser tampilan. Ctrl + putar roda mouse = perbesar/perkecil; saat diperbesar, putar roda = geser kiri/kanan.</p><p class="cn" id="note"></p>
 </div></div>
 </div>
 <aside class="side-c rk-side"><div class="card" style="padding:14px 16px"><h3>Kejadian hari ini</h3><div id="evs"></div></div></aside>
@@ -228,35 +256,55 @@ function rekamanApp() {
     S.vs = c - w / 2; S.ve = S.vs + w; clampView();
   }
   function matiAt(t) { var d = S.data, r = null; if (!d) return null; d.mati.forEach(function (m) { if (t >= m.dari && t <= (m.sampai || d.sekarang)) r = m; }); return r; }
-  // Geser (drag) di garis waktu = cari posisi; lepas = putar dari situ. Klik biasa sama saja.
+  // Dua gerakan terpisah di garis waktu:
+  //  - tarik GARIS PENANDA (garis hitam posisi putar) = cari posisi video
+  //  - tarik bagian lain garis waktu = geser tampilan timeline (kiri/kanan), penanda tidak ikut pindah
+  //  - ketuk/klik tanpa menarik = pindahkan penanda ke situ dan putar
   var drag = null;
   function scrubTo(cx) {
-    var t = Math.max(d0(S.day), Math.min(d0(S.day) + DAY - 1, x2t(cx))); S.posMs = t; $('clk').hidden = false; $('clk').textContent = hms(t); movePos();
+    var t = Math.max(d0(S.day), Math.min(d0(S.day) + DAY - 1, x2t(cx))); S.posMs = t; $('clk').textContent = hms(t); movePos();
     if (S.seg && t >= S.seg.m && t < S.seg.a && V.readyState >= 1) { try { V.currentTime = (t - S.seg.m) / 1000; } catch (e) {} }
     return t;
   }
   var TL = $('tl');
-  TL.addEventListener('pointerdown', function (e) { if (e.pointerType === 'mouse' && e.button !== 0) return; if (!S.data) return; drag = { id: e.pointerId }; S.scrub = true; try { TL.setPointerCapture(e.pointerId); } catch (x) {} scrubTo(e.clientX); e.preventDefault(); });
-  TL.addEventListener('pointermove', function (e) { if (drag) scrubTo(e.clientX); });
-  function endDrag(e, ok) {
-    if (!drag) return; drag = null; S.scrub = false; if (!ok) return;
-    var t = scrubTo(e.clientX), m = matiAt(t);
+  TL.addEventListener('pointerdown', function (e) {
+    if (e.pointerType === 'mouse' && e.button !== 0) return; if (!S.data) return;
+    var r = TL.getBoundingClientRect(), px = S.posMs != null ? r.left + (S.posMs - S.vs) / (S.ve - S.vs) * r.width : -999;
+    drag = { id: e.pointerId, x0: e.clientX, vs0: S.vs, w: S.ve - S.vs, mode: Math.abs(e.clientX - px) <= 16 ? 'scrub' : 'pan', moved: false };
+    try { TL.setPointerCapture(e.pointerId); } catch (x) {}
+    if (drag.mode === 'scrub') { S.scrub = true; scrubTo(e.clientX); }
+    e.preventDefault();
+  });
+  TL.addEventListener('pointermove', function (e) {
+    if (!drag) return;
+    if (Math.abs(e.clientX - drag.x0) > 4) drag.moved = true;
+    if (drag.mode === 'scrub') { scrubTo(e.clientX); return; }
+    if (!drag.moved || drag.w >= DAY) return;
+    var r = TL.getBoundingClientRect(); S.vs = drag.vs0 - (e.clientX - drag.x0) / r.width * drag.w; S.ve = S.vs + drag.w; clampView(); S.free = true; drawTl();
+  });
+  function jumpTo(t) {
+    var m = matiAt(t);
     if (m) { t = m.dari - 5000; note('Kamera mati mulai ' + hms(m.dari) + (m.sampai ? ', menyala lagi ' + hms(m.sampai) : ' (belum menyala)') + '. Ini 5 detik terakhir sebelum mati.', true); }
     gotoTime(t, true);
+  }
+  function endDrag(e, ok) {
+    if (!drag) return; var d = drag; drag = null; S.scrub = false; if (!ok) return;
+    if (d.mode === 'scrub') { jumpTo(scrubTo(e.clientX)); return; }
+    if (!d.moved) jumpTo(Math.max(d0(S.day), Math.min(d0(S.day) + DAY - 1, x2t(e.clientX))));
   }
   TL.addEventListener('pointerup', function (e) { endDrag(e, true); });
   TL.addEventListener('pointercancel', function (e) { endDrag(e, false); });
   // Ctrl + roda mouse (atau cubit di trackpad) = perbesar/perkecil di sekitar kursor. Roda biasa saat diperbesar = geser kiri/kanan.
   TL.addEventListener('wheel', function (e) {
     if (!S.data) return; var w = S.ve - S.vs;
-    if (e.ctrlKey || e.metaKey) { e.preventDefault(); var dy = Math.max(-80, Math.min(80, e.deltaY)); zoomAt(Math.exp(dy * 0.012), x2t(e.clientX)); drawTl(); return; }
+    if (e.ctrlKey || e.metaKey) { e.preventDefault(); var dy = Math.max(-80, Math.min(80, e.deltaY)); zoomAt(Math.exp(dy * 0.012), x2t(e.clientX)); S.free = true; drawTl(); return; }
     if (w >= DAY) return; e.preventDefault();
     var dx = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY; var r = TL.getBoundingClientRect();
-    S.vs += dx / r.width * w; S.ve = S.vs + w; clampView(); drawTl();
+    S.vs += dx / r.width * w; S.ve = S.vs + w; clampView(); S.free = true; drawTl();
   }, { passive: false });
   $('zoom').addEventListener('click', function (e) {
     var b = e.target.closest ? e.target.closest('[data-m]') : null; if (!b) return; var z = Number(b.getAttribute('data-m'));
-    S.w = z * 60000; centerView(); drawTl();
+    S.w = z * 60000; S.free = false; centerView(); drawTl();
   });
   $('zoomIn').onclick = function () { var c = S.posMs != null ? S.posMs : (S.vs + S.ve) / 2; zoomAt(0.5, c); drawTl(); };
   $('zoomOut').onclick = function () { var c = S.posMs != null ? S.posMs : (S.vs + S.ve) / 2; zoomAt(2, c); drawTl(); };
@@ -295,6 +343,7 @@ function rekamanApp() {
     $('ph0').style.display = 'none'; $('clk').hidden = false;
     if (S.loadedKey === key && V.readyState >= 1) { applyWant(); return; }
     S.loadedKey = key; note('Menyiapkan potongan ' + hm(s.m) + '... (pertama kali bisa beberapa detik)');
+    S.failed = false; clearTimeout(S.loadTo); S.loadTo = setTimeout(function () { if (V.readyState < 1) loadFail(); }, 540000);
     V.src = '/rekaman/f/' + S.cam + '/' + S.day + '/' + s.f + '.mp4'; V.load();
   }
   function applyWant() {
@@ -305,12 +354,14 @@ function rekamanApp() {
     note('');
   }
   V.addEventListener('loadedmetadata', applyWant);
-  V.addEventListener('error', function () { if (S.seg) note('Potongan ' + hm(S.seg.m) + ' tidak bisa diputar (hilang, atau sedang diproses).', true); });
+  function loadFail() { clearTimeout(S.loadTo); if (S.seg) { S.failed = true; note('Gagal menyiapkan potongan ' + hm(S.seg.m) + '. Tekan Putar untuk coba lagi.', true); } }
+  V.addEventListener('error', function () { if (V.getAttribute('src')) loadFail(); });
+  V.addEventListener('loadedmetadata', function () { clearTimeout(S.loadTo); S.failed = false; });
   V.addEventListener('click', function () { if (!S.seg) return; if (V.paused) { var p = V.play(); if (p && p.catch) p.catch(function () {}); } else V.pause(); });
   function setPlay(on) { S.playing = on; $('ppT').textContent = on ? 'Jeda' : 'Putar'; }
   V.addEventListener('play', function () { setPlay(true); }); V.addEventListener('pause', function () { setPlay(false); });
   V.addEventListener('timeupdate', function () { if (!S.seg || S.scrub) return; S.posMs = S.seg.m + V.currentTime * 1000; $('clk').textContent = hms(S.posMs); movePos(); autoScroll(); });
-  function autoScroll() { if (S.ve - S.vs >= DAY || S.posMs == null) return; if (S.posMs < S.vs || S.posMs > S.ve) { centerView(); drawTl(); } }
+  function autoScroll() { if (S.free || S.ve - S.vs >= DAY || S.posMs == null) return; if (S.posMs < S.vs || S.posMs > S.ve) { centerView(); drawTl(); } }
   V.addEventListener('ended', function () {
     var s = S.seg; if (!s) return;
     var nx = segAfter(s.m + 1000); // potongan berikutnya pada hari ini
@@ -320,7 +371,7 @@ function rekamanApp() {
     else note('Sudah sampai rekaman terbaru.');
   });
   function gotoTime(t, play) {
-    if (!S.cam) return; var tg = dstr(t);
+    if (!S.cam) return; var tg = dstr(t); S.free = false;
     var go = function () {
       var s = segAt(t);
       if (s) { posSet(t); loadSeg(s, t - s.m, play !== false); return; }
@@ -331,7 +382,7 @@ function rekamanApp() {
     if (tg !== S.day) setDay(tg, go); else go();
   }
   function posSet(t) { S.posMs = t; $('clk').hidden = false; $('clk').textContent = hms(t); movePos(); }
-  $('pp').onclick = function () { if (!S.seg) { gotoNow(); return; } if (V.paused) { var p = V.play(); if (p && p.catch) p.catch(function () {}); } else V.pause(); };
+  $('pp').onclick = function () { if (!S.seg) { gotoNow(); return; } if (S.failed) { S.loadedKey = ''; gotoTime(S.posMs != null ? S.posMs : S.seg.m, true); return; } if (V.paused) { var p = V.play(); if (p && p.catch) p.catch(function () {}); } else V.pause(); };
   $('ctl').addEventListener('click', function (e) { var b = e.target.closest ? e.target.closest('[data-j]') : null; if (!b) return; var base = S.posMs != null ? S.posMs : Date.now(); gotoTime(base + Number(b.getAttribute('data-j')) * 1000, !V.paused || S.playing); });
   $('spd').addEventListener('click', function (e) { var b = e.target.closest ? e.target.closest('button') : null; if (!b) return; S.speed = Number(b.getAttribute('data-s')); V.playbackRate = S.speed; var all = $('spd').querySelectorAll('button'); for (var i = 0; i < all.length; i++) all[i].setAttribute('aria-pressed', all[i] === b ? 'true' : 'false'); });
   $('goTm').onclick = function () { var v = $('tm').value; if (!v) return; var a = v.split(':'); var t = d0(S.day || dstr(Date.now())) + (Number(a[0]) * 3600 + Number(a[1]) * 60 + Number(a[2] || 0)) * 1000; gotoTime(t, true); };

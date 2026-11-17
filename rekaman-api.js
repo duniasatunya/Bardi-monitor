@@ -17,7 +17,7 @@ const dayOf = (ms) => { const d = new Date(ms); return `${d.getFullYear()}-${pad
 const shiftDay = (tgl, n) => { const [y, m, d] = tgl.split('-').map(Number); return dayOf(new Date(y, m - 1, d + n, 12).getTime()); };
 const dayStart = (tgl) => { const [y, m, d] = tgl.split('-').map(Number); return new Date(y, m - 1, d).getTime(); };
 
-function createRekamanApi({ rec, rootDir, ffmpegPath, log, cacheDir, cacheMaxBytes = 3 * 1024 * 1024 * 1024 }) {
+function createRekamanApi({ rec, rootDir, ffmpegPath, log, cacheDir, cacheMaxBytes = 3 * 1024 * 1024 * 1024, copyTimeoutMs = 90000, hevcTimeoutMs = 480000 }) {
   const cache = cacheDir || path.join(os.tmpdir(), 'bardi-rekaman-cache');
   try { fs.rmSync(cache, { recursive: true, force: true }); } catch (_) {}
   try { fs.mkdirSync(cache, { recursive: true }); } catch (e) { log('ERROR', `Rekaman: gagal membuat folder sementara: ${e.message}`); }
@@ -58,7 +58,18 @@ function createRekamanApi({ rec, rootDir, ffmpegPath, log, cacheDir, cacheMaxByt
       p.on('exit', () => { clearTimeout(to); resolve(/Video:\s*(hevc|h265)/i.test(err)); });
     });
   }
-  function runFf(args, cwd) { return new Promise((resolve) => { let err = ''; let p; try { p = spawn(findFfmpeg(), args, { cwd, windowsHide: true, stdio: ['ignore', 'ignore', 'pipe'] }); } catch (e) { return resolve({ ok: false, err: e.message }); } p.stderr.on('data', (d) => { err += d; if (err.length > 8000) err = err.slice(-4000); }); p.on('error', (e) => resolve({ ok: false, err: e.code === 'ENOENT' ? 'ffmpeg tidak ditemukan' : e.message })); p.on('exit', (c) => resolve({ ok: c === 0, err })); }); }
+  // Setiap proses ffmpeg punya batas waktu: kalau macet (misalnya hardisk USB tersendat) dihentikan paksa supaya antrean tidak ikut macet.
+  function runFf(args, cwd, timeoutMs) {
+    return new Promise((resolve) => {
+      let err = '', done = false, timedOut = false, p;
+      const fin = (r) => { if (done) return; done = true; clearTimeout(to); resolve(r); };
+      try { p = spawn(findFfmpeg(), args, { cwd, windowsHide: true, stdio: ['ignore', 'ignore', 'pipe'] }); } catch (e) { return resolve({ ok: false, err: e.message }); }
+      const to = setTimeout(() => { timedOut = true; try { p.kill('SIGKILL'); } catch (_) {} setTimeout(() => fin({ ok: false, timedOut: true, err: 'melebihi batas waktu' }), 3000); }, timeoutMs || 120000);
+      p.stderr.on('data', (d) => { err += d; if (err.length > 8000) err = err.slice(-4000); });
+      p.on('error', (e) => fin({ ok: false, err: e.code === 'ENOENT' ? 'ffmpeg tidak ditemukan' : e.message }));
+      p.on('exit', (c) => fin({ ok: c === 0 && !timedOut, timedOut, err: timedOut ? 'melebihi batas waktu' : err }));
+    });
+  }
 
   async function siapkan(id, tgl, nama) {
     const src = await rec.segmentPath(id, tgl, nama);
@@ -76,8 +87,8 @@ function createRekamanApi({ rec, rootDir, ffmpegPath, log, cacheDir, cacheMaxByt
         const tmp = out + '.tmp.mp4';
         const args = ['-y', '-hide_banner', '-loglevel', 'error', '-i', src, '-map', '0:v:0', '-an',
           ...(c.hevc ? ['-c:v', 'libx264', '-preset', 'veryfast', '-crf', '27', '-pix_fmt', 'yuv420p'] : ['-c', 'copy']), '-movflags', '+faststart', '-f', 'mp4', tmp];
-        const r = await runFf(args, cache);
-        if (!r.ok) { log('WARN', `Rekaman: gagal menyiapkan ${id} ${tgl} ${nama}: ${String(r.err).replace(/\/\/[^@\s\/]*@/g, '//***@').slice(-160)}`); try { fs.rmSync(tmp, { force: true }); } catch (_) {} return null; }
+        const r = await runFf(args, cache, c.hevc ? hevcTimeoutMs : copyTimeoutMs); // salin: 90 dtk; ubah H.265->H.264: 8 menit
+        if (!r.ok) { log('WARN', `Rekaman: gagal menyiapkan ${id} ${tgl} ${nama}${r.timedOut ? ' (melebihi batas waktu, dihentikan)' : ''}: ${String(r.err).replace(/\/\/[^@\s\/]*@/g, '//***@').slice(-160)}`); try { fs.rmSync(tmp, { force: true }); } catch (_) {} return null; }
         fs.renameSync(tmp, out);
         const o = fs.statSync(out); trim();
         return { file: out, size: o.size };

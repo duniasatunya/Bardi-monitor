@@ -509,6 +509,7 @@ const commonSheets = `
 <a class="rowi" href="/klip">${icon('clip', 'l')}<span class="grow"><span class="t1">Papan klip</span><span class="t2">Titip teks dan catatan</span></span>${icon('next', 's')}</a>
 <a class="rowi" href="/layar" target="_blank" rel="noopener">${icon('monitor', 'l')}<span class="grow"><span class="t1">Lihat layar PC</span><span class="t2">Buka di tab baru (hanya melihat)</span></span>${icon('next', 's')}</a>
 <button class="rowi" type="button" id="moreUpd">${icon('update', 'l')}<span class="grow"><span class="t1">Pembaruan</span><span class="t2" id="moreUpdV">Cek versi terbaru dari GitHub</span></span>${icon('next', 's')}</button>
+<button class="rowi" type="button" id="moreRst">${icon('refresh', 'l')}<span class="grow"><span class="t1" id="moreRstT">Mulai ulang program</span><span class="t2" id="moreRstS">Tutup lalu jalankan lagi otomatis (rekaman terputus sebentar)</span></span></button>
 <a class="rowi" href="/report.pdf" id="morePdf">${icon('file', 'l')}<span class="grow"><span class="t1">Unduh PDF</span><span class="t2">Laporan 7 hari terakhir</span></span>${icon('download', 's')}</a>
 <a class="rowi" href="/logout">${icon('logout', 'l')}<span class="grow"><span class="t1">Keluar</span></span></a>
 </div>
@@ -846,6 +847,16 @@ function dsKit() {
       b.className = 'btn pri busy'; api('/api/update/apply', true).then(function (r) { b.className = 'btn pri'; if (r.ok) upPoll(); else $('upm').textContent = r.error || 'Gagal memulai pembaruan'; }).catch(function () { b.className = 'btn pri'; $('upm').textContent = 'Gagal memulai pembaruan. Coba lagi.'; });
     };
     api('/api/update/status').then(function (d) { $('moreUpdV').textContent = d.current ? 'Terpasang: ' + d.current.short : 'Cek versi terbaru dari GitHub'; }).catch(function () {});
+    // Mulai ulang program (ketuk dua kali untuk konfirmasi)
+    var rst = $('moreRst'), rstT = null;
+    function rstBack(ms) { var n = 0; function tick() { n++; fetch('/api/status', { cache: 'no-store', credentials: 'same-origin' }).then(function (r) { if (r.ok || r.status === 401) location.reload(); else throw new Error('x'); }).catch(function () { if (n < 60) setTimeout(tick, 3000); else $('moreRstS').textContent = 'Belum menyala lagi. Cek PC, atau buka shortcut Bardi Monitor.'; }); } setTimeout(tick, ms); }
+    rst.onclick = function () {
+      if (rst.getAttribute('data-sure') !== '1') { rst.setAttribute('data-sure', '1'); $('moreRstT').textContent = 'Ketuk lagi untuk mulai ulang'; clearTimeout(rstT); rstT = setTimeout(function () { rst.removeAttribute('data-sure'); $('moreRstT').textContent = 'Mulai ulang program'; }, 5000); return; }
+      clearTimeout(rstT); rst.removeAttribute('data-sure'); rst.disabled = true; $('moreRstT').textContent = 'Memulai ulang...'; $('moreRstS').textContent = 'Program ditutup lalu menyala lagi, sekitar 20-40 detik. Halaman ini muat ulang sendiri.';
+      fetch('/api/restart', { method: 'POST', cache: 'no-store', credentials: 'same-origin' }).then(function (r) { if (r.status === 401) { location.href = '/login'; throw new Error('login'); } return r.json(); }).then(function (r) {
+        if (r.ok) rstBack(12000); else { rst.disabled = false; $('moreRstT').textContent = 'Mulai ulang program'; $('moreRstS').textContent = r.error || 'Gagal memulai ulang'; }
+      }).catch(function () { rst.disabled = false; $('moreRstT').textContent = 'Mulai ulang program'; $('moreRstS').textContent = 'Gagal menghubungi PC. Coba lagi.'; });
+    };
     // Hentikan pemantauan (geser untuk konfirmasi)
     DS.slide($('stopSlide'), function (reset) {
       fetch('/api/stop', { method: 'POST', cache: 'no-store', credentials: 'same-origin' }).then(function (r) { if (r.status === 401) { location.href = '/login'; throw new Error('login'); } return r.json(); }).then(function (r) {
