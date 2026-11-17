@@ -26,7 +26,7 @@ const startOfSeg = (date, name) => { const m = SEG_RE.exec(name); const [y, mo, 
 const tick = () => new Promise((r) => setImmediate(r));
 const withTimeout = (p, ms) => new Promise((res, rej) => { const t = setTimeout(() => rej(new Error('waktu habis (hardisk tidak menjawab)')), ms); Promise.resolve(p).then((v) => { clearTimeout(t); res(v); }, (e) => { clearTimeout(t); rej(e); }); });
 
-const DEFAULTS = { aktif: true, penuh: { serial: null, label: '' }, klip: { serial: null, label: '' }, hari: 20, batasTB: 4.1, sisaMinimumGB: 50, persenCadangan: 80, segmenDetik: 600 };
+const DEFAULTS = { aktif: true, penuh: { serial: null, label: '' }, klip: { serial: null, label: '' }, hari: 20, batasTB: 4.1, sisaMinimumGB: 50, persenCadangan: 80, segmenDetik: 600, suara: true };
 
 function loadSettings(file, log) {
   let s = {};
@@ -160,8 +160,9 @@ function createRecorder24({ log, rootDir, ffmpegPath, listCams, getCamera, setti
     R.camDir = await camDirOf(base, R.id, R.name);
     try { await ensureDays(R); } catch (_) {}
     const isRtsp = /^rtsp/i.test(url); // sumber selain RTSP (berkas) hanya dipakai untuk uji
+    const withAudio = !!S.suara && !R.noAudio; // suara ikut direkam; bila gagal cepat, otomatis kembali tanpa suara
     const args = ['-hide_banner', '-nostdin', '-loglevel', 'error', ...(isRtsp ? ['-rtsp_transport', rtspTransport, '-fflags', '+genpts+discardcorrupt', '-use_wallclock_as_timestamps', '1'] : ['-re', '-stream_loop', '-1']),
-      '-i', url, '-map', '0:v:0', '-c', 'copy', '-an', '-f', 'segment', '-segment_time', String(S.segmenDetik), '-segment_atclocktime', '1', '-reset_timestamps', '1', '-strftime', '1', '-strftime_mkdir', '1',
+      '-i', url, '-map', '0:v:0', ...(withAudio ? ['-map', '0:a:0?', '-c:v', 'copy', '-c:a', 'aac', '-b:a', '32k', '-ac', '1'] : ['-c', 'copy', '-an']), '-f', 'segment', '-segment_time', String(S.segmenDetik), '-segment_atclocktime', '1', '-reset_timestamps', '1', '-strftime', '1', '-strftime_mkdir', '1',
       path.join(R.camDir, '%Y-%m-%d', '%H-%M-%S.ts')];
     let p, err = '';
     try { p = spawn(findFfmpeg(), args, { windowsHide: true, stdio: ['ignore', 'ignore', 'pipe'] }); } catch (e) { R.err = e.message; return false; }
@@ -171,6 +172,7 @@ function createRecorder24({ log, rootDir, ffmpegPath, listCams, getCamera, setti
     p.on('exit', () => {
       if (R.proc === p) R.proc = null;
       const e = scrubUrl(err).trim();
+      if (withAudio && !R.killing && Date.now() - R.startedAt < 20000 && e && !/401|Unauthorized|No such file|Permission denied|I\/O error|Connection (refused|timed out)|timed out|No route/i.test(e)) { R.noAudio = true; log('WARN', `Rekaman 24 jam ${R.name}: suara kamera tidak bisa direkam, lanjut merekam tanpa suara.`); }
       if (e) R.err = e.split(/\r?\n/).slice(-2).join(' | ').slice(0, 200);
       if (/401|Unauthorized/i.test(e)) { R.state = 'login'; R.authUntil = Date.now() + T.authRetryMs; log('WARN', `Rekaman 24 jam ${R.name}: login kamera ditolak. Berhenti mencoba ${Math.round(T.authRetryMs / 60000)} menit supaya akun kamera tidak terkunci.`); }
       if (/No such file|Permission denied|Input\/output|I\/O error|device/i.test(e) && !R.killing) forceDrives = true; // kemungkinan hardisk lepas: cek ulang daftar hardisk segera

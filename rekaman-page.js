@@ -35,7 +35,6 @@ const css = `
 .rk-ctl{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .rk-ctl .btn{min-height:40px;font-size:14px;padding:0 14px}
 .rk-ctl .grow{flex:1}
-.rk-ctl .spd button[aria-pressed=true]{background:var(--brand-ink);color:var(--on-brand)}
 .tlw{position:relative}
 .tl{position:relative;height:64px;cursor:ew-resize;border-radius:14px;background:repeating-linear-gradient(135deg,var(--surface-2) 0 6px,var(--line) 6px 8px);overflow:hidden;touch-action:pan-y;user-select:none;-webkit-user-select:none}
 .tl .tk{position:absolute;bottom:0;width:1px;height:14px;background:var(--tx);opacity:.35;pointer-events:none}
@@ -99,34 +98,69 @@ const css = `
   .rk-bar .psel{flex-basis:100%}
 }
 
-/* HP miring (landscape): video penuh layar, kontrol + garis waktu melayang di bawahnya */
-@media (orientation:landscape) and (max-height:540px) and (hover:none){
-  .pcard{position:fixed;left:0;top:0;right:0;bottom:0;margin:0;z-index:70;background:#000;display:block}
-  .pcard .vbox{position:absolute;inset:0;aspect-ratio:auto;height:100%;order:0}
-  .pinfo{display:flex;flex-direction:column;position:absolute;left:0;right:0;bottom:0;padding:0 max(8px,env(safe-area-inset-right)) 4px max(8px,env(safe-area-inset-left));background:linear-gradient(transparent,rgba(0,0,0,.62) 38%);color:#fff}
-  .pinfo .dnav{display:flex;position:fixed;top:6px;left:50%;transform:translateX(-50%);padding:0;z-index:2}
-  .dpill{padding:3px;background:rgba(255,255,255,.18)}
-  .dpill b{min-width:84px;font-size:14px;color:#fff}
-  .dpill button{width:30px;height:30px;background:rgba(255,255,255,.9)}
-  #ctl{order:1;padding:0;gap:6px;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
-  #ctl .btn{flex:none;min-height:30px;font-size:13px;padding:0 12px;background:rgba(255,255,255,.2);color:#fff;border:0}
-  #ctl .btn.pri,#ctl .spd button[aria-pressed=true]{background:var(--brand-ink)}
-  #ctl .grow{flex:1}
-  .tlw{order:2;background:rgba(40,48,54,.55);margin-top:6px;padding-top:6px;border-radius:12px;overflow:hidden}
-  .tlh{color:#fff;height:18px;font-size:12px;margin-bottom:2px}
-  .tl{height:42px;background:transparent}
-  .tl .sg{top:6px;bottom:6px}
-  .tl .tk{background:#fff;opacity:.6}
-  .tl .pos{background:#fff;box-shadow:0 0 0 1px rgba(0,0,0,.5)}
-  #zoom{order:3;padding:4px 0 0;background:transparent;gap:6px}
-  #zoom .btn{min-height:28px;font-size:12px;padding:0 10px;background:rgba(255,255,255,.2);color:#fff;border:0}
-  #zoom .btn[aria-pressed=true]{background:var(--brand-ink)}
-  .tlg{display:none}
-  .pinfo .cn{position:absolute;left:12px;bottom:calc(100% + 6px);padding:0;color:#fff;text-shadow:0 1px 3px #000;font-size:12px}
-  .pinfo .cn:not(#note){display:none}
-  #note{bottom:calc(100% + 6px)}
-}
+/* Tombol melayang di atas video */
+.ov{position:absolute;inset:0;pointer-events:none;z-index:3;transition:opacity .25s}
+.ov>*{pointer-events:auto}
+.vbox.idle .ov>*{opacity:0;pointer-events:none}
+.ov .ob{width:42px;height:42px;border:0;border-radius:50%;background:rgba(0,0,0,.5);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;-webkit-tap-highlight-color:transparent;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+.ov .ob svg{width:22px;height:22px;display:block}
+.ov .ob.on{background:var(--bad);color:#fff}
+.ov .ob .a2{display:none}
+.ov .ob.alt .a1{display:none}.ov .ob.alt .a2{display:block}
+.ov .oleft{position:absolute;left:10px;bottom:10px;display:flex;gap:8px;align-items:center}
+.ov .oright{position:absolute;right:10px;bottom:10px;display:flex;gap:8px}
+.ov .chip{min-width:42px;width:auto;padding:0 12px;border-radius:999px;font:inherit;font-weight:800;font-size:14px}
+.ov .big{position:absolute;left:50%;top:50%;width:72px;height:72px;margin:-36px 0 0 -36px;background:rgba(0,0,0,.42)}
+.ov .big svg{width:34px;height:34px}
+.ov .ovmsg{position:absolute;left:10px;top:10px;right:10px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;color:#fff;font-size:13px;font-weight:700;text-shadow:0 1px 3px #000}
+.ov .ovmsg[hidden]{display:none}
+.ov .ovmsg span{background:rgba(0,0,0,.55);padding:5px 10px;border-radius:999px}
+.ov .ovmsg button{border:0;border-radius:999px;height:32px;padding:0 14px;font:inherit;font-weight:800;font-size:13px;background:var(--brand-ink);color:var(--on-brand);cursor:pointer}
+.ov .ovmsg button[hidden]{display:none}
+.vbox:not(.has) .ov .big,.vbox:not(.has) .ov .oleft{display:none}
+.rk-lock,.rk-lock body{overflow:hidden}
+/* Layar penuh (tombol layar penuh, atau HP miring): video memenuhi layar, garis waktu melayang di bawah */
+.pcard.fs{position:fixed;left:0;top:0;right:0;bottom:0;margin:0;z-index:120;background:#000;display:block;border-radius:0;box-shadow:none;overflow:hidden}
+.pcard.fs .vbox{position:absolute;inset:0;aspect-ratio:auto;height:100%;order:0}
+.pcard.fs .pinfo{display:flex;flex-direction:column;position:absolute;left:0;right:0;bottom:0;z-index:4;padding:0 max(8px,env(safe-area-inset-right)) max(4px,env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left));background:linear-gradient(transparent,rgba(0,0,0,.62) 38%);color:#fff;gap:6px}
+.pcard.fs .pinfo .dnav{display:flex;position:fixed;top:max(6px,env(safe-area-inset-top));left:50%;transform:translateX(-50%);padding:0;z-index:5}
+.pcard.fs .dpill{padding:3px;background:rgba(255,255,255,.18)}
+.pcard.fs .dpill b{min-width:84px;font-size:14px;color:#fff}
+.pcard.fs .dpill button{width:30px;height:30px;background:rgba(255,255,255,.9)}
+.pcard.fs #ctl{order:1;padding:0;gap:6px;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
+.pcard.fs #ctl .btn{flex:none;min-height:30px;font-size:13px;padding:0 12px;background:rgba(255,255,255,.2);color:#fff;border:0}
+.pcard.fs #ctl .grow{flex:1}
+.pcard.fs .tlw{order:2;background:rgba(40,48,54,.55);margin-top:0;padding-top:6px;border-radius:12px;overflow:hidden}
+.pcard.fs .tlh{color:#fff;height:18px;font-size:12px;margin-bottom:2px;order:-1}
+.pcard.fs .tl{height:42px;background:transparent}
+.pcard.fs .tl .sg{top:6px;bottom:6px}
+.pcard.fs .tl .tk{background:#fff;opacity:.6}
+.pcard.fs .tl .pos{background:#fff;box-shadow:0 0 0 1px rgba(0,0,0,.5)}
+.pcard.fs #zoom{order:3;padding:0;background:transparent;gap:6px;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
+.pcard.fs #zoom .btn{flex:none;min-height:28px;font-size:12px;padding:0 10px;background:rgba(255,255,255,.2);color:#fff;border:0}
+.pcard.fs #zoom .btn[aria-pressed=true],.pcard.fs #ctl .btn.pri{background:var(--brand-ink)}
+.pcard.fs #zoom .cn,.pcard.fs #zoomIn,.pcard.fs #zoomOut{display:none}
+.pcard.fs .tlg{display:none}
+.pcard.fs .pinfo .cn:not(#note){display:none}
+.pcard.fs #note{position:absolute;left:12px;bottom:calc(100% + 54px);padding:0;color:#fff;text-shadow:0 1px 3px #000;font-size:12px}
+.pcard.fs .ov .oleft,.pcard.fs .ov .oright{bottom:calc(var(--ph,120px) + 8px)}
+.pcard.fs .ov .big{margin-top:-60px}
+.pcard.auto #bFs{display:none}
 `;
+
+
+const SV = (d, x) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+const OV = `<div class="ov" id="ov">
+<div class="ovmsg" id="ovMsg" hidden><span id="ovMsgT"></span><button type="button" id="ovMsgB" hidden>Simpan</button></div>
+<button class="ob big" type="button" id="bBig" aria-label="Putar atau jeda"><span class="a1">${SV('<path d="M7 4.5v15l12-7.5z" fill="currentColor"/>')}</span><span class="a2">${SV('<path d="M8 5v14M16 5v14" stroke-width="3.5"/>')}</span></button>
+<div class="oleft">
+<button class="ob" type="button" id="bRec" aria-label="Rekam klip" title="Rekam klip (tekan lagi untuk selesai)">${SV('<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4" fill="currentColor" stroke="none"/>')}</button>
+<button class="ob" type="button" id="bShot" aria-label="Screenshot" title="Screenshot">${SV('<path d="M4 8h3l1.5-2h7L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.5"/>')}</button>
+<button class="ob" type="button" id="bMute" aria-label="Suara" title="Suara"><span class="a1">${SV('<path d="M4 10v4h4l5 4V6l-5 4z" fill="currentColor"/><path d="M16 9a4 4 0 010 6M18.5 6.5a8 8 0 010 11"/>')}</span><span class="a2">${SV('<path d="M4 10v4h4l5 4V6l-5 4z" fill="currentColor"/><path d="M16 9l5 6M21 9l-5 6"/>')}</span></button>
+<button class="ob chip" type="button" id="bSpd" aria-label="Kecepatan" title="Kecepatan">1x</button>
+</div>
+<div class="oright"><button class="ob" type="button" id="bFs" aria-label="Layar penuh" title="Layar penuh"><span class="a1">${SV('<path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/>')}</span><span class="a2">${SV('<path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/>')}</span></button></div>
+</div>`;
 
 const body = `
 <div class="rk-tabs" role="tablist"><button type="button" role="tab" id="tPlay" aria-selected="true">Putar ulang</button><button type="button" role="tab" id="tStat" aria-selected="false">Status perekam</button></div>
@@ -140,18 +174,15 @@ const body = `
 <button class="btn pri" type="button" id="goNow">${I('clock', 's')}Terbaru</button>
 </div>
 <div class="rk-days" id="days" role="group" aria-label="Pilih tanggal"></div>
-<div class="card pcard">
-<div class="vbox"><video id="v" playsinline preload="auto" muted></video><div class="clk" id="clk" hidden></div><div class="ph0" id="ph0">Pilih kamera dan tanggal, lalu klik garis waktu di bawah untuk mulai memutar.</div></div>
+<div class="card pcard" id="pcard">
+<div class="vbox" id="vbox"><video id="v" playsinline preload="auto"></video><div class="clk" id="clk" hidden></div><div class="ph0" id="ph0">Pilih kamera dan tanggal, lalu klik garis waktu di bawah untuk mulai memutar.</div>${OV}</div>
 <div class="pinfo">
 <div class="dnav" id="dnav"><div class="dpill"><button type="button" id="dPrev" aria-label="Hari sebelumnya">${I('back', 's')}</button><b id="dLbl">Hari ini</b><button type="button" id="dNext" aria-label="Hari berikutnya">${I('next', 's')}</button></div></div>
 <div class="rk-ctl" id="ctl">
 <button class="btn" type="button" data-j="-600" title="Mundur 10 menit">-10 mnt</button>
 <button class="btn" type="button" data-j="-10" title="Mundur 10 detik">-10 dtk</button>
-<button class="btn pri" type="button" id="pp" aria-label="Putar atau jeda">${I('play', 's')}<span id="ppT">Putar</span></button>
 <button class="btn" type="button" data-j="10" title="Maju 10 detik">+10 dtk</button>
 <button class="btn" type="button" data-j="600" title="Maju 10 menit">+10 mnt</button>
-<span class="grow"></span>
-<span class="rk-ctl spd" id="spd"><button class="btn" type="button" data-s="1" aria-pressed="true">1x</button><button class="btn" type="button" data-s="2" aria-pressed="false">2x</button><button class="btn" type="button" data-s="4" aria-pressed="false">4x</button><button class="btn" type="button" data-s="8" aria-pressed="false">8x</button></span>
 </div>
 <div class="tlw"><div class="tl" id="tl" role="slider" aria-label="Garis waktu"></div><div class="tlh" id="tlh"></div></div>
 <div class="rk-ctl" id="zoom"><span class="cn" id="zinfo">Tampilan: Seluruh hari</span><button class="btn" type="button" id="zoomOut" aria-label="Perkecil" title="Perkecil">-</button><button class="btn" type="button" id="zoomIn" aria-label="Perbesar" title="Perbesar">+</button><button class="btn" type="button" data-m="1440" aria-pressed="true">24 jam</button><button class="btn" type="button" data-m="360">6 jam</button><button class="btn" type="button" data-m="60">1 jam</button><button class="btn" type="button" data-m="30">30 mnt</button><button class="btn" type="button" data-m="10">10 mnt</button><button class="btn" type="button" data-m="5">5 mnt</button><button class="btn" type="button" data-m="1">1 mnt</button></div>
@@ -346,7 +377,7 @@ function rekamanApp() {
   }
   // Hanya bagian dari titik yang diminta sampai akhir potongan yang disiapkan (bukan seluruh 10 menit), jadi mulai putar jauh lebih cepat.
   function loadSeg(s, offMs, autoplay) {
-    S.seg = s; $('ph0').style.display = 'none'; $('clk').hidden = false;
+    S.seg = s; $('ph0').style.display = 'none'; $('clk').hidden = false; $('vbox').classList.add('has');
     var tot = Math.max(0, (s.a - s.m) / 1000 - 1), ss = Math.max(0, Math.min(tot, Math.floor(offMs / 1000))), hv = hvOk();
     var base = S.cam + '|' + S.day + '|' + s.f + '|' + hv;
     var within = S.fileBase === base && V.readyState >= 1 && offMs / 1000 >= S.ssFile && offMs / 1000 < S.ssFile + (V.duration || 0) - 0.3;
@@ -360,7 +391,9 @@ function rekamanApp() {
     if (!S.want) return; var w = S.want; S.want = null;
     try { V.currentTime = Math.min(w.off / 1000, Math.max(0, (V.duration || 1e9) - 0.05)); } catch (e) {}
     V.playbackRate = S.speed;
-    if (w.play) { var p = V.play(); if (p && p.catch) p.catch(function () { setPlay(false); note('Browser menahan putar otomatis. Tekan tombol Putar.', true); }); }
+    if (w.play) { var p = V.play(); if (p && p.catch) p.catch(function () {
+      if (!V.muted) { V.muted = true; S.autoMuted = true; var p2 = V.play(); if (p2 && p2.catch) p2.catch(function () { setPlay(false); note('Browser menahan putar otomatis. Tekan tombol Putar.', true); }); note('Browser menahan suara otomatis. Ketuk di mana saja atau ikon speaker untuk menyalakan suara.', true); return; }
+      setPlay(false); note('Browser menahan putar otomatis. Tekan tombol Putar.', true); }); }
     note('');
   }
   V.addEventListener('loadedmetadata', applyWant);
@@ -374,10 +407,10 @@ function rekamanApp() {
     loadFail();
   });
   V.addEventListener('loadedmetadata', function () { clearTimeout(S.loadTo); S.failed = false; });
-  V.addEventListener('click', function () { if (!S.seg) return; if (V.paused) { var p = V.play(); if (p && p.catch) p.catch(function () {}); } else V.pause(); });
-  function setPlay(on) { S.playing = on; $('ppT').textContent = on ? 'Jeda' : 'Putar'; }
+  V.addEventListener('click', function () { if (!S.seg) return; if (S.wasIdle) { S.wasIdle = false; return; } if (V.paused) { var p = V.play(); if (p && p.catch) p.catch(function () {}); } else V.pause(); });
+  function setPlay(on) { S.playing = on; $('bBig').classList.toggle('alt', on); $('vbox').classList.toggle('has', !!S.seg); wake(); }
   V.addEventListener('play', function () { setPlay(true); }); V.addEventListener('pause', function () { setPlay(false); });
-  V.addEventListener('timeupdate', function () { if (!S.seg || S.scrub) return; S.posMs = S.seg.m + (S.ssFile + V.currentTime) * 1000; $('clk').textContent = hms(S.posMs); movePos(); autoScroll(); });
+  V.addEventListener('timeupdate', function () { if (!S.seg || S.scrub) return; S.posMs = S.seg.m + (S.ssFile + V.currentTime) * 1000; $('clk').textContent = hms(S.posMs); movePos(); autoScroll(); recTick(); });
   function autoScroll() { if (S.free || S.ve - S.vs >= DAY || S.posMs == null) return; if (S.posMs < S.vs || S.posMs > S.ve) { centerView(); drawTl(); } }
   V.addEventListener('ended', function () {
     var s = S.seg; if (!s) return;
@@ -399,9 +432,10 @@ function rekamanApp() {
     if (tg !== S.day) setDay(tg, go); else go();
   }
   function posSet(t) { S.posMs = t; $('clk').hidden = false; $('clk').textContent = hms(t); movePos(); }
-  $('pp').onclick = function () { if (!S.seg) { gotoNow(); return; } if (S.failed) { S.fileBase = ''; gotoTime(S.posMs != null ? S.posMs : S.seg.m, true); return; } if (V.paused) { var p = V.play(); if (p && p.catch) p.catch(function () {}); } else V.pause(); };
+  function togglePlay() { if (!S.seg) { gotoNow(); return; } if (S.failed) { S.fileBase = ''; gotoTime(S.posMs != null ? S.posMs : S.seg.m, true); return; } if (V.paused) { var p = V.play(); if (p && p.catch) p.catch(function () {}); } else V.pause(); }
+  $('bBig').onclick = togglePlay;
   $('ctl').addEventListener('click', function (e) { var b = e.target.closest ? e.target.closest('[data-j]') : null; if (!b) return; var base = S.posMs != null ? S.posMs : Date.now(); gotoTime(base + Number(b.getAttribute('data-j')) * 1000, !V.paused || S.playing); });
-  $('spd').addEventListener('click', function (e) { var b = e.target.closest ? e.target.closest('button') : null; if (!b) return; S.speed = Number(b.getAttribute('data-s')); V.playbackRate = S.speed; var all = $('spd').querySelectorAll('button'); for (var i = 0; i < all.length; i++) all[i].setAttribute('aria-pressed', all[i] === b ? 'true' : 'false'); });
+  $('bSpd').onclick = function () { var L = [1, 2, 4, 8]; S.speed = L[(L.indexOf(S.speed) + 1) % 4]; V.playbackRate = S.speed; this.textContent = S.speed + 'x'; };
   $('goTm').onclick = function () { var v = $('tm').value; if (!v) return; var a = v.split(':'); var t = d0(S.day || dstr(Date.now())) + (Number(a[0]) * 3600 + Number(a[1]) * 60 + Number(a[2] || 0)) * 1000; gotoTime(t, true); };
   function gotoNow() { // langsung ke rekaman paling baru dan putar; kalau hari ini belum ada, pakai hari terakhir yang ada rekamannya
     var cam = S.cam; if (!cam) return; var today = dstr(Date.now());
@@ -414,7 +448,86 @@ function rekamanApp() {
     });
   }
   $('goNow').onclick = gotoNow;
-  $('cam').onchange = function () { S.cam = this.value; S.seg = null; S.posMs = null; S.fileBase = ''; S.hvTried = false; try { V.pause(); V.removeAttribute('src'); V.load(); } catch (e) {} $('clk').hidden = true; $('ph0').style.display = ''; note(''); setPlay(false); try { localStorage.setItem('rk-cam', S.cam); } catch (e) {} gotoNow(); };
+  $('cam').onchange = function () { recCancel(); S.cam = this.value; S.seg = null; S.posMs = null; S.fileBase = ''; S.hvTried = false; try { V.pause(); V.removeAttribute('src'); V.load(); } catch (e) {} $('clk').hidden = true; $('ph0').style.display = ''; $('vbox').classList.remove('has'); note(''); setPlay(false); try { localStorage.setItem('rk-cam', S.cam); } catch (e) {} gotoNow(); };
+
+
+  // ---------- tombol melayang di atas video ----------
+  function wake() { var b = $('vbox'); b.classList.remove('idle'); clearTimeout(S.idleTo); if (!V.paused && !S.rec && !S.pend) S.idleTo = setTimeout(function () { b.classList.add('idle'); }, 3000); }
+  ['pointermove', 'pointerdown'].forEach(function (ev) { $('vbox').addEventListener(ev, wake); });
+  $('vbox').addEventListener('pointerdown', function (e) { S.wasIdle = e.target === V && $('vbox').classList.contains('idle'); }, true);
+  V.addEventListener('playing', wake); V.addEventListener('pause', wake);
+  // suara: otomatis menyala; hanya mati kalau diklik
+  function drawMute() { $('bMute').classList.toggle('alt', V.muted); }
+  V.addEventListener('volumechange', drawMute);
+  $('bMute').onclick = function () { V.muted = !V.muted; S.autoMuted = false; drawMute(); };
+  document.addEventListener('pointerdown', function () { if (S.autoMuted && V.muted) { V.muted = false; S.autoMuted = false; drawMute(); note(''); } }, true);
+  // simpan ke perangkat yang membuka halaman ini (bukan komputer perekam)
+  function isTouch() { try { return matchMedia('(hover:none)').matches && (navigator.maxTouchPoints || 0) > 0; } catch (e) { return false; } }
+  function dl(blob, name) { var u = URL.createObjectURL(blob), a = document.createElement('a'); a.href = u; a.download = name; document.body.appendChild(a); a.click(); setTimeout(function () { a.remove(); URL.revokeObjectURL(u); }, 5000); }
+  function saveFile(blob, name, type) { // 'ok' | 'batal' | 'tunggu' (perlu ketukan baru)
+    var f = null; try { f = new File([blob], name, { type: type }); } catch (e) {}
+    if (isTouch() && f && navigator.canShare && navigator.share) {
+      var can = false; try { can = navigator.canShare({ files: [f] }); } catch (e) {}
+      if (can) return navigator.share({ files: [f] }).then(function () { return 'ok'; }, function (e) { return e && e.name === 'AbortError' ? 'batal' : 'tunggu'; });
+    }
+    dl(blob, name); return Promise.resolve('ok');
+  }
+  function stamp(ms) { var d = new Date(ms); return d.getFullYear() + p2(d.getMonth() + 1) + p2(d.getDate()) + '_' + p2(d.getHours()) + p2(d.getMinutes()) + p2(d.getSeconds()); }
+  function fname(ms, ext) { return (camName(S.cam).replace(/[^A-Za-z0-9]+/g, '_').replace(/^_|_$/g, '') || 'kamera') + '_' + stamp(ms) + '.' + ext; }
+  function msg(t, btn) { var m = $('ovMsg'); m.hidden = !t; $('ovMsgT').textContent = t || ''; $('ovMsgB').hidden = !btn; wake(); }
+  function deliver(blob, name, type, done) {
+    saveFile(blob, name, type).then(function (r) {
+      if (r === 'tunggu') { S.pend = { blob: blob, name: name, type: type }; msg('Sudah siap. Ketuk Simpan untuk menaruh ke galeri.', true); return; }
+      S.pend = null; msg(r === 'ok' ? done : '');
+      if (r === 'ok') setTimeout(function () { if (!S.rec && !S.pend) msg(''); }, 4000);
+    });
+  }
+  $('ovMsgB').onclick = function () { var q = S.pend; if (!q) return; saveFile(q.blob, q.name, q.type).then(function (r) { if (r === 'tunggu') { msg('Gagal membuka menu simpan. Ketuk Simpan lagi.', true); return; } S.pend = null; msg(r === 'ok' ? 'Tersimpan.' : ''); setTimeout(function () { if (!S.pend && !S.rec) msg(''); }, 3000); }); };
+  $('bShot').onclick = function () {
+    if (!S.seg || !V.videoWidth) { note('Putar rekaman dulu sebelum screenshot.', true); return; }
+    var c = document.createElement('canvas'); c.width = V.videoWidth; c.height = V.videoHeight; var t = S.posMs;
+    try { c.getContext('2d').drawImage(V, 0, 0, c.width, c.height); } catch (e) { note('Screenshot gagal.', true); return; }
+    c.toBlob(function (b) { if (!b) { note('Screenshot gagal.', true); return; } deliver(b, fname(t, 'jpg'), 'image/jpeg', 'Screenshot tersimpan.'); }, 'image/jpeg', 0.92);
+  };
+  // rekam klip: tekan sekali untuk mulai, tekan lagi untuk selesai. Klip dibuat di komputer perekam dari rekaman asli, lalu dikirim ke perangkat ini.
+  function mmss(s) { s = Math.max(0, Math.floor(s)); return Math.floor(s / 60) + ':' + p2(s % 60); }
+  function recTick() { if (S.rec && S.posMs != null) msg('Merekam klip ' + mmss((S.posMs - S.rec.from) / 1000)); }
+  function recCancel() { if (!S.rec) return; S.rec = null; $('bRec').classList.remove('on'); msg(''); }
+  $('bRec').onclick = function () {
+    if (S.busyClip) return;
+    if (!S.rec) { if (!S.seg || S.posMs == null) { note('Putar rekaman dulu, lalu tekan Rekam.', true); return; } S.rec = { from: S.posMs, cam: S.cam }; this.classList.add('on'); recTick(); return; }
+    var r = S.rec, to = S.posMs; recCancel();
+    if (to == null || to - r.from < 1000) { msg('Klip terlalu pendek.'); setTimeout(function () { if (!S.rec && !S.pend) msg(''); }, 3000); return; }
+    S.busyClip = true; msg('Menyiapkan klip ' + mmss((to - r.from) / 1000) + '...');
+    fetch('/rekaman/klip.mp4?id=' + r.cam + '&from=' + Math.round(r.from) + '&to=' + Math.round(to) + '&hv=' + hvOk(), { credentials: 'same-origin' })
+      .then(function (x) { if (!x.ok) throw new Error('x'); return x.blob(); })
+      .then(function (b) { S.busyClip = false; deliver(b, fname(r.from, 'mp4'), 'video/mp4', 'Klip tersimpan.'); })
+      .catch(function () { S.busyClip = false; msg('Klip gagal dibuat. Coba lagi.'); setTimeout(function () { if (!S.rec && !S.pend) msg(''); }, 4000); });
+  };
+  // layar penuh: desktop pakai layar penuh asli browser (Esc untuk keluar); iPhone memakai tampilan penuh buatan sendiri. HP miring otomatis penuh.
+  var PC = $('pcard'), mq = null; try { mq = matchMedia('(orientation:landscape) and (max-height:540px) and (hover:none)'); } catch (e) {}
+  function measure() { PC.style.setProperty('--ph', PC.querySelector('.pinfo').offsetHeight + 'px'); }
+  function applyFs() {
+    var auto = !!(mq && mq.matches), on = !!S.fsMan || auto;
+    PC.classList.toggle('auto', auto); PC.classList.toggle('fs', on);
+    document.documentElement.classList.toggle('rk-lock', on);
+    $('bFs').classList.toggle('alt', !!S.fsMan);
+    if (on) { measure(); setTimeout(measure, 60); }
+  }
+  function fsOff() { S.fsMan = false; var de = document.fullscreenElement || document.webkitFullscreenElement; if (de) { try { (document.exitFullscreen || document.webkitExitFullscreen).call(document); } catch (e) {} } applyFs(); }
+  $('bFs').onclick = function () {
+    if (S.fsMan) { fsOff(); return; }
+    S.fsMan = true; applyFs();
+    var rq = PC.requestFullscreen || PC.webkitRequestFullscreen;
+    if (rq) { try { var pr = rq.call(PC); if (pr && pr.catch) pr.catch(function () {}); } catch (e) {} }
+  };
+  function fsChange() { if (S.fsMan && !(document.fullscreenElement || document.webkitFullscreenElement) && S.fsReal) { S.fsMan = false; applyFs(); } S.fsReal = !!(document.fullscreenElement || document.webkitFullscreenElement); }
+  document.addEventListener('fullscreenchange', fsChange); document.addEventListener('webkitfullscreenchange', fsChange);
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && S.fsMan) fsOff(); });
+  if (mq) { if (mq.addEventListener) mq.addEventListener('change', applyFs); else if (mq.addListener) mq.addListener(applyFs); }
+  window.addEventListener('resize', function () { if (PC.classList.contains('fs')) measure(); });
+  if (window.ResizeObserver) { try { new ResizeObserver(function () { if (PC.classList.contains('fs')) measure(); }).observe(PC.querySelector('.pinfo')); } catch (e) {} }
+  applyFs(); drawMute();
 
   // ---------- status ----------
   function drawStat() {
