@@ -71,24 +71,28 @@ function createRekamanApi({ rec, rootDir, ffmpegPath, log, cacheDir, cacheMaxByt
     });
   }
 
-  async function siapkan(id, tgl, nama) {
+  // ss = mulai dari detik ke-berapa di dalam potongan (0 = dari awal); hv = browser bisa memutar H.265 langsung.
+  async function siapkan(id, tgl, nama, ss = 0, hv = false) {
     const src = await rec.segmentPath(id, tgl, nama);
     if (!src) return null;
     let st; try { st = await fs.promises.stat(src); } catch (_) { return null; }
     if (st.size < 1000) return null;
-    const key = `${id}_${tgl}_${nama}_${st.size}`;
+    ss = Math.max(0, Math.min(86400, Math.floor(Number(ss) || 0)));
+    // codec kamera diperiksa dari isi berkas yang sebenarnya (bukan dari daftar ONVIF, yang bisa salah menulis H264)
+    let c = codecCache.get(id); if (!c || Date.now() - c.at > 600000) { c = { hevc: await probeHevc(src), at: Date.now() }; codecCache.set(id, c); }
+    const mode = c.hevc ? (hv ? 'h' : 't') : 'c'; // c = salin H.264, h = salin H.265 (browser memutar sendiri), t = ubah H.265 -> H.264
+    const key = `${id}_${tgl}_${nama}_${st.size}_${ss}_${mode}`;
     const out = path.join(cache, key + '.mp4');
     try { const o = await fs.promises.stat(out); if (o.size > 0) { fs.promises.utimes(out, new Date(), new Date()).catch(() => {}); return { file: out, size: o.size }; } } catch (_) {}
     if (jobs.has(key)) return jobs.get(key);
     const job = (async () => {
-      let c = codecCache.get(id); if (!c || Date.now() - c.at > 600000) { c = { hevc: await probeHevc(src), at: Date.now() }; codecCache.set(id, c); }
-      const release = await slot(c.hevc);
+      const release = await slot(mode === 't');
       try {
         const tmp = out + '.tmp.mp4';
-        const args = ['-y', '-hide_banner', '-loglevel', 'error', '-i', src, '-map', '0:v:0', '-an',
-          ...(c.hevc ? ['-c:v', 'libx264', '-preset', 'veryfast', '-crf', '27', '-pix_fmt', 'yuv420p'] : ['-c', 'copy']), '-movflags', '+faststart', '-f', 'mp4', tmp];
-        const r = await runFf(args, cache, c.hevc ? hevcTimeoutMs : copyTimeoutMs); // salin: 90 dtk; ubah H.265->H.264: 8 menit
-        if (!r.ok) { log('WARN', `Rekaman: gagal menyiapkan ${id} ${tgl} ${nama}${r.timedOut ? ' (melebihi batas waktu, dihentikan)' : ''}: ${String(r.err).replace(/\/\/[^@\s\/]*@/g, '//***@').slice(-160)}`); try { fs.rmSync(tmp, { force: true }); } catch (_) {} return null; }
+        const args = ['-y', '-hide_banner', '-loglevel', 'error', ...(ss > 0 ? ['-ss', String(ss)] : []), '-i', src, '-map', '0:v:0', '-an',
+          ...(mode === 't' ? ['-c:v', 'libx264', '-preset', 'veryfast', '-crf', '27', '-pix_fmt', 'yuv420p'] : mode === 'h' ? ['-c', 'copy', '-tag:v', 'hvc1'] : ['-c', 'copy']), '-movflags', '+faststart', '-f', 'mp4', tmp];
+        const r = await runFf(args, cache, mode === 't' ? hevcTimeoutMs : copyTimeoutMs); // salin: 90 dtk; ubah H.265->H.264: 8 menit
+        if (!r.ok) { log('WARN', `Rekaman: gagal menyiapkan ${id} ${tgl} ${nama} (mulai ${ss} dtk, mode ${mode})${r.timedOut ? ' (melebihi batas waktu, dihentikan)' : ''}: ${String(r.err).replace(/\/\/[^@\s\/]*@/g, '//***@').slice(-160)}`); try { fs.rmSync(tmp, { force: true }); } catch (_) {} return null; }
         fs.renameSync(tmp, out);
         const o = fs.statSync(out); trim();
         return { file: out, size: o.size };
@@ -137,7 +141,7 @@ function createRekamanApi({ rec, rootDir, ffmpegPath, log, cacheDir, cacheMaxByt
     const m = /^\/rekaman\/f\/([0-9a-f]{8})\/(\d{4}-\d\d-\d\d)\/(\d\d-\d\d-\d\d)\.mp4$/.exec(p);
     if (m) {
       if (!SEG_RE.test(m[3])) { send(res, 404, 'text/plain; charset=utf-8', 'Tidak ada'); return true; }
-      const f = await siapkan(m[1], m[2], m[3] + '.ts');
+      const f = await siapkan(m[1], m[2], m[3] + '.ts', url.searchParams.get('ss'), url.searchParams.get('hv') === '1');
       if (!f) { send(res, 404, 'text/plain; charset=utf-8', 'Potongan tidak ada atau gagal disiapkan.'); return true; }
       serveFile(req, res, f); return true;
     }

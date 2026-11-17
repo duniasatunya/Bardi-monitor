@@ -170,7 +170,7 @@ const body = `
 function rekamanApp() {
   var $ = function (i) { return document.getElementById(i); };
   var esc = DS.esc, icon = DS.icon;
-  var S = { cams: [], simpan: null, cam: '', day: '', data: null, dayCache: {}, seg: null, vs: 0, ve: 0, w: 86400000, speed: 1, playing: false, want: null, loadedKey: '', posMs: null };
+  var S = { cams: [], simpan: null, cam: '', day: '', data: null, dayCache: {}, seg: null, vs: 0, ve: 0, w: 86400000, speed: 1, playing: false, want: null, fileBase: '', ssFile: 0, hv: null, posMs: null };
   var DAYN = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'], MON = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
   function p2(n) { return n < 10 ? '0' + n : '' + n; }
   function dstr(ms) { var d = new Date(ms); return d.getFullYear() + '-' + p2(d.getMonth() + 1) + '-' + p2(d.getDate()); }
@@ -263,7 +263,7 @@ function rekamanApp() {
   var drag = null;
   function scrubTo(cx) {
     var t = Math.max(d0(S.day), Math.min(d0(S.day) + DAY - 1, x2t(cx))); S.posMs = t; $('clk').textContent = hms(t); movePos();
-    if (S.seg && t >= S.seg.m && t < S.seg.a && V.readyState >= 1) { try { V.currentTime = (t - S.seg.m) / 1000; } catch (e) {} }
+    if (S.seg && V.readyState >= 1) { var rel = (t - S.seg.m) / 1000 - S.ssFile; if (rel >= 0 && rel < (V.duration || 0) - 0.3) { try { V.currentTime = rel; } catch (e) {} } }
     return t;
   }
   var TL = $('tl');
@@ -338,13 +338,23 @@ function rekamanApp() {
   function segAt(t) { var d = S.data; if (!d) return null; var best = null; d.segmen.forEach(function (s) { if (t >= s.m && t < s.a + 1500) best = s; }); return best; }
   function segAfter(t) { var d = S.data, best = null; if (!d) return null; d.segmen.forEach(function (s) { if (s.m >= t && (!best || s.m < best.m)) best = s; }); return best; }
   function note(msg, warn) { var n = $('note'); n.textContent = msg || ''; n.className = 'cn' + (warn ? ' warn' : ''); }
+  // Apakah browser bisa memutar H.265 langsung? Kalau bisa, server cukup menyalin (cepat, tanpa beban CPU). Kalau tidak, server mengubahnya ke H.264.
+  function hvOk() {
+    if (S.hv != null) return S.hv; var ok = false;
+    try { var c = V.canPlayType('video/mp4; codecs="hvc1.1.6.L153.B0"'); ok = c === 'probably' || c === 'maybe'; } catch (e) {}
+    S.hv = ok ? 1 : 0; return S.hv;
+  }
+  // Hanya bagian dari titik yang diminta sampai akhir potongan yang disiapkan (bukan seluruh 10 menit), jadi mulai putar jauh lebih cepat.
   function loadSeg(s, offMs, autoplay) {
-    var key = S.cam + '|' + S.day + '|' + s.f; S.seg = s; S.want = { off: Math.max(0, offMs), play: autoplay };
-    $('ph0').style.display = 'none'; $('clk').hidden = false;
-    if (S.loadedKey === key && V.readyState >= 1) { applyWant(); return; }
-    S.loadedKey = key; note('Menyiapkan potongan ' + hm(s.m) + '... (pertama kali bisa beberapa detik)');
+    S.seg = s; $('ph0').style.display = 'none'; $('clk').hidden = false;
+    var tot = Math.max(0, (s.a - s.m) / 1000 - 1), ss = Math.max(0, Math.min(tot, Math.floor(offMs / 1000))), hv = hvOk();
+    var base = S.cam + '|' + S.day + '|' + s.f + '|' + hv;
+    var within = S.fileBase === base && V.readyState >= 1 && offMs / 1000 >= S.ssFile && offMs / 1000 < S.ssFile + (V.duration || 0) - 0.3;
+    if (within) { S.want = { off: offMs - S.ssFile * 1000, play: autoplay }; applyWant(); return; }
+    S.fileBase = base; S.ssFile = ss; S.hvReq = hv; S.want = { off: Math.max(0, offMs - ss * 1000), play: autoplay };
+    note('Menyiapkan potongan ' + hm(s.m) + '...');
     S.failed = false; clearTimeout(S.loadTo); S.loadTo = setTimeout(function () { if (V.readyState < 1) loadFail(); }, 540000);
-    V.src = '/rekaman/f/' + S.cam + '/' + S.day + '/' + s.f + '.mp4'; V.load();
+    V.src = '/rekaman/f/' + S.cam + '/' + S.day + '/' + s.f + '.mp4?ss=' + ss + '&hv=' + hv; V.load();
   }
   function applyWant() {
     if (!S.want) return; var w = S.want; S.want = null;
@@ -355,12 +365,19 @@ function rekamanApp() {
   }
   V.addEventListener('loadedmetadata', applyWant);
   function loadFail() { clearTimeout(S.loadTo); if (S.seg) { S.failed = true; note('Gagal menyiapkan potongan ' + hm(S.seg.m) + '. Tekan Putar untuk coba lagi.', true); } }
-  V.addEventListener('error', function () { if (V.getAttribute('src')) loadFail(); });
+  V.addEventListener('error', function () {
+    if (!V.getAttribute('src')) return;
+    if (S.hvReq === 1 && S.seg && !S.hvTried) { // mungkin browser tidak sanggup memutar H.265: coba sekali dengan cara cadangan (diubah ke H.264)
+      S.hvTried = true; S.hv = 0; var s0 = S.seg, off = S.posMs != null && S.posMs >= s0.m ? S.posMs - s0.m : S.ssFile * 1000;
+      note('Browser ini belum bisa memutar H.265 langsung. Memakai cara cadangan (lebih lambat)...', true); S.fileBase = ''; loadSeg(s0, off, true); return;
+    }
+    loadFail();
+  });
   V.addEventListener('loadedmetadata', function () { clearTimeout(S.loadTo); S.failed = false; });
   V.addEventListener('click', function () { if (!S.seg) return; if (V.paused) { var p = V.play(); if (p && p.catch) p.catch(function () {}); } else V.pause(); });
   function setPlay(on) { S.playing = on; $('ppT').textContent = on ? 'Jeda' : 'Putar'; }
   V.addEventListener('play', function () { setPlay(true); }); V.addEventListener('pause', function () { setPlay(false); });
-  V.addEventListener('timeupdate', function () { if (!S.seg || S.scrub) return; S.posMs = S.seg.m + V.currentTime * 1000; $('clk').textContent = hms(S.posMs); movePos(); autoScroll(); });
+  V.addEventListener('timeupdate', function () { if (!S.seg || S.scrub) return; S.posMs = S.seg.m + (S.ssFile + V.currentTime) * 1000; $('clk').textContent = hms(S.posMs); movePos(); autoScroll(); });
   function autoScroll() { if (S.free || S.ve - S.vs >= DAY || S.posMs == null) return; if (S.posMs < S.vs || S.posMs > S.ve) { centerView(); drawTl(); } }
   V.addEventListener('ended', function () {
     var s = S.seg; if (!s) return;
@@ -382,7 +399,7 @@ function rekamanApp() {
     if (tg !== S.day) setDay(tg, go); else go();
   }
   function posSet(t) { S.posMs = t; $('clk').hidden = false; $('clk').textContent = hms(t); movePos(); }
-  $('pp').onclick = function () { if (!S.seg) { gotoNow(); return; } if (S.failed) { S.loadedKey = ''; gotoTime(S.posMs != null ? S.posMs : S.seg.m, true); return; } if (V.paused) { var p = V.play(); if (p && p.catch) p.catch(function () {}); } else V.pause(); };
+  $('pp').onclick = function () { if (!S.seg) { gotoNow(); return; } if (S.failed) { S.fileBase = ''; gotoTime(S.posMs != null ? S.posMs : S.seg.m, true); return; } if (V.paused) { var p = V.play(); if (p && p.catch) p.catch(function () {}); } else V.pause(); };
   $('ctl').addEventListener('click', function (e) { var b = e.target.closest ? e.target.closest('[data-j]') : null; if (!b) return; var base = S.posMs != null ? S.posMs : Date.now(); gotoTime(base + Number(b.getAttribute('data-j')) * 1000, !V.paused || S.playing); });
   $('spd').addEventListener('click', function (e) { var b = e.target.closest ? e.target.closest('button') : null; if (!b) return; S.speed = Number(b.getAttribute('data-s')); V.playbackRate = S.speed; var all = $('spd').querySelectorAll('button'); for (var i = 0; i < all.length; i++) all[i].setAttribute('aria-pressed', all[i] === b ? 'true' : 'false'); });
   $('goTm').onclick = function () { var v = $('tm').value; if (!v) return; var a = v.split(':'); var t = d0(S.day || dstr(Date.now())) + (Number(a[0]) * 3600 + Number(a[1]) * 60 + Number(a[2] || 0)) * 1000; gotoTime(t, true); };
@@ -397,7 +414,7 @@ function rekamanApp() {
     });
   }
   $('goNow').onclick = gotoNow;
-  $('cam').onchange = function () { S.cam = this.value; S.seg = null; S.posMs = null; S.loadedKey = ''; try { V.pause(); V.removeAttribute('src'); V.load(); } catch (e) {} $('clk').hidden = true; $('ph0').style.display = ''; note(''); setPlay(false); try { localStorage.setItem('rk-cam', S.cam); } catch (e) {} gotoNow(); };
+  $('cam').onchange = function () { S.cam = this.value; S.seg = null; S.posMs = null; S.fileBase = ''; S.hvTried = false; try { V.pause(); V.removeAttribute('src'); V.load(); } catch (e) {} $('clk').hidden = true; $('ph0').style.display = ''; note(''); setPlay(false); try { localStorage.setItem('rk-cam', S.cam); } catch (e) {} gotoNow(); };
 
   // ---------- status ----------
   function drawStat() {
