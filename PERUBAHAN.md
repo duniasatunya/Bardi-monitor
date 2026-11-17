@@ -150,3 +150,4 @@ Cadangan sebelum revisi: `*.bak-r3`. Belum diuji di iPhone asli dan dengan kamer
 - `rekam-24jam.js`: tambah `segmentPath`, `hariAda`.
 - `report-server.js`: /rekaman, /kejadian dialihkan ke /rekaman. `ui-kit.js` & `onvif-multiview.js`: menu jadi "Rekaman".
 - Putar ulang memakai potongan 10 menit utuh (disalin ke MP4 sementara, H.265 diubah ke H.264). Folder sementara dibersihkan otomatis.
+- Rekaman (revisi): memilih kamera langsung memutar rekaman paling baru; garis waktu bisa digeser (drag); Ctrl + roda mouse = zoom seperti Premiere, roda saat diperbesar = geser; klik tanda merah = langsung ke saat kamera mati (5 detik sebelumnya).

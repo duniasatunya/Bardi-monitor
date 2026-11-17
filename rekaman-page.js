@@ -37,7 +37,7 @@ const css = `
 .rk-ctl .grow{flex:1}
 .rk-ctl .spd button[aria-pressed=true]{background:var(--brand-ink);color:var(--on-brand)}
 .tlw{position:relative}
-.tl{position:relative;height:56px;border-radius:14px;background:repeating-linear-gradient(135deg,var(--surface-2) 0 6px,var(--line) 6px 8px);cursor:pointer;overflow:hidden;touch-action:pan-y;user-select:none;-webkit-user-select:none}
+.tl{position:relative;height:64px;cursor:ew-resize;border-radius:14px;background:repeating-linear-gradient(135deg,var(--surface-2) 0 6px,var(--line) 6px 8px);overflow:hidden;touch-action:pan-y;user-select:none;-webkit-user-select:none}
 .tl .sg{position:absolute;top:10px;bottom:10px;background:var(--ok);border-radius:3px;min-width:1px;pointer-events:none}
 .tl .sg.b{background:var(--brand)}
 .tl .mt{position:absolute;top:0;bottom:0;background:var(--bad-t);border-left:2px solid var(--bad);border-right:2px solid var(--bad);min-width:4px;pointer-events:none}
@@ -98,9 +98,9 @@ const body = `
 <span class="rk-ctl spd" id="spd"><button class="btn" type="button" data-s="1" aria-pressed="true">1x</button><button class="btn" type="button" data-s="2" aria-pressed="false">2x</button><button class="btn" type="button" data-s="4" aria-pressed="false">4x</button><button class="btn" type="button" data-s="8" aria-pressed="false">8x</button></span>
 </div>
 <div class="tlw"><div class="tl" id="tl" role="slider" aria-label="Garis waktu"></div><div class="tlh" id="tlh"></div></div>
-<div class="rk-ctl" id="zoom"><span class="cn">Tampilan:</span><button class="btn" type="button" data-z="24" aria-pressed="true">24 jam</button><button class="btn" type="button" data-z="6">6 jam</button><button class="btn" type="button" data-z="1">1 jam</button><button class="btn" type="button" data-z="0.17">10 menit</button></div>
-<div class="tlg"><span><i style="background:var(--ok)"></i>Ada rekaman</span><span><i style="background:var(--brand)"></i>Sedang direkam</span><span><i style="background:var(--bad)"></i>Kamera mati (klik = 2 menit sebelumnya)</span><span><i style="background:var(--line)"></i>Tidak ada rekaman</span></div>
-<p class="cn" id="note"></p>
+<div class="rk-ctl" id="zoom"><span class="cn" id="zinfo">Tampilan: Seluruh hari</span><button class="btn" type="button" id="zoomOut" aria-label="Perkecil" title="Perkecil">-</button><button class="btn" type="button" id="zoomIn" aria-label="Perbesar" title="Perbesar">+</button><button class="btn" type="button" data-z="24" aria-pressed="true">24 jam</button><button class="btn" type="button" data-z="6">6 jam</button><button class="btn" type="button" data-z="1">1 jam</button><button class="btn" type="button" data-z="0.17">10 menit</button></div>
+<div class="tlg"><span><i style="background:var(--ok)"></i>Ada rekaman</span><span><i style="background:var(--brand)"></i>Sedang direkam</span><span><i style="background:var(--bad)"></i>Kamera mati (klik = ke saat kamera mati)</span><span><i style="background:var(--line)"></i>Tidak ada rekaman</span></div>
+<p class="cn">Geser garis waktu untuk mencari. Ctrl + putar roda mouse = perbesar/perkecil; saat diperbesar, putar roda = geser kiri/kanan.</p><p class="cn" id="note"></p>
 </div></div>
 </div>
 <aside class="side-c rk-side"><div class="card" style="padding:14px 16px"><h3>Kejadian hari ini</h3><div id="evs"></div></div></aside>
@@ -114,7 +114,7 @@ const body = `
 function rekamanApp() {
   var $ = function (i) { return document.getElementById(i); };
   var esc = DS.esc, icon = DS.icon;
-  var S = { cams: [], simpan: null, cam: '', day: '', data: null, dayCache: {}, seg: null, vs: 0, ve: 0, zoomH: 24, speed: 1, playing: false, want: null, loadedKey: '', posMs: null };
+  var S = { cams: [], simpan: null, cam: '', day: '', data: null, dayCache: {}, seg: null, vs: 0, ve: 0, w: 86400000, speed: 1, playing: false, want: null, loadedKey: '', posMs: null };
   var DAYN = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'], MON = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
   function p2(n) { return n < 10 ? '0' + n : '' + n; }
   function dstr(ms) { var d = new Date(ms); return d.getFullYear() + '-' + p2(d.getMonth() + 1) + '-' + p2(d.getDate()); }
@@ -145,8 +145,7 @@ function rekamanApp() {
     S.day = tgl;
     loadDay(S.cam, tgl).then(function (d) {
       if (!d || !d.ok || S.day !== tgl) return;
-      S.data = d; var a = d0(tgl); S.zoomH = S.zoomH || 24;
-      if (S.zoomH >= 24) { S.vs = a; S.ve = a + 86400000; }
+      S.data = d; var a = d0(tgl); centerView();
       drawDays(); drawTl(); drawEvs(); if (then) then();
     });
   }
@@ -159,11 +158,13 @@ function rekamanApp() {
     }
     if (S.lastDays !== h) { S.lastDays = h; $('days').innerHTML = h; }
   }
-  $('days').addEventListener('click', function (e) { var b = e.target.closest ? e.target.closest('button') : null; if (!b) return; S.zoomH = S.zoomH; setDay(b.getAttribute('data-d'), function () { var s = S.data.segmen; if (s.length) { /* mulai dari awal rekaman hari itu hanya bila diminta; di sini hanya tampilkan */ } }); });
+  $('days').addEventListener('click', function (e) { var b = e.target.closest ? e.target.closest('button') : null; if (!b) return; setDay(b.getAttribute('data-d')); });
 
   // ---------- garis waktu ----------
+  var DAY = 86400000;
   function x2t(x) { var r = $('tl').getBoundingClientRect(); return S.vs + (x - r.left) / r.width * (S.ve - S.vs); }
   function pct(t) { return (t - S.vs) / (S.ve - S.vs) * 100; }
+  var STEPS = [1000, 2000, 5000, 10000, 15000, 30000, 60000, 120000, 300000, 600000, 900000, 1800000, 3600000, 7200000, 10800000, 21600000];
   function drawTl() {
     var d = S.data; if (!d) return;
     var h = '', vs = S.vs, ve = S.ve, w = ve - vs;
@@ -173,24 +174,57 @@ function rekamanApp() {
     if (sek >= vs && sek <= ve) h += '<span class="now" style="left:' + pct(sek) + '%"></span>';
     h += '<span class="pos" id="pos" style="left:' + (S.posMs != null ? pct(S.posMs) : -5) + '%"></span>';
     $('tl').innerHTML = h;
-    var th = '', step = w <= 700000 ? 60000 : w <= 4000000 ? 600000 : w <= 25000000 ? 3600000 : 10800000, t0 = Math.ceil(vs / step) * step;
-    var a0 = new Date(vs); a0.setHours(0, 0, 0, 0);
-    for (var t = a0.getTime(); t <= ve; t += step) { if (t < vs) continue; th += '<span style="left:' + pct(t) + '%">' + hm(t) + '</span>'; }
+    var step = STEPS[STEPS.length - 1]; for (var k = 0; k < STEPS.length; k++) { if (w / STEPS[k] <= 9) { step = STEPS[k]; break; } }
+    var th = '', a0 = d0(S.day);
+    for (var t = a0 + Math.floor((vs - a0) / step) * step; t <= ve; t += step) { if (t < vs) continue; th += '<span style="left:' + pct(t) + '%">' + (step < 60000 ? hms(t) : hm(t)) + '</span>'; }
     $('tlh').innerHTML = th;
+    var span = w >= DAY ? 'Seluruh hari' : dur(w / 1000);
+    $('zinfo').textContent = 'Tampilan: ' + span;
+    var all = $('zoom').querySelectorAll('button');
+    for (var i = 0; i < all.length; i++) { var z = Number(all[i].getAttribute('data-z')) * 3600000; all[i].setAttribute('aria-pressed', Math.abs(z - w) / z < 0.02 ? 'true' : 'false'); }
   }
   function movePos() { var p = $('pos'); if (p && S.posMs != null) p.style.left = pct(S.posMs) + '%'; }
-  $('tl').addEventListener('click', function (e) { var t = x2t(e.clientX); gotoTime(t, true); });
-  $('zoom').addEventListener('click', function (e) {
-    var b = e.target.closest ? e.target.closest('button') : null; if (!b) return; var z = Number(b.getAttribute('data-z')); S.zoomH = z;
-    var all = $('zoom').querySelectorAll('button'); for (var i = 0; i < all.length; i++) all[i].setAttribute('aria-pressed', all[i] === b ? 'true' : 'false');
-    centerView(); drawTl();
-  });
+  function clampView() { var a = d0(S.day), w = Math.max(30000, Math.min(DAY, S.ve - S.vs)); var s = Math.max(a, Math.min(a + DAY - w, S.vs)); S.vs = s; S.ve = s + w; S.w = w; }
+  function zoomAt(f, t) { var w = S.ve - S.vs, nw = Math.max(30000, Math.min(DAY, w * f)), r = (t - S.vs) / w; S.vs = t - r * nw; S.ve = S.vs + nw; clampView(); }
   function centerView() {
-    var a = d0(S.day), w = S.zoomH * 3600000;
-    if (S.zoomH >= 24) { S.vs = a; S.ve = a + 86400000; return; }
-    var c = S.posMs != null ? S.posMs : (S.data && S.data.segmen.length ? S.data.segmen[S.data.segmen.length - 1].a : a + 43200000);
-    var s = Math.max(a, Math.min(a + 86400000 - w, c - w / 2)); S.vs = s; S.ve = s + w;
+    var a = d0(S.day), w = Math.min(S.w, DAY);
+    if (w >= DAY) { S.vs = a; S.ve = a + DAY; S.w = DAY; return; }
+    var c = S.posMs != null ? S.posMs : (S.data && S.data.segmen.length ? S.data.segmen[S.data.segmen.length - 1].a : a + DAY / 2);
+    S.vs = c - w / 2; S.ve = S.vs + w; clampView();
   }
+  function matiAt(t) { var d = S.data, r = null; if (!d) return null; d.mati.forEach(function (m) { if (t >= m.dari && t <= (m.sampai || d.sekarang)) r = m; }); return r; }
+  // Geser (drag) di garis waktu = cari posisi; lepas = putar dari situ. Klik biasa sama saja.
+  var drag = null;
+  function scrubTo(cx) {
+    var t = Math.max(d0(S.day), Math.min(d0(S.day) + DAY - 1, x2t(cx))); S.posMs = t; $('clk').hidden = false; $('clk').textContent = hms(t); movePos();
+    if (S.seg && t >= S.seg.m && t < S.seg.a && V.readyState >= 1) { try { V.currentTime = (t - S.seg.m) / 1000; } catch (e) {} }
+    return t;
+  }
+  var TL = $('tl');
+  TL.addEventListener('pointerdown', function (e) { if (e.pointerType === 'mouse' && e.button !== 0) return; if (!S.data) return; drag = { id: e.pointerId }; S.scrub = true; try { TL.setPointerCapture(e.pointerId); } catch (x) {} scrubTo(e.clientX); e.preventDefault(); });
+  TL.addEventListener('pointermove', function (e) { if (drag) scrubTo(e.clientX); });
+  function endDrag(e, ok) {
+    if (!drag) return; drag = null; S.scrub = false; if (!ok) return;
+    var t = scrubTo(e.clientX), m = matiAt(t);
+    if (m) { t = m.dari - 5000; note('Kamera mati mulai ' + hms(m.dari) + (m.sampai ? ', menyala lagi ' + hms(m.sampai) : ' (belum menyala)') + '. Ini 5 detik terakhir sebelum mati.', true); }
+    gotoTime(t, true);
+  }
+  TL.addEventListener('pointerup', function (e) { endDrag(e, true); });
+  TL.addEventListener('pointercancel', function (e) { endDrag(e, false); });
+  // Ctrl + roda mouse (atau cubit di trackpad) = perbesar/perkecil di sekitar kursor. Roda biasa saat diperbesar = geser kiri/kanan.
+  TL.addEventListener('wheel', function (e) {
+    if (!S.data) return; var w = S.ve - S.vs;
+    if (e.ctrlKey || e.metaKey) { e.preventDefault(); var dy = Math.max(-80, Math.min(80, e.deltaY)); zoomAt(Math.exp(dy * 0.012), x2t(e.clientX)); drawTl(); return; }
+    if (w >= DAY) return; e.preventDefault();
+    var dx = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY; var r = TL.getBoundingClientRect();
+    S.vs += dx / r.width * w; S.ve = S.vs + w; clampView(); drawTl();
+  }, { passive: false });
+  $('zoom').addEventListener('click', function (e) {
+    var b = e.target.closest ? e.target.closest('button') : null; if (!b) return; var z = Number(b.getAttribute('data-z'));
+    S.w = z * 3600000; centerView(); drawTl();
+  });
+  $('zoomIn').onclick = function () { var c = S.posMs != null ? S.posMs : (S.vs + S.ve) / 2; zoomAt(0.5, c); drawTl(); };
+  $('zoomOut').onclick = function () { var c = S.posMs != null ? S.posMs : (S.vs + S.ve) / 2; zoomAt(2, c); drawTl(); };
 
   // ---------- kejadian hari itu ----------
   function gaps() {
@@ -210,7 +244,7 @@ function rekamanApp() {
     items.sort(function (x, y) { return x.t - y.t; });
     items.forEach(function (x) {
       var t = x.k === 'r' ? 'Kamera mati' : 'Tidak ada rekaman', sub = hms(x.a) + ' - ' + (x.b ? hms(x.b) + ' (' + dur((x.b - x.a) / 1000) + ')' : 'masih berlangsung');
-      h += '<button type="button" class="ev" data-t="' + (x.k === 'r' ? Math.max(0, x.a - 120000) : Math.max(0, x.a - 20000)) + '"><i class="' + x.k + '"></i><span class="en"><b>' + t + '</b><span>' + sub + '</span></span>' + icon('play', 's') + '</button>';
+      h += '<button type="button" class="ev" data-t="' + (x.k === 'r' ? Math.max(0, x.a - 5000) : Math.max(0, x.a - 20000)) + '"><i class="' + x.k + '"></i><span class="en"><b>' + t + '</b><span>' + sub + '</span></span>' + icon('play', 's') + '</button>';
     });
     $('evs').innerHTML = h || '<p class="cn">Tidak ada kejadian pada hari ini.</p>';
   }
@@ -239,8 +273,8 @@ function rekamanApp() {
   V.addEventListener('error', function () { if (S.seg) note('Potongan ' + hm(S.seg.m) + ' tidak bisa diputar (hilang, atau sedang diproses).', true); });
   function setPlay(on) { S.playing = on; $('ppT').textContent = on ? 'Jeda' : 'Putar'; }
   V.addEventListener('play', function () { setPlay(true); }); V.addEventListener('pause', function () { setPlay(false); });
-  V.addEventListener('timeupdate', function () { if (!S.seg) return; S.posMs = S.seg.m + V.currentTime * 1000; $('clk').textContent = hms(S.posMs); movePos(); autoScroll(); });
-  function autoScroll() { if (S.zoomH >= 24 || S.posMs == null) return; if (S.posMs < S.vs || S.posMs > S.ve) { centerView(); drawTl(); } }
+  V.addEventListener('timeupdate', function () { if (!S.seg || S.scrub) return; S.posMs = S.seg.m + V.currentTime * 1000; $('clk').textContent = hms(S.posMs); movePos(); autoScroll(); });
+  function autoScroll() { if (S.ve - S.vs >= DAY || S.posMs == null) return; if (S.posMs < S.vs || S.posMs > S.ve) { centerView(); drawTl(); } }
   V.addEventListener('ended', function () {
     var s = S.seg; if (!s) return;
     var nx = segAfter(s.m + 1000); // potongan berikutnya pada hari ini
@@ -265,12 +299,18 @@ function rekamanApp() {
   document.querySelector('.rk-ctl').addEventListener('click', function (e) { var b = e.target.closest ? e.target.closest('[data-j]') : null; if (!b) return; var base = S.posMs != null ? S.posMs : Date.now(); gotoTime(base + Number(b.getAttribute('data-j')) * 1000, !V.paused || S.playing); });
   $('spd').addEventListener('click', function (e) { var b = e.target.closest ? e.target.closest('button') : null; if (!b) return; S.speed = Number(b.getAttribute('data-s')); V.playbackRate = S.speed; var all = $('spd').querySelectorAll('button'); for (var i = 0; i < all.length; i++) all[i].setAttribute('aria-pressed', all[i] === b ? 'true' : 'false'); });
   $('goTm').onclick = function () { var v = $('tm').value; if (!v) return; var a = v.split(':'); var t = d0(S.day || dstr(Date.now())) + (Number(a[0]) * 3600 + Number(a[1]) * 60 + Number(a[2] || 0)) * 1000; gotoTime(t, true); };
-  function gotoNow() {
-    var go = function () { var s = S.data && S.data.segmen; if (!s || !s.length) { note('Belum ada rekaman hari ini untuk kamera ini.', true); return; } var l = s[s.length - 1]; var t = Math.max(l.m, l.a - 20000); gotoTime(t, true); };
-    if (S.day !== dstr(Date.now())) setDay(dstr(Date.now()), go); else { loadDay(S.cam, S.day).then(function (d) { if (d && d.ok) { S.data = d; drawTl(); drawEvs(); } go(); }); }
+  function gotoNow() { // langsung ke rekaman paling baru dan putar; kalau hari ini belum ada, pakai hari terakhir yang ada rekamannya
+    var cam = S.cam; if (!cam) return; var today = dstr(Date.now());
+    loadDay(cam, today).then(function (d) {
+      if (!d || !d.ok || S.cam !== cam) return;
+      var tgt = d.segmen.length ? today : (d.hari && d.hari[0]);
+      if (!tgt) { S.day = today; S.data = d; drawDays(); centerView(); drawTl(); drawEvs(); note('Belum ada rekaman untuk kamera ini.', true); return; }
+      var run = function () { var sg = S.data.segmen; if (!sg.length) { note('Belum ada rekaman untuk kamera ini.', true); return; } var l = sg[sg.length - 1]; gotoTime(Math.max(l.m, l.a - 20000), true); };
+      if (tgt === today) { S.day = today; S.data = d; drawDays(); centerView(); drawTl(); drawEvs(); run(); } else setDay(tgt, run);
+    });
   }
   $('goNow').onclick = gotoNow;
-  $('cam').onchange = function () { S.cam = this.value; S.seg = null; S.posMs = null; S.loadedKey = ''; try { V.pause(); V.removeAttribute('src'); V.load(); } catch (e) {} $('clk').hidden = true; $('ph0').style.display = ''; note(''); setPlay(false); try { localStorage.setItem('rk-cam', S.cam); } catch (e) {} setDay(dstr(Date.now())); };
+  $('cam').onchange = function () { S.cam = this.value; S.seg = null; S.posMs = null; S.loadedKey = ''; try { V.pause(); V.removeAttribute('src'); V.load(); } catch (e) {} $('clk').hidden = true; $('ph0').style.display = ''; note(''); setPlay(false); try { localStorage.setItem('rk-cam', S.cam); } catch (e) {} gotoNow(); };
 
   // ---------- status ----------
   function drawStat() {
@@ -310,12 +350,12 @@ function rekamanApp() {
     var want = S.cam; if (!want) { try { want = localStorage.getItem('rk-cam') || ''; } catch (e) {} }
     var ok = S.cams.some(function (c) { return c.id === want; });
     sel.value = ok ? want : (S.cams[0] ? S.cams[0].id : '');
-    if (sel.value !== S.cam) { S.cam = sel.value; if (S.cam) setDay(dstr(Date.now())); }
+    if (sel.value !== S.cam) { S.cam = sel.value; if (S.cam) { if ($('pPlay').hidden) setDay(dstr(Date.now())); else gotoNow(); } }
   }
   var P = DS.poll({ name: 'rekaman', url: '/api/rekaman/ringkasan', ms: 5000, cache: false, onData: function (d) {
     if (!d || !d.ok) return; S.cams = d.kamera; S.simpan = d.simpan; fillCams(); drawStat();
     // hari ini: segarkan garis waktu (potongan baru) tanpa mengganggu pemutaran
-    if (S.cam && S.day === dstr(Date.now()) && !S.refreshing) { S.refreshing = true; loadDay(S.cam, S.day).then(function (x) { S.refreshing = false; if (x && x.ok && S.day === x.tgl) { S.data = x; if (S.zoomH >= 24) { S.vs = d0(S.day); S.ve = S.vs + 86400000; } drawDays(); drawTl(); drawEvs(); } }, function () { S.refreshing = false; }); }
+    if (S.cam && S.day === dstr(Date.now()) && !S.refreshing) { S.refreshing = true; loadDay(S.cam, S.day).then(function (x) { S.refreshing = false; if (x && x.ok && S.day === x.tgl) { S.data = x; drawDays(); drawTl(); drawEvs(); } }, function () { S.refreshing = false; }); }
   } });
   DS.pullRefresh(function () { P.now(); return new Promise(function (r) { setTimeout(r, 800); }); });
   DS.initShell({ search: function (q) { if (!q) return []; var out = []; S.cams.forEach(function (c) { if (c.name.toLowerCase().indexOf(q) >= 0) out.push({ label: c.name, sub: 'Putar rekaman kamera ini', icon: 'history', go: function () { $('cam').value = c.id; $('cam').onchange(); tab('play'); gotoNow(); } }); }); return out; } });
