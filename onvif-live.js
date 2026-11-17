@@ -212,6 +212,76 @@ function createOnvifLive({ log, rootDir, ffmpegPath, getCamera, maxSessions = 4,
   }
   const realtimeCount = () => rtActive;
 
+  // ===== Relay bersama (untuk aplikasi pemantau) =====
+  // SATU ffmpeg per kamera+kualitas (-c copy, tanpa olah ulang, tanpa transcode) -> MPEG-TS -> dibagi ke semua penonton.
+  // Jadi 1 kamera = 1 sambungan RTSP, berapa pun penontonnya. Berhenti sendiri 10 dtk setelah penonton terakhir pergi.
+  const relays = new Map(); // "id|q|a" -> { proc, subs:Set(res), idleTimer, lastData, head:Buffer[] }
+  function pickAny(cam, quality) { // semua kodek boleh (aplikasi bisa memutar H.265); sub = piksel terkecil, main = terbesar
+    const list = (cam.profiles || []).filter((p) => p.rtsp);
+    if (!list.length) return null;
+    const px = (p) => (p.width || 0) * (p.height || 0);
+    const sorted = list.slice().sort((a, b) => px(a) - px(b));
+    return quality === 'main' ? sorted[sorted.length - 1] : sorted[0];
+  }
+  function relayStart(key, id, quality, audio) {
+    const cam = getCamera(id); const prof = cam && pickAny(cam, quality);
+    if (!cam || !prof || cam.password === null) return null;
+    const secrets = [cam.password, cam.username];
+    const R = { key, id, quality, subs: new Set(), idleTimer: null, lastData: Date.now(), proc: null, err: '', gotData: false, prof, startedAt: Date.now() };
+    const args = ['-hide_banner', '-loglevel', 'error', '-nostdin',
+      '-rtsp_transport', rtspTransport, '-fflags', 'nobuffer+genpts+discardcorrupt', '-flags', 'low_delay', '-analyzeduration', '1000000', '-probesize', '500000', '-use_wallclock_as_timestamps', '1',
+      '-i', rtspUrl(cam, prof), '-map', '0:v:0', '-c:v', 'copy', ...(audio ? ['-map', '0:a:0?', '-c:a', 'aac', '-b:a', '32k', '-ac', '1', '-ar', '16000'] : ['-an']),
+      '-f', 'mpegts', '-mpegts_flags', '+resend_headers', '-flush_packets', '1', 'pipe:1'];
+    const p = spawn(findFfmpeg(), args, { windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'] });
+    R.proc = p;
+    p.stderr.on('data', (d) => { R.err = (R.err + d).slice(-600); });
+    p.stdout.on('data', (chunk) => {
+      R.lastData = Date.now();
+      if (!R.gotData) { R.gotData = true; log('INFO', `Relay ${id} ${quality} dimulai (${prof.name || ''} ${prof.width || '?'}x${prof.height || '?'}, ${prof.codec || '?'})`); }
+      for (const res of R.subs) {
+        if (res.writableLength > 4 * 1024 * 1024) { R.subs.delete(res); try { res.destroy(); } catch (_) {} continue; } // penonton terlalu lambat
+        res.write(chunk);
+      }
+    });
+    const kill = () => { if (R.dead) return; R.dead = true; clearInterval(R.watch); clearTimeout(R.idleTimer); try { p.kill(); } catch (_) {} if (relays.get(key) === R) relays.delete(key); };
+    R.kill = kill;
+    p.on('error', (e) => { R.err = e.code === 'ENOENT' ? 'ffmpeg tidak ditemukan' : e.message; closeAll(R); kill(); });
+    p.on('exit', (code) => {
+      if (R.dead) return;
+      if (R.gotData) log('WARN', `Relay ${id} ${quality} berakhir (kode ${code}): ${scrub(R.err.trim(), secrets).slice(0, 160)}`);
+      closeAll(R); kill();
+    });
+    // Pengawas: tidak ada data 8 dtk (atau 25 dtk sebelum data pertama) -> putus semua penonton, mereka menyambung ulang sendiri
+    R.watch = setInterval(() => {
+      const lim = R.gotData ? 8000 : 25000;
+      if (Date.now() - (R.gotData ? R.lastData : R.startedAt) > lim) { log('WARN', `Relay ${id} ${quality}: tidak ada data dari kamera, dihentikan (${scrub(R.err.trim(), secrets).slice(0, 120)})`); closeAll(R); kill(); }
+    }, 2000);
+    R.watch.unref();
+    relays.set(key, R);
+    return R;
+  }
+  function closeAll(R) { for (const res of R.subs) { try { res.end(); } catch (_) {} } R.subs.clear(); }
+  function relay(id, quality, req, res, audio = false) {
+    if (!ID_RE.test(String(id))) return rtFail(res, 400, 'ID kamera tidak valid');
+    const q = quality === 'main' ? 'main' : 'sub';
+    const key = `${id}|${q}|${audio ? 1 : 0}`;
+    let R = relays.get(key);
+    if (!R) {
+      if (relays.size >= 60) return rtFail(res, 429, 'Terlalu banyak relay');
+      R = relayStart(key, id, q, audio);
+      if (!R) { const cam = getCamera(id); return rtFail(res, 503, !cam ? 'Kamera tidak ditemukan' : (cam.password === null ? 'Password tersimpan tidak terbaca' : 'Kamera belum tersambung ONVIF')); }
+    }
+    clearTimeout(R.idleTimer);
+    res.writeHead(200, { 'Content-Type': 'video/mp2t', 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff', 'X-Codec': (R.prof.codec || '') });
+    R.subs.add(res);
+    const gone = () => {
+      if (!R.subs.delete(res) && R.subs.size) return;
+      if (R.subs.size === 0 && !R.dead) { clearTimeout(R.idleTimer); R.idleTimer = setTimeout(() => { if (!R.subs.size) { log('INFO', `Relay ${id} ${q} berhenti (tidak ada penonton)`); R.kill(); } }, 10000); }
+    };
+    req.on('close', gone); res.on('close', gone);
+  }
+  const relayStatus = () => [...relays.values()].map((R) => ({ id: R.id, quality: R.quality, viewers: R.subs.size, flowing: R.gotData, codec: R.prof.codec || '', size: `${R.prof.width || '?'}x${R.prof.height || '?'}` }));
+
   // Diagnosa: baca info stream kamera (codec, profil, level, galat decode) selama ~4 detik, tanpa menyimpan apa pun.
   function diag(id, quality) {
     return new Promise((resolve) => {
@@ -235,9 +305,9 @@ function createOnvifLive({ log, rootDir, ffmpegPath, getCamera, maxSessions = 4,
 
   const status = () => [...sessions.values()].map((s) => ({ id: s.id, quality: s.quality, running: !!s.proc, fails: s.fails, error: s.lastErr.trim().slice(0, 150) }));
   const stopAll = () => { for (const id of [...sessions.keys()]) stop(id, 'program berhenti'); };
-  process.on('exit', () => { for (const s of sessions.values()) { try { s.proc && s.proc.kill(); } catch (_) {} } });
+  process.on('exit', () => { for (const s of sessions.values()) { try { s.proc && s.proc.kill(); } catch (_) {} } for (const R of relays.values()) { try { R.proc && R.proc.kill(); } catch (_) {} } });
 
-  return { start, stop, file, status, stopAll, realtime, realtimeCount, diag };
+  return { start, stop, file, status, stopAll, realtime, realtimeCount, diag, relay, relayStatus };
 }
 
 module.exports = { createOnvifLive };

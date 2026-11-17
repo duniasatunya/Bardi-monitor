@@ -461,6 +461,7 @@ function startReportServer(opts) {
       }
       if (p.startsWith('/onvif-live/')) { // /onvif-live/<id>/<live.m3u8|segNNNNN.ts>
         const m = /^\/onvif-live\/([0-9a-f]{8})\/([A-Za-z0-9_.]+)$/.exec(p);
+        if (m && m[2] === 'live.ts') return onvifLive.relay(m[1], url.searchParams.get('q'), req, res, url.searchParams.get('a') === '1');
         if (m && m[2] === 'rt.mp4') return onvifLive.realtime(m[1], url.searchParams.get('q'), req, res, url.searchParams.get('a') !== '0', url.searchParams.get('s') === '1');
         const f = m && onvifLive.file(m[1], m[2]);
         if (!f) return send(res, 404, 'text/plain; charset=utf-8', 'Tidak ada');

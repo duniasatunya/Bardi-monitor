@@ -164,3 +164,9 @@ Cadangan sebelum revisi: `*.bak-r3`. Belum diuji di iPhone asli dan dengan kamer
 - Rekaman: tombol melayang di atas video (desktop dan HP): Rekam klip, Screenshot, Suara, Kecepatan (1x/2x/4x/8x, ketuk untuk ganti), Layar penuh, dan tombol Putar/Jeda besar di tengah. Tombol Putar dan kecepatan di bawah video dihapus. Tombol memudar saat memutar; gerak mouse/ketuk memunculkannya lagi.
 - Rekaman: Screenshot dan Rekam klip disimpan ke perangkat yang membuka halaman (bukan komputer perekam). Desktop: diunduh. HP: menu bagikan (pilih Simpan Gambar/Simpan Video). Klip dibuat di komputer perekam (`/rekaman/klip.mp4`, maks 30 menit) dari rekaman asli.
 - Rekaman: Layar penuh (desktop pakai layar penuh asli browser, Esc keluar; iPhone memakai tampilan penuh buatan sendiri), tampilan sama dengan HP miring: tombol dan garis waktu melayang di bawah.
+- Rekaman (perilaku seperti YouTube): desktop: spasi = putar/jeda, klik video = putar/jeda, tombol hilang setelah 5 detik tanpa aktivitas (muncul lagi saat mouse digerakkan). HP/layar sentuh: putar/jeda hanya lewat tombolnya; ketuk bagian kosong video = tombol hilang, ketuk lagi = muncul. Tulisan "Merekam klip" dipindah ke pojok kanan atas (tidak menutupi cap waktu kamera).
+
+## Relay siaran bersama (tahap 1 aplikasi pemantau)
+- Alamat baru `/onvif-live/<id8>/live.ts?q=sub|main&a=0|1` (wajib login, cookie sama). Keluarannya MPEG-TS tanpa olah ulang (`-c copy`, H.265 tetap H.265).
+- Satu ffmpeg per kamera+kualitas, dibagi ke semua penonton; berhenti 10 dtk setelah penonton terakhir pergi; putus otomatis kalau kamera diam 8 dtk.
+- Tidak mengubah halaman/pemutar yang sudah ada. Berkas: `onvif-live.js` (relay), `report-server.js` (1 baris rute).
