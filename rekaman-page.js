@@ -38,6 +38,13 @@ const css = `
 .rk-ctl .spd button[aria-pressed=true]{background:var(--brand-ink);color:var(--on-brand)}
 .tlw{position:relative}
 .tl{position:relative;height:64px;cursor:ew-resize;border-radius:14px;background:repeating-linear-gradient(135deg,var(--surface-2) 0 6px,var(--line) 6px 8px);overflow:hidden;touch-action:pan-y;user-select:none;-webkit-user-select:none}
+.tl .tk{position:absolute;bottom:0;width:1px;height:14px;background:var(--tx);opacity:.35;pointer-events:none}
+.tl .tk.mj{height:100%;opacity:.5}
+.dnav{display:none}
+.dpill{display:inline-flex;align-items:center;gap:6px;padding:6px;border-radius:999px;background:var(--surface-2)}
+.dpill b{min-width:96px;text-align:center;font-size:16px}
+.dpill button{width:44px;height:44px;border:0;border-radius:50%;background:var(--surface);color:var(--tx);display:flex;align-items:center;justify-content:center;cursor:pointer}
+.dpill button:disabled{opacity:.4}
 .tl .sg{position:absolute;top:10px;bottom:10px;background:var(--ok);border-radius:3px;min-width:1px;pointer-events:none}
 .tl .sg.b{background:var(--brand)}
 .tl .mt{position:absolute;top:0;bottom:0;background:var(--bad-t);border-left:2px solid var(--bad);border-right:2px solid var(--bad);min-width:4px;pointer-events:none}
@@ -68,6 +75,26 @@ const css = `
 .sbar.hot i{background:var(--bad)}
 @media (max-width:899px){
   .rk{grid-template-columns:minmax(0,1fr)}
+  .rk-days{display:none}
+  .rk-bar{gap:6px}
+  .rk-bar input[type=time]{flex:1 1 120px;min-width:0;padding:0 10px}
+  .rk-bar .btn{padding:0 14px}
+  .pcard{background:transparent;box-shadow:none;margin:0 -16px;border-radius:0;overflow:visible;display:flex;flex-direction:column}
+  .pcard .vbox{border-radius:0;order:0}
+  .pinfo{display:contents}
+  .dnav{display:block;order:1;padding:12px 16px 4px}
+  .tlw{order:2;display:flex;flex-direction:column;background:var(--surface-2);padding:10px 0 0;margin-top:8px}
+  .tlh{order:-1;height:22px;margin:0 0 4px;font-size:13px}
+  .tl{height:84px;border-radius:0;background:transparent}
+  .tl .sg{top:8px;bottom:8px}
+  #zoom{order:3;flex-wrap:nowrap;overflow-x:auto;gap:8px;padding:10px 16px;background:var(--surface-2);scrollbar-width:none}
+  #zoom .btn{flex:none;background:var(--surface);min-height:44px}
+  #zoom .btn[aria-pressed=true]{background:var(--brand-ink);color:var(--on-brand)}
+  #zoom .cn,#zoomIn,#zoomOut{display:none}
+  #ctl{order:4;padding:12px 16px 0}
+  .tlg{order:5;padding:0 16px}
+  .pinfo .cn{order:6;padding:0 16px}
+  .rk-side{padding:0}
   .rk .side-c{position:static}
   .rk-bar .psel{flex-basis:100%}
 }
@@ -88,7 +115,8 @@ const body = `
 <div class="card pcard">
 <div class="vbox"><video id="v" playsinline preload="auto" muted></video><div class="clk" id="clk" hidden></div><div class="ph0" id="ph0">Pilih kamera dan tanggal, lalu klik garis waktu di bawah untuk mulai memutar.</div></div>
 <div class="pinfo">
-<div class="rk-ctl">
+<div class="dnav" id="dnav"><div class="dpill"><button type="button" id="dPrev" aria-label="Hari sebelumnya">${I('back', 's')}</button><b id="dLbl">Hari ini</b><button type="button" id="dNext" aria-label="Hari berikutnya">${I('next', 's')}</button></div></div>
+<div class="rk-ctl" id="ctl">
 <button class="btn" type="button" data-j="-600" title="Mundur 10 menit">-10 mnt</button>
 <button class="btn" type="button" data-j="-10" title="Mundur 10 detik">-10 dtk</button>
 <button class="btn pri" type="button" id="pp" aria-label="Putar atau jeda">${I('play', 's')}<span id="ppT">Putar</span></button>
@@ -98,7 +126,7 @@ const body = `
 <span class="rk-ctl spd" id="spd"><button class="btn" type="button" data-s="1" aria-pressed="true">1x</button><button class="btn" type="button" data-s="2" aria-pressed="false">2x</button><button class="btn" type="button" data-s="4" aria-pressed="false">4x</button><button class="btn" type="button" data-s="8" aria-pressed="false">8x</button></span>
 </div>
 <div class="tlw"><div class="tl" id="tl" role="slider" aria-label="Garis waktu"></div><div class="tlh" id="tlh"></div></div>
-<div class="rk-ctl" id="zoom"><span class="cn" id="zinfo">Tampilan: Seluruh hari</span><button class="btn" type="button" id="zoomOut" aria-label="Perkecil" title="Perkecil">-</button><button class="btn" type="button" id="zoomIn" aria-label="Perbesar" title="Perbesar">+</button><button class="btn" type="button" data-z="24" aria-pressed="true">24 jam</button><button class="btn" type="button" data-z="6">6 jam</button><button class="btn" type="button" data-z="1">1 jam</button><button class="btn" type="button" data-z="0.17">10 menit</button></div>
+<div class="rk-ctl" id="zoom"><span class="cn" id="zinfo">Tampilan: Seluruh hari</span><button class="btn" type="button" id="zoomOut" aria-label="Perkecil" title="Perkecil">-</button><button class="btn" type="button" id="zoomIn" aria-label="Perbesar" title="Perbesar">+</button><button class="btn" type="button" data-m="1440" aria-pressed="true">24 jam</button><button class="btn" type="button" data-m="360">6 jam</button><button class="btn" type="button" data-m="60">1 jam</button><button class="btn" type="button" data-m="30">30 mnt</button><button class="btn" type="button" data-m="10">10 mnt</button><button class="btn" type="button" data-m="5">5 mnt</button><button class="btn" type="button" data-m="1">1 mnt</button></div>
 <div class="tlg"><span><i style="background:var(--ok)"></i>Ada rekaman</span><span><i style="background:var(--brand)"></i>Sedang direkam</span><span><i style="background:var(--bad)"></i>Kamera mati (klik = ke saat kamera mati)</span><span><i style="background:var(--line)"></i>Tidak ada rekaman</span></div>
 <p class="cn">Geser garis waktu untuk mencari. Ctrl + putar roda mouse = perbesar/perkecil; saat diperbesar, putar roda = geser kiri/kanan.</p><p class="cn" id="note"></p>
 </div></div>
@@ -157,9 +185,12 @@ function rekamanApp() {
       h += '<button type="button" data-d="' + t + '" class="' + (set[t] ? '' : 'kosong') + '" aria-pressed="' + (t === S.day ? 'true' : 'false') + '"><b>' + dd.getDate() + '</b><span>' + (t === today ? 'Hari ini' : DAYN[dd.getDay()] + ' ' + MON[dd.getMonth()]) + '</span></button>';
     }
     if (S.lastDays !== h) { S.lastDays = h; $('days').innerHTML = h; }
+    var yd = dstr(now - 86400000), dl = $('dLbl'); if (dl && S.day) { var dd2 = new Date(d0(S.day) + 43200000); dl.textContent = S.day === today ? 'Hari ini' : S.day === yd ? 'Kemarin' : DAYN[dd2.getDay()] + ', ' + dd2.getDate() + ' ' + MON[dd2.getMonth()]; $('dNext').disabled = S.day >= today; }
   }
   $('days').addEventListener('click', function (e) { var b = e.target.closest ? e.target.closest('button') : null; if (!b) return; setDay(b.getAttribute('data-d')); });
 
+  $('dPrev').onclick = function () { if (S.day) setDay(dstr(d0(S.day) - 43200000)); };
+  $('dNext').onclick = function () { if (S.day && S.day < dstr(Date.now())) setDay(dstr(d0(S.day) + 129600000)); };
   // ---------- garis waktu ----------
   var DAY = 86400000;
   function x2t(x) { var r = $('tl').getBoundingClientRect(); return S.vs + (x - r.left) / r.width * (S.ve - S.vs); }
@@ -173,15 +204,19 @@ function rekamanApp() {
     d.mati.forEach(function (m) { var a = Math.max(m.dari, vs), b = Math.min(m.sampai || sek, ve); if (b < a) return; h += '<span class="mt" style="left:' + pct(a) + '%;width:' + Math.max(0.3, (b - a) / w * 100) + '%" title="Kamera mati ' + hms(m.dari) + '"></span>'; });
     if (sek >= vs && sek <= ve) h += '<span class="now" style="left:' + pct(sek) + '%"></span>';
     h += '<span class="pos" id="pos" style="left:' + (S.posMs != null ? pct(S.posMs) : -5) + '%"></span>';
+    var tstep0 = 0;
     $('tl').innerHTML = h;
     var step = STEPS[STEPS.length - 1]; for (var k = 0; k < STEPS.length; k++) { if (w / STEPS[k] <= 9) { step = STEPS[k]; break; } }
     var th = '', a0 = d0(S.day);
     for (var t = a0 + Math.floor((vs - a0) / step) * step; t <= ve; t += step) { if (t < vs) continue; th += '<span style="left:' + pct(t) + '%">' + (step < 60000 ? hms(t) : hm(t)) + '</span>'; }
     $('tlh').innerHTML = th;
+    var tk = '', mn = step / 5, a1 = d0(S.day), n = 0;
+    for (var u = a1 + Math.floor((vs - a1) / mn) * mn; u <= ve && n < 400; u += mn, n++) { if (u < vs) continue; var mj = Math.abs(((u - a1) % step)) < 1; tk += '<span class="tk' + (mj ? ' mj' : '') + '" style="left:' + pct(u) + '%"></span>'; }
+    $('tl').insertAdjacentHTML('afterbegin', tk);
     var span = w >= DAY ? 'Seluruh hari' : dur(w / 1000);
     $('zinfo').textContent = 'Tampilan: ' + span;
-    var all = $('zoom').querySelectorAll('button');
-    for (var i = 0; i < all.length; i++) { var z = Number(all[i].getAttribute('data-z')) * 3600000; all[i].setAttribute('aria-pressed', Math.abs(z - w) / z < 0.02 ? 'true' : 'false'); }
+    var all = $('zoom').querySelectorAll('[data-m]');
+    for (var i = 0; i < all.length; i++) { var z = Number(all[i].getAttribute('data-m')) * 60000; if (!z) continue; all[i].setAttribute('aria-pressed', Math.abs(z - w) / z < 0.02 ? 'true' : 'false'); }
   }
   function movePos() { var p = $('pos'); if (p && S.posMs != null) p.style.left = pct(S.posMs) + '%'; }
   function clampView() { var a = d0(S.day), w = Math.max(30000, Math.min(DAY, S.ve - S.vs)); var s = Math.max(a, Math.min(a + DAY - w, S.vs)); S.vs = s; S.ve = s + w; S.w = w; }
@@ -220,8 +255,8 @@ function rekamanApp() {
     S.vs += dx / r.width * w; S.ve = S.vs + w; clampView(); drawTl();
   }, { passive: false });
   $('zoom').addEventListener('click', function (e) {
-    var b = e.target.closest ? e.target.closest('button') : null; if (!b) return; var z = Number(b.getAttribute('data-z'));
-    S.w = z * 3600000; centerView(); drawTl();
+    var b = e.target.closest ? e.target.closest('[data-m]') : null; if (!b) return; var z = Number(b.getAttribute('data-m'));
+    S.w = z * 60000; centerView(); drawTl();
   });
   $('zoomIn').onclick = function () { var c = S.posMs != null ? S.posMs : (S.vs + S.ve) / 2; zoomAt(0.5, c); drawTl(); };
   $('zoomOut').onclick = function () { var c = S.posMs != null ? S.posMs : (S.vs + S.ve) / 2; zoomAt(2, c); drawTl(); };
@@ -271,6 +306,7 @@ function rekamanApp() {
   }
   V.addEventListener('loadedmetadata', applyWant);
   V.addEventListener('error', function () { if (S.seg) note('Potongan ' + hm(S.seg.m) + ' tidak bisa diputar (hilang, atau sedang diproses).', true); });
+  V.addEventListener('click', function () { if (!S.seg) return; if (V.paused) { var p = V.play(); if (p && p.catch) p.catch(function () {}); } else V.pause(); });
   function setPlay(on) { S.playing = on; $('ppT').textContent = on ? 'Jeda' : 'Putar'; }
   V.addEventListener('play', function () { setPlay(true); }); V.addEventListener('pause', function () { setPlay(false); });
   V.addEventListener('timeupdate', function () { if (!S.seg || S.scrub) return; S.posMs = S.seg.m + V.currentTime * 1000; $('clk').textContent = hms(S.posMs); movePos(); autoScroll(); });
@@ -296,7 +332,7 @@ function rekamanApp() {
   }
   function posSet(t) { S.posMs = t; $('clk').hidden = false; $('clk').textContent = hms(t); movePos(); }
   $('pp').onclick = function () { if (!S.seg) { gotoNow(); return; } if (V.paused) { var p = V.play(); if (p && p.catch) p.catch(function () {}); } else V.pause(); };
-  document.querySelector('.rk-ctl').addEventListener('click', function (e) { var b = e.target.closest ? e.target.closest('[data-j]') : null; if (!b) return; var base = S.posMs != null ? S.posMs : Date.now(); gotoTime(base + Number(b.getAttribute('data-j')) * 1000, !V.paused || S.playing); });
+  $('ctl').addEventListener('click', function (e) { var b = e.target.closest ? e.target.closest('[data-j]') : null; if (!b) return; var base = S.posMs != null ? S.posMs : Date.now(); gotoTime(base + Number(b.getAttribute('data-j')) * 1000, !V.paused || S.playing); });
   $('spd').addEventListener('click', function (e) { var b = e.target.closest ? e.target.closest('button') : null; if (!b) return; S.speed = Number(b.getAttribute('data-s')); V.playbackRate = S.speed; var all = $('spd').querySelectorAll('button'); for (var i = 0; i < all.length; i++) all[i].setAttribute('aria-pressed', all[i] === b ? 'true' : 'false'); });
   $('goTm').onclick = function () { var v = $('tm').value; if (!v) return; var a = v.split(':'); var t = d0(S.day || dstr(Date.now())) + (Number(a[0]) * 3600 + Number(a[1]) * 60 + Number(a[2] || 0)) * 1000; gotoTime(t, true); };
   function gotoNow() { // langsung ke rekaman paling baru dan putar; kalau hari ini belum ada, pakai hari terakhir yang ada rekamannya
