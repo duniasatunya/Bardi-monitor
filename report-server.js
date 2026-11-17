@@ -14,6 +14,7 @@ const { createPtz } = require('./onvif-ptz');
 const { attachRealtimeWs } = require('./onvif-ws');
 const { createOnvifLive } = require('./onvif-live');
 const { createRecorder24 } = require('./rekam-24jam');
+const { createRekamanApi } = require('./rekaman-api');
 const UIKIT = require('./ui-kit');
 
 // ---------- password & sesi ----------
@@ -256,7 +257,8 @@ function startReportServer(opts) {
     statusList: () => rekam24.statusList().map((r) => ({ id: r.id, name: r.name, state: r.state === 'merekam' ? 'ok' : (r.state === 'menyambung' ? 'mulai' : 'putus'), lastDataAt: r.lastDataAt, sejak: null, error: r.state === 'merekam' ? '' : (r.alasan || r.teks), rate: r.mbps != null ? { nowMbps: r.mbps, avgMbps: r.mbps, peakMbps: r.mbps } : null })),
     incidents: () => rekam24.kejadianTerbaru(), fileFor: () => null,
   };
-  const INCIDENT_PAGE = require('./onvif-kejadian')(BASE_CSS);
+  const REKAMAN_PAGE = require('./rekaman-page')();
+  const rekamanApi = createRekamanApi({ rec: rekam24, rootDir: dir, ffmpegPath: opts.ffmpegPath, log });
   const { createClipStore, page: clipPage, MAX_ITEM_CHARS: CLIP_MAX } = require('./papan-klip');
   const CLIP_PAGE = clipPage(BASE_CSS);
   const clip = createClipStore({ dir, log, file: opts.clipFile });
@@ -434,7 +436,9 @@ function startReportServer(opts) {
         if (p === '/api/klip/delete') return json(res, clip.remove(body.id));
         return json(res, clip.list({ q: body.q, offset: body.offset, limit: body.limit }));
       }
-      if (p === '/kejadian') return send(res, 200, 'text/html; charset=utf-8', INCIDENT_PAGE);
+      if (p === '/rekaman') return send(res, 200, 'text/html; charset=utf-8', REKAMAN_PAGE);
+      if (p === '/kejadian') { res.writeHead(302, { Location: '/rekaman', 'Cache-Control': 'no-store' }); return res.end(); }
+      if (await rekamanApi.handle(req, res, url, p)) return;
       if (p === '/api/kejadian') return json(res, { ok: true, dir: incident.dir, recorder: incident.statusList(), days: incident.retentionDays, incidents: incident.incidents() });
       if (p.startsWith('/kejadian/f/')) { // /kejadian/f/<id8>/<tanggal_jam.mp4>: video klip (mendukung Range supaya bisa digeser)
         const m = /^\/kejadian\/f\/([0-9a-f]{8})\/([0-9_.\-a-z]+)$/.exec(p);

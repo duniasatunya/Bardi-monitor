@@ -144,3 +144,9 @@ Cadangan sebelum revisi: `*.bak-r3`. Belum diuji di iPhone asli dan dengan kamer
 - Penghubung kecil di `report-server.js` menjaga halaman lama tetap jalan: halaman Kamera (Mbps per kamera) dan Kejadian memakai status/Mbps dari perekam 24 jam; daftar Kejadian berisi kamera putus/tersambung sejak program dinyalakan (tanpa klip/berkas).
 - Folder `rekaman-kejadian` lama dan isinya tidak disentuh. Sambungan video tambahan per kamera berkurang satu (perekam kejadian tidak jalan lagi).
 - Kamera H.265 direkam apa adanya; memutarnya di browser nanti perlu pengolahan saat diputar (belum dibuat).
+
+## Halaman Rekaman (menggantikan Kejadian)
+- Baru: `rekaman-page.js` (halaman /rekaman: Putar ulang + Status perekam), `rekaman-api.js` (/api/rekaman/ringkasan, /api/rekaman/hari, /rekaman/f/... potongan MP4 dengan Range).
+- `rekam-24jam.js`: tambah `segmentPath`, `hariAda`.
+- `report-server.js`: /rekaman, /kejadian dialihkan ke /rekaman. `ui-kit.js` & `onvif-multiview.js`: menu jadi "Rekaman".
+- Putar ulang memakai potongan 10 menit utuh (disalin ke MP4 sementara, H.265 diubah ke H.264). Folder sementara dibersihkan otomatis.

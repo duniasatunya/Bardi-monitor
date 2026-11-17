@@ -8,7 +8,7 @@ const LINKS = [
   ['report', '/displaycostum.html', 'Laporan'],
   ['onvif', '/onvif', 'Kamera ONVIF'],
   ['mv', '/multiview', 'Multiview'],
-  ['kj', '/kejadian', 'Rekaman kejadian'],
+  ['kj', '/rekaman', 'Rekaman'],
   ['klip', '/klip', 'Papan klip'],
 ];
 
@@ -184,7 +184,7 @@ const FONT_ROUTE_READY = true;
 const NAV = [
   ['home', '/displaycostum.html', 'Beranda', 'home'],
   ['live', '/multiview', 'Live', 'live'],
-  ['kj', '/kejadian', 'Kejadian', 'history'],
+  ['kj', '/rekaman', 'Rekaman', 'history'],
   ['cam', '/onvif', 'Kamera', 'cam'],
 ];
 
@@ -854,7 +854,7 @@ function dsKit() {
       }).catch(function () { $('stopMsg').textContent = 'Gagal menghubungi PC. Coba lagi.'; reset('Coba lagi'); });
     });
     // Cari / perintah (Ctrl+K)
-    var base = [['Beranda', '/displaycostum.html', 'home'], ['Live (Multiview)', '/multiview', 'live'], ['Rekaman kejadian', '/kejadian', 'history'], ['Kamera ONVIF', '/onvif', 'cam'], ['Papan klip', '/klip', 'clip'], ['Lihat layar PC', '/layar', 'monitor'], ['Unduh PDF', '/report.pdf', 'file'], ['Keluar', '/logout', 'logout']];
+    var base = [['Beranda', '/displaycostum.html', 'home'], ['Live (Multiview)', '/multiview', 'live'], ['Rekaman', '/rekaman', 'history'], ['Kamera ONVIF', '/onvif', 'cam'], ['Papan klip', '/klip', 'clip'], ['Lihat layar PC', '/layar', 'monitor'], ['Unduh PDF', '/report.pdf', 'file'], ['Keluar', '/logout', 'logout']];
     function drawCmd() {
       var q = $('cmdq').value.trim().toLowerCase(), h = '', n = 0;
       var extra = (o.search ? o.search(q) : []) || [];

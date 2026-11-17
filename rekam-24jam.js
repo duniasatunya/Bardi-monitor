@@ -360,6 +360,20 @@ function createRecorder24({ log, rootDir, ffmpegPath, listCams, getCamera, setti
     }
     return res;
   }
+  async function camDirFor(id) { const R = cams.get(id); if (R && R.camDir) return R.camDir; return camDirOf(baseOf(target.mount), id, ''); }
+  async function segmentPath(id, date, name) { // lokasi satu potongan (hanya setelah nama divalidasi); null bila tidak ada
+    if (!target || !ID_RE.test(String(id)) || !DAY_RE.test(String(date)) || !/^\d\d-\d\d-\d\d\.ts$/.test(String(name))) return null;
+    const f = path.join(await camDirFor(id), date, name);
+    try { await withTimeout(fs.promises.stat(f), T.ioTimeoutMs); return f; } catch (_) { return null; }
+  }
+  async function hariAda(id) { // tanggal-tanggal yang punya rekaman (terbaru dulu, maksimal 31)
+    if (!target || !ID_RE.test(String(id))) return [];
+    const dir = await camDirFor(id); let ds = [];
+    try { ds = (await withTimeout(fs.promises.readdir(dir), T.ioTimeoutMs)).filter((d) => DAY_RE.test(d)).sort().reverse().slice(0, 40); } catch (_) { return []; }
+    const out = [];
+    for (const d of ds) { try { if ((await withTimeout(fs.promises.readdir(path.join(dir, d)), T.ioTimeoutMs)).some((n) => SEG_RE.test(n))) out.push(d); } catch (_) {} if (out.length >= 31) break; }
+    return out;
+  }
   async function events(date) { // catatan kejadian satu hari (tanda merah)
     if (!target || !DAY_RE.test(String(date))) return [];
     try { const txt = await withTimeout(fs.promises.readFile(path.join(baseOf(target.mount), '_log', date + '.jsonl'), 'utf8'), T.ioTimeoutMs); return txt.split('\n').filter(Boolean).map((l) => { try { return JSON.parse(l); } catch (_) { return null; } }).filter(Boolean); } catch (_) { return []; }
@@ -382,7 +396,7 @@ function createRecorder24({ log, rootDir, ffmpegPath, listCams, getCamera, setti
   }
   function stop() { stopped = true; for (const t of timers) clearInterval(t); timers = []; if (ready) logEvent('program-berhenti', null); for (const R of cams.values()) killFfmpeg(R); }
 
-  return { start, stop, statusList, storage, segments, events, kejadianTerbaru, rotate, settings: S, _debug: { cams, get target() { return target; }, refreshDrives } };
+  return { start, stop, statusList, storage, segments, segmentPath, hariAda, events, kejadianTerbaru, rotate, settings: S, _debug: { cams, get target() { return target; }, refreshDrives } };
 }
 
 module.exports = { createRecorder24, listDrivesWindows };
