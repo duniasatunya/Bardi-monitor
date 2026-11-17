@@ -13,7 +13,7 @@ const makeOnvifPage = require('./onvif-page');
 const { createPtz } = require('./onvif-ptz');
 const { attachRealtimeWs } = require('./onvif-ws');
 const { createOnvifLive } = require('./onvif-live');
-const { createIncidentRecorder } = require('./onvif-incident');
+const { createRecorder24 } = require('./rekam-24jam');
 const UIKIT = require('./ui-kit');
 
 // ---------- password & sesi ----------
@@ -246,9 +246,16 @@ function startReportServer(opts) {
   const onvif = createOnvifManager({ dir, log, probeFn: opts.onvifProbeFn, timing: opts.onvifTiming });
   onvif.start();
   const onvifLive = createOnvifLive({ log, rootDir: dir, ffmpegPath: opts.ffmpegPath, getCamera: (id) => onvif.liveInfo(id), tmpBase: opts.onvifLiveTmp, rtspTransport: opts.onvifRtspTransport });
-  // Rekaman kejadian: buffer berputar tiap kamera ONVIF; saat kamera putus, 2 menit sebelum & sesudahnya disimpan jadi klip.
-  const incident = createIncidentRecorder({ log, rootDir: dir, ffmpegPath: opts.ffmpegPath, listCams: () => onvif.list().map((c) => ({ id: c.id, name: c.name })), getCamera: (id) => onvif.liveInfo(id), outDir: opts.incidentDir, bufBase: opts.incidentBuf, timing: opts.incidentTiming, minFreeBytes: opts.incidentMinFree, retentionDays: opts.incidentDays || 7 });
-  if (!opts.noIncident) incident.start();
+  // Rekaman 24 jam ke hardisk (pengaturan: rekam-pengaturan.json; "aktif": false untuk mematikan).
+  const rekam24 = createRecorder24({ log, rootDir: dir, ffmpegPath: opts.ffmpegPath, listCams: () => onvif.list().map((c) => ({ id: c.id, name: c.name })), getCamera: (id) => onvif.liveInfo(id), rtspTransport: opts.onvifRtspTransport });
+  if (!opts.noRekam24) rekam24.start();
+  // Perekam kejadian lama (onvif-incident.js) tidak dijalankan lagi: diganti rekaman 24 jam. Objek ini hanya penghubung supaya halaman Kamera/Kejadian tetap jalan:
+  // status & Mbps diambil dari perekam 24 jam; kejadian kamera putus/tersambung dari catatannya; tidak ada klip terpisah (rekamannya ada di rekaman penuh).
+  const incident = {
+    dir: 'rekaman 24 jam (BardiRekaman\\penuh di hardisk)', retentionDays: rekam24.settings.hari,
+    statusList: () => rekam24.statusList().map((r) => ({ id: r.id, name: r.name, state: r.state === 'merekam' ? 'ok' : (r.state === 'menyambung' ? 'mulai' : 'putus'), lastDataAt: r.lastDataAt, sejak: null, error: r.state === 'merekam' ? '' : (r.alasan || r.teks), rate: r.mbps != null ? { nowMbps: r.mbps, avgMbps: r.mbps, peakMbps: r.mbps } : null })),
+    incidents: () => rekam24.kejadianTerbaru(), fileFor: () => null,
+  };
   const INCIDENT_PAGE = require('./onvif-kejadian')(BASE_CSS);
   const { createClipStore, page: clipPage, MAX_ITEM_CHARS: CLIP_MAX } = require('./papan-klip');
   const CLIP_PAGE = clipPage(BASE_CSS);
